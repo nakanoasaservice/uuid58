@@ -27,7 +27,8 @@ await build({
     name: config.name,
     version: config.version,
     license: config.license,
-    description: "A Base58-encoded UUID encoder and decoder.",
+    description:
+      "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
     repository: {
       type: "git",
       url: "git://github.com/nakanoasaservice/uuid58.git",
