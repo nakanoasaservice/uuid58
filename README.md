@@ -1,6 +1,6 @@
 # uuid58
 
-[![JSR](https://jsr.io/badges/@nakanoasaservice/uuid58)](https://jsr.io/@nakanoasaservice/uuid58)
+[![JSR](https://jsr.io/badges/@nakanoaas/uuid58)](https://jsr.io/@nakanoaas/uuid58)
 [![npm](https://badge.fury.io/js/@nakanoaas%2Fuuid58.svg)](https://badge.fury.io/js/@nakanoaas%2Fuuid58)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
