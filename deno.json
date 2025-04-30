@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
   "name": "@nakanoaas/uuid58",
   "license": "MIT",
   "exports": "./index.ts",

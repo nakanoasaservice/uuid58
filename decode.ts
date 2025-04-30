@@ -29,10 +29,10 @@ export class InvalidBase58Error extends Error {
  *
  * @example
  * ```typescript
- * const uuid = decodeUuid58("XDY9dmBbcMBXqcRvYw8xJ2"); // returns "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"
+ * const uuid = uuid58Decode("XDY9dmBbcMBXqcRvYw8xJ2"); // returns "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"
  * ```
  */
-export function decodeUuid58(base58: string): string {
+export function uuid58Decode(base58: string): string {
   if (!/^[1-9A-HJ-NP-Za-km-z]+$/.test(base58)) {
     throw new InvalidBase58Error(base58);
   }

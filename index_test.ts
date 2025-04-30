@@ -1,11 +1,11 @@
-import { describe, it } from "jsr:@std/testing/bdd";
 import { expect } from "jsr:@std/expect";
+import { describe, it } from "jsr:@std/testing/bdd";
 
-import { encodeUuid58 } from "./encode.ts";
-import { decodeUuid58 } from "./decode.ts";
+import { uuid58Decode } from "./decode.ts";
+import { uuid58Encode } from "./encode.ts";
 import { uuid58 } from "./uuid58.ts";
 
-describe("encodeUuid58 / decodeUuid58 round-trip", () => {
+describe("uuid58Encode / uuid58Decode round-trip", () => {
   // Prepare various UUIDs including random, typical, and zero-padded cases
   const samples = [
     "00000000-0000-0000-0000-000000000000", // All zeros
@@ -17,32 +17,32 @@ describe("encodeUuid58 / decodeUuid58 round-trip", () => {
 
   it("encodes then decodes back to the identical UUID (case-insensitive)", () => {
     for (const uuid of samples) {
-      const short = encodeUuid58(uuid);
-      const restored = decodeUuid58(short);
+      const short = uuid58Encode(uuid);
+      const restored = uuid58Decode(short);
       expect(restored).toBe(uuid.toLowerCase());
     }
   });
 
   it("returns a Base58 string of ~22 chars for non-degenerate UUIDs", () => {
     const uuid = "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf";
-    const short = encodeUuid58(uuid);
+    const short = uuid58Encode(uuid);
     expect(short.length).toBe(22);
   });
 
   it("throws on malformed UUID input", () => {
-    expect(() => encodeUuid58("not-a-uuid")).toThrow();
-    expect(() => encodeUuid58("12345678-1234")).toThrow();
+    expect(() => uuid58Encode("not-a-uuid")).toThrow();
+    expect(() => uuid58Encode("12345678-1234")).toThrow();
   });
 
   it("throws on malformed Base58 input", () => {
-    expect(() => decodeUuid58("O0lI")).toThrow(); // Contains forbidden characters
-    expect(() => decodeUuid58("$$$")).toThrow();
+    expect(() => uuid58Decode("O0lI")).toThrow(); // Contains forbidden characters
+    expect(() => uuid58Decode("$$$")).toThrow();
   });
 });
 
 describe("uuid58", () => {
   it("round-trips", () => {
     const short = uuid58();
-    expect(encodeUuid58(decodeUuid58(short))).toBe(short);
+    expect(uuid58Encode(uuid58Decode(short))).toBe(short);
   });
 });

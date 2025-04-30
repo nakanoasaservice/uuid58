@@ -26,14 +26,14 @@ export class InvalidUuidError extends Error {
  * @example
  * ```typescript
  * // With hyphens
- * const base58 = encodeUuid58("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
+ * const base58 = uuid58Encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
  * // Without hyphens
- * const base58 = encodeUuid58("f4b247fd1f8745d4aa061c6fc0a8dfaf"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
+ * const base58 = uuid58Encode("f4b247fd1f8745d4aa061c6fc0a8dfaf"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
  * // Uppercase UUID is also accepted
- * const base58 = encodeUuid58("F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
+ * const base58 = uuid58Encode("F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
  * ```
  */
-export function encodeUuid58(uuid: string): string {
+export function uuid58Encode(uuid: string): string {
   const hex = uuid.replace(/-/g, "").toLowerCase();
   if (!/^[0-9a-f]{32}$/.test(hex)) {
     throw new InvalidUuidError(uuid);

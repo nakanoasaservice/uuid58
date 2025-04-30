@@ -1,4 +1,4 @@
-import { encodeUuid58 } from "./encode.ts";
+import { uuid58Encode } from "./encode.ts";
 
 /**
  * Generates a new Base58-encoded UUID.
@@ -14,5 +14,5 @@ import { encodeUuid58 } from "./encode.ts";
  * ```
  */
 export function uuid58(): string {
-  return encodeUuid58(crypto.randomUUID());
+  return uuid58Encode(crypto.randomUUID());
 }

@@ -48,18 +48,18 @@ pnpm add @nakanoaas/uuid58
 ## Usage
 
 ```typescript
-import { decodeUuid58, encodeUuid58, uuid58 } from "@nakanoaas/uuid58";
+import { uuid58, uuid58Decode, uuid58Encode } from "@nakanoaas/uuid58";
 
 // Generate a new Base58-encoded UUID
 const id = uuid58();
 // => "XDY9dmBbcMBXqcRvYw8xJ2"
 
 // Convert existing UUID to Base58
-const encoded = encodeUuid58("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf");
+const encoded = uuid58Encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf");
 // => "XDY9dmBbcMBXqcRvYw8xJ2"
 
 // Convert Base58 back to UUID
-const decoded = decodeUuid58("XDY9dmBbcMBXqcRvYw8xJ2");
+const decoded = uuid58Decode("XDY9dmBbcMBXqcRvYw8xJ2");
 // => "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"
 ```
 
@@ -73,12 +73,12 @@ Generates a new Base58-encoded UUID.
 function uuid58(): string;
 ```
 
-### `encodeUuid58(uuid: string)`
+### `uuid58Encode(uuid: string)`
 
 Converts a standard UUID string to a Base58-encoded format.
 
 ```typescript
-function encodeUuid58(uuid: string): string;
+function uuid58Encode(uuid: string): string;
 ```
 
 - **Parameters:**
@@ -86,12 +86,12 @@ function encodeUuid58(uuid: string): string;
 - **Returns:** A Base58-encoded string
 - **Throws:** `InvalidUuidError` if the input is not a valid UUID
 
-### `decodeUuid58(encoded: string)`
+### `uuid58Decode(encoded: string)`
 
 Converts a Base58-encoded string back to a standard UUID format.
 
 ```typescript
-function decodeUuid58(encoded: string): string;
+function uuid58Decode(encoded: string): string;
 ```
 
 - **Parameters:**
