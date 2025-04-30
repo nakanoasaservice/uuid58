@@ -33,16 +33,19 @@ export class InvalidBase58Error extends Error {
  * ```
  */
 export function uuid58Decode(base58: string): string {
-  if (!/^[1-9A-HJ-NP-Za-km-z]+$/.test(base58)) {
-    throw new InvalidBase58Error(base58);
-  }
-
   let num = 0n;
   for (const char of base58) {
-    num = num * ALPHABET_LENGTH + BASE58_MAP[char]!;
+    const index = BASE58_MAP[char];
+    if (index === undefined) {
+      throw new InvalidBase58Error(base58);
+    }
+    num = num * ALPHABET_LENGTH + index;
   }
 
   const hex = num.toString(16).padStart(32, "0");
+  if (hex.length !== 32) {
+    throw new InvalidBase58Error(base58);
+  }
 
   return (
     hex.slice(0, 8) +

@@ -35,11 +35,17 @@ export class InvalidUuidError extends Error {
  */
 export function uuid58Encode(uuid: string): string {
   const hex = uuid.replace(/-/g, "").toLowerCase();
-  if (!/^[0-9a-f]{32}$/.test(hex)) {
+  if (hex.length !== 32) {
     throw new InvalidUuidError(uuid);
   }
 
-  let num = BigInt("0x" + hex);
+  let num;
+  try {
+    num = BigInt("0x" + hex);
+  } catch {
+    throw new InvalidUuidError(uuid);
+  }
+
   let encoded = "";
   do {
     const rem = Number(num % ALPHABET_LENGTH);
