@@ -86,6 +86,21 @@ function uuid58Encode(uuid: string): string;
 - **Returns:** A Base58-encoded string
 - **Throws:** `InvalidUuidError` if the input is not a valid UUID
 
+### `uuid58EncodeSafe(uuid: string)`
+
+Converts a standard UUID string to a Base58-encoded format, but instead of
+throwing an error for invalid input, it returns an `InvalidUuidError` instance.
+
+```typescript
+function uuid58EncodeSafe(uuid: string): string | InvalidUuidError;
+```
+
+- **Parameters:**
+  - `uuid`: The UUID string to encode (with or without hyphens)
+- **Returns:** A Base58-encoded string, or an `InvalidUuidError` if the input is
+  not a valid UUID
+- **Note:** This function does not throw; it returns the error object instead.
+
 ### `uuid58Decode(encoded: string)`
 
 Converts a Base58-encoded string back to a standard UUID format.
@@ -99,6 +114,22 @@ function uuid58Decode(encoded: string): string;
 - **Returns:** A standard UUID string (lowercase, with hyphens)
 - **Throws:** `InvalidBase58Error` if the input contains invalid Base58
   characters
+
+### `uuid58DecodeSafe(encoded: string)`
+
+Converts a Base58-encoded string back to a standard UUID format, but instead of
+throwing an error for invalid input, it returns an `InvalidBase58Error`
+instance.
+
+```typescript
+function uuid58DecodeSafe(encoded: string): string | InvalidBase58Error;
+```
+
+- **Parameters:**
+  - `encoded`: The Base58-encoded string to decode
+- **Returns:** A standard UUID string (lowercase, with hyphens), or an
+  `InvalidBase58Error` if the input contains invalid Base58 characters
+- **Note:** This function does not throw; it returns the error object instead.
 
 ## Why uuid58?
 

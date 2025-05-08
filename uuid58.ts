@@ -1,4 +1,4 @@
-import { uuid58Encode } from "./encode.ts";
+import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
 
 /**
  * Generates a new Base58-encoded UUID.
@@ -14,5 +14,13 @@ import { uuid58Encode } from "./encode.ts";
  * ```
  */
 export function uuid58(): string {
-  return uuid58Encode(crypto.randomUUID());
+  let num = BigInt("0x" + crypto.randomUUID().replace(/-/g, ""));
+  let encoded = "";
+
+  do {
+    encoded = BASE58_ALPHABET[Number(num % ALPHABET_LENGTH)] + encoded;
+    num /= ALPHABET_LENGTH;
+  } while (num > 0n);
+
+  return encoded;
 }
