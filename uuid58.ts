@@ -14,7 +14,7 @@ import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
  * ```
  */
 export function uuid58(): string {
-  let num = BigInt("0x" + crypto.randomUUID().replace(/-/g, ""));
+  let num = BigInt("0x" + crypto.randomUUID().replaceAll("-", ""));
   let encoded = "";
 
   do {
