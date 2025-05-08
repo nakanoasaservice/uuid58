@@ -4,22 +4,18 @@ import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
  * Error thrown when an invalid UUID string is provided for encoding.
  * This includes strings that don't match the standard UUID format (32 hexadecimal characters with optional hyphens).
  */
-export class InvalidUuidError extends Error {
+export class Uuid58EncodeError extends Error {
   static {
-    this.prototype.name = "InvalidUuidError";
-  }
-
-  constructor(uuid: string) {
-    super(`Invalid UUID format: ${uuid}`);
+    this.prototype.name = "Uuid58EncodeError";
   }
 }
 
 /**
  * Converts a standard UUID string to a Base58-encoded format, but instead of
- * throwing an error for invalid input, it returns an `InvalidUuidError` instance.
+ * throwing an error for invalid input, it returns an `Uuid58EncodeError` instance.
  *
  * @param uuid - The UUID string to encode (with or without hyphens)
- * @returns A Base58-encoded string, or an `InvalidUuidError` if the input is
+ * @returns A Base58-encoded string, or an `Uuid58EncodeError` if the input is
  *   not a valid UUID
  * @note This function does not throw; it returns the error object instead.
  *
@@ -32,20 +28,24 @@ export class InvalidUuidError extends Error {
  * // Uppercase UUID is also accepted
  * const base58 = uuid58EncodeSafe("F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF"); // returns "XDY9dmBbcMBXqcRvYw8xJ2"
  * // Invalid UUID format
- * const error = uuid58EncodeSafe("invalid"); // returns InvalidUuidError
+ * const error = uuid58EncodeSafe("invalid"); // returns Uuid58EncodeError
  * ```
  */
-export function uuid58EncodeSafe(uuid: string): string | InvalidUuidError {
+export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
   const hex = uuid.replaceAll("-", "");
   if (hex.length !== 32) {
-    return new InvalidUuidError(uuid);
+    return new Uuid58EncodeError(
+      `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in "${uuid}"`,
+    );
   }
 
   let num;
   try {
     num = BigInt("0x" + hex);
   } catch {
-    return new InvalidUuidError(uuid);
+    return new Uuid58EncodeError(
+      `Invalid UUID format: "${uuid}" contains non-hexadecimal characters`,
+    );
   }
 
   let encoded = "";
@@ -64,7 +64,7 @@ export function uuid58EncodeSafe(uuid: string): string | InvalidUuidError {
  *              (format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" or "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx").
  *              The input is case-insensitive, so both uppercase and lowercase hexadecimal characters are accepted.
  * @returns A Base58-encoded string representation of the UUID
- * @throws {InvalidUuidError} If the input string is not a valid UUID format
+ * @throws {Uuid58EncodeError} If the input string is not a valid UUID format
  *
  * @example
  * ```typescript
@@ -79,14 +79,14 @@ export function uuid58EncodeSafe(uuid: string): string | InvalidUuidError {
 export function uuid58Encode(uuid: string): string {
   const hex = uuid.replaceAll("-", "");
   if (hex.length !== 32) {
-    throw new InvalidUuidError(uuid);
+    throw new Uuid58EncodeError(uuid);
   }
 
   let num;
   try {
     num = BigInt("0x" + hex);
   } catch {
-    throw new InvalidUuidError(uuid);
+    throw new Uuid58EncodeError(uuid);
   }
 
   let encoded = "";
