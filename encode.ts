@@ -36,7 +36,7 @@ export class InvalidUuidError extends Error {
  * ```
  */
 export function uuid58EncodeSafe(uuid: string): string | InvalidUuidError {
-  const hex = uuid.replace(/-/g, "").toLowerCase();
+  const hex = uuid.replaceAll("-", "");
   if (hex.length !== 32) {
     return new InvalidUuidError(uuid);
   }
@@ -77,7 +77,7 @@ export function uuid58EncodeSafe(uuid: string): string | InvalidUuidError {
  * ```
  */
 export function uuid58Encode(uuid: string): string {
-  const hex = uuid.replace(/-/g, "").toLowerCase();
+  const hex = uuid.replaceAll("-", "");
   if (hex.length !== 32) {
     throw new InvalidUuidError(uuid);
   }
