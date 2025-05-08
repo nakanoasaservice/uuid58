@@ -79,14 +79,16 @@ export function uuid58Decode(base58: string): string {
   for (const char of base58) {
     const index = BASE58_MAP[char];
     if (index === undefined) {
-      throw new Uuid58DecodeError(base58);
+      throw new Uuid58DecodeError(
+        `Character '${char}' is not a valid Base58 character in string: ${base58}`,
+      );
     }
     num = num * ALPHABET_LENGTH + index;
   }
 
   const hex = num.toString(16).padStart(32, "0");
   if (hex.length !== 32) {
-    throw new Uuid58DecodeError(base58);
+    throw new Uuid58DecodeError(`length not 32: ${base58}`);
   }
 
   return (

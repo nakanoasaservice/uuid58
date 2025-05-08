@@ -79,14 +79,18 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
 export function uuid58Encode(uuid: string): string {
   const hex = uuid.replaceAll("-", "");
   if (hex.length !== 32) {
-    throw new Uuid58EncodeError(uuid);
+    throw new Uuid58EncodeError(
+      `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in "${uuid}"`,
+    );
   }
 
   let num;
   try {
     num = BigInt("0x" + hex);
   } catch {
-    throw new Uuid58EncodeError(uuid);
+    throw new Uuid58EncodeError(
+      `Invalid UUID format: "${uuid}" contains non-hexadecimal characters`,
+    );
   }
 
   let encoded = "";
