@@ -77,27 +77,9 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
  * ```
  */
 export function uuid58Encode(uuid: string): string {
-  const hex = uuid.replaceAll("-", "");
-  if (hex.length !== 32) {
-    throw new Uuid58EncodeError(
-      `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in "${uuid}"`,
-    );
+  const result = uuid58EncodeSafe(uuid);
+  if (result instanceof Uuid58EncodeError) {
+    throw result;
   }
-
-  let num;
-  try {
-    num = BigInt("0x" + hex);
-  } catch {
-    throw new Uuid58EncodeError(
-      `Invalid UUID format: "${uuid}" contains non-hexadecimal characters`,
-    );
-  }
-
-  let encoded = "";
-  do {
-    encoded = BASE58_ALPHABET[Number(num % ALPHABET_LENGTH)] + encoded;
-    num /= ALPHABET_LENGTH;
-  } while (num > 0n);
-
-  return encoded;
+  return result;
 }
