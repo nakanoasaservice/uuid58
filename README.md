@@ -16,6 +16,7 @@ shorter, URL-safe identifiers while maintaining the uniqueness of UUIDs.
 - 💪 Type-safe with TypeScript
 - 🔒 Uses native `crypto.randomUUID()` for secure UUID generation
 - 📦 Supports both ESM and CommonJS
+- 🛡️ Provides safe APIs that return error objects instead of throwing exceptions
 
 ## Installation
 
