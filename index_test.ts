@@ -69,3 +69,26 @@ describe("uuid58", () => {
     expect(uuid58Encode(uuid58Decode(short))).toBe(short);
   });
 });
+
+describe("uuid58Encode is case-insensitive and ignores hyphens", () => {
+  const uuidVariants = [
+    "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+    "F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF",
+    "f4b247fd1f8745d4aa061c6fc0a8dfaf",
+    "F4B247FD1F8745D4AA061C6FC0A8DFAF",
+  ];
+  it("returns the same Base58 string for all case/hyphen variants", () => {
+    const encodedSet = new Set(uuidVariants.map(uuid58Encode));
+    expect(encodedSet.size).toBe(1);
+  });
+  it("safe version also returns the same Base58 string for all case/hyphen variants", () => {
+    const encodedSet = new Set(
+      uuidVariants.map((uuid) => {
+        const result = uuid58EncodeSafe(uuid);
+        if (result instanceof Uuid58EncodeError) throw result;
+        return result;
+      }),
+    );
+    expect(encodedSet.size).toBe(1);
+  });
+});
