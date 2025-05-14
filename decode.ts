@@ -17,13 +17,13 @@ export class Uuid58DecodeError extends Error {
 }
 
 /**
- * Converts a Base58-encoded string back to a standard UUID format, but instead of
+ * Converts a 22-character Base58-encoded string back to a standard UUID format, but instead of
  * throwing an error for invalid input, it returns an `Uuid58DecodeError`
  * instance.
  *
- * @param uuid58 - The Base58-encoded UUID string to decode
+ * @param uuid58 - The 22-character Base58-encoded UUID string to decode
  * @returns A standard UUID string (lowercase, with hyphens), or an
- *   `Uuid58DecodeError` if the input contains invalid Base58 characters
+ *   `Uuid58DecodeError` if the input is not a valid 22-character Base58 string
  * @note This function does not throw; it returns the error object instead.
  *
  * @example
@@ -71,19 +71,19 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
 }
 
 /**
- * Converts a Base58-encoded string back to a standard UUID string format.
+ * Converts a 22-character Base58-encoded string back to a standard UUID string format.
  *
- * @param base58 - The Base58-encoded string to decode
+ * @param uuid58 - The 22-character Base58-encoded string to decode
  * @returns A standard UUID string in the format "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" (always in lowercase)
- * @throws {Uuid58DecodeError} If the input string contains characters not in the Base58 alphabet
+ * @throws {Uuid58DecodeError} If the input string is not a valid 22-character Base58 string
  *
  * @example
  * ```typescript
  * const uuid = uuid58Decode("XDY9dmBbcMBXqcRvYw8xJ2"); // returns "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"
  * ```
  */
-export function uuid58Decode(base58: string): string {
-  const result = uuid58DecodeSafe(base58);
+export function uuid58Decode(uuid58: string): string {
+  const result = uuid58DecodeSafe(uuid58);
   if (result instanceof Uuid58DecodeError) {
     throw result;
   }
