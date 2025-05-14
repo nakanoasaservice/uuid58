@@ -37,6 +37,18 @@ describe("uuid58Encode / uuid58Decode round-trip", () => {
     expect(() => uuid58Decode("O0lI")).toThrow(Uuid58DecodeError); // Contains forbidden characters
     expect(() => uuid58Decode("$$$")).toThrow(Uuid58DecodeError);
   });
+
+  it("throws on Base58 strings that are too short", () => {
+    expect(() => uuid58Decode("UoWww8DGaVGLtea7zU7p")).toThrow(
+      Uuid58DecodeError,
+    );
+  });
+
+  it("throws on Base58 strings that are too long", () => {
+    expect(() => uuid58Decode("1111UoWww8DGaVGLtea7zU7p")).toThrow(
+      Uuid58DecodeError,
+    );
+  });
 });
 
 describe("uuid58EncodeSafe / uuid58DecodeSafe", () => {

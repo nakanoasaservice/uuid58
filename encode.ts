@@ -11,11 +11,11 @@ export class Uuid58EncodeError extends Error {
 }
 
 /**
- * Converts a standard UUID string to a Base58-encoded format, but instead of
+ * Converts a standard UUID string to a 22-character Base58-encoded format, but instead of
  * throwing an error for invalid input, it returns an `Uuid58EncodeError` instance.
  *
  * @param uuid - The UUID string to encode (with or without hyphens)
- * @returns A Base58-encoded string, or an `Uuid58EncodeError` if the input is
+ * @returns A 22-character Base58-encoded string, or an `Uuid58EncodeError` if the input is
  *   not a valid UUID
  * @note This function does not throw; it returns the error object instead.
  *
@@ -54,16 +54,16 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
     num /= ALPHABET_LENGTH;
   } while (num > 0n);
 
-  return encoded;
+  return encoded.padStart(22, BASE58_ALPHABET[0]);
 }
 
 /**
- * Converts a standard UUID string to a shortened Base58-encoded format.
+ * Converts a standard UUID string to a 22-character Base58-encoded format.
  *
  * @param uuid - The UUID string to encode. Can be provided with or without hyphens
  *              (format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" or "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx").
  *              The input is case-insensitive, so both uppercase and lowercase hexadecimal characters are accepted.
- * @returns A Base58-encoded string representation of the UUID
+ * @returns A 22-character Base58-encoded string representation of the UUID
  * @throws {Uuid58EncodeError} If the input string is not a valid UUID format
  *
  * @example

@@ -1,16 +1,16 @@
 import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
 
 /**
- * Generates a new Base58-encoded UUID.
+ * Generates a new Base58-encoded UUID (always 22 characters).
  *
  * This function combines the standard UUID generation (using crypto.randomUUID())
  * with Base58 encoding to create a shorter, URL-safe identifier.
  *
- * @returns A Base58-encoded string representing a newly generated UUID
+ * @returns A 22-character Base58-encoded string representing a newly generated UUID
  *
  * @example
  * ```typescript
- * const id = uuid58(); // returns something like "XDY9dmBbcMBXqcRvYw8xJ2"
+ * const id = uuid58(); // returns a 22-character string like "XDY9dmBbcMBXqcRvYw8xJ2"
  * ```
  */
 export function uuid58(): string {
@@ -22,5 +22,5 @@ export function uuid58(): string {
     num /= ALPHABET_LENGTH;
   } while (num > 0n);
 
-  return encoded;
+  return encoded.padStart(22, BASE58_ALPHABET[0]);
 }
