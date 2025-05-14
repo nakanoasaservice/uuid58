@@ -54,7 +54,7 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
     num /= ALPHABET_LENGTH;
   } while (num > 0n);
 
-  return encoded;
+  return encoded.padStart(22, BASE58_ALPHABET[0]);
 }
 
 /**

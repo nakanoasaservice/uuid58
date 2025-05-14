@@ -21,7 +21,7 @@ export class Uuid58DecodeError extends Error {
  * throwing an error for invalid input, it returns an `Uuid58DecodeError`
  * instance.
  *
- * @param base58 - The Base58-encoded string to decode
+ * @param uuid58 - The Base58-encoded UUID string to decode
  * @returns A standard UUID string (lowercase, with hyphens), or an
  *   `Uuid58DecodeError` if the input contains invalid Base58 characters
  * @note This function does not throw; it returns the error object instead.
@@ -32,13 +32,19 @@ export class Uuid58DecodeError extends Error {
  * const error = uuid58DecodeSafe("invalid"); // returns Uuid58DecodeError
  * ```
  */
-export function uuid58DecodeSafe(base58: string): string | Uuid58DecodeError {
+export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
+  if (uuid58.length !== 22) {
+    return new Uuid58DecodeError(
+      `Base58 string must be exactly 22 characters: ${uuid58}`,
+    );
+  }
+
   let num = 0n;
-  for (const char of base58) {
+  for (const char of uuid58) {
     const index = BASE58_MAP[char];
     if (index === undefined) {
       return new Uuid58DecodeError(
-        `Character '${char}' is not a valid Base58 character in string: ${base58}`,
+        `Invalid Base58 character '${char}' found in input: ${uuid58}`,
       );
     }
     num = num * ALPHABET_LENGTH + index;
@@ -46,7 +52,9 @@ export function uuid58DecodeSafe(base58: string): string | Uuid58DecodeError {
 
   const hex = num.toString(16).padStart(32, "0");
   if (hex.length !== 32) {
-    return new Uuid58DecodeError(`length not 32: ${base58}`);
+    return new Uuid58DecodeError(
+      `Decoded hexadecimal string is not 32 characters: ${uuid58}`,
+    );
   }
 
   return (
