@@ -35,7 +35,7 @@ export class Uuid58DecodeError extends Error {
 export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
   if (uuid58.length !== 22) {
     return new Uuid58DecodeError(
-      `Base58 string must be exactly 22 characters: ${uuid58}`,
+      `Expected Base58 string of length 22, but received string of length ${uuid58.length}: ${uuid58}`,
     );
   }
 
@@ -53,7 +53,7 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
   const hex = num.toString(16).padStart(32, "0");
   if (hex.length !== 32) {
     return new Uuid58DecodeError(
-      `Decoded hexadecimal string is not 32 characters: ${uuid58}`,
+      `Decoded value exceeds 128 bits of UUID: ${uuid58}`,
     );
   }
 
