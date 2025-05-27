@@ -18,6 +18,11 @@ shorter, URL-safe identifiers while maintaining the uniqueness of UUIDs.
 - 📦 Supports both ESM and CommonJS
 - 🛡️ Provides safe APIs that return error objects instead of throwing exceptions
 
+## Try it out!
+
+[UUID58 Playground](https://nakanoasaservice.github.io/uuid58-playground/) - Try
+generating, encoding, and decoding UUID58 in real-time!
+
 ## Installation
 
 ### Deno
