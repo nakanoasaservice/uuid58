@@ -6,6 +6,7 @@ interface Config {
   name: string;
   version: string;
   license: string;
+  sideEffects: boolean;
   compilerOptions: { [key: string]: boolean };
 }
 
@@ -20,13 +21,17 @@ await build({
   },
 
   test: false,
-  compilerOptions: config.compilerOptions,
+  compilerOptions: {
+    ...config.compilerOptions,
+    target: "Latest",
+  },
 
   package: {
     // package.json properties
     name: config.name,
     version: config.version,
     license: config.license,
+    sideEffects: config.sideEffects,
     description:
       "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
     repository: {
