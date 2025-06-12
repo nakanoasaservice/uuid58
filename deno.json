@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "name": "@nakanoaas/uuid58",
   "license": "MIT",
   "sideEffects": false,
@@ -23,7 +23,8 @@
     "strictPropertyInitialization": false,
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["deno.ns", "ES2020", "DOM"]
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.42.1",
