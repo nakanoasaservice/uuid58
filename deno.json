@@ -23,7 +23,8 @@
     "strictPropertyInitialization": false,
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["deno.ns", "ES2020", "DOM"]
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.42.1",

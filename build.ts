@@ -24,6 +24,7 @@ await build({
   compilerOptions: {
     ...config.compilerOptions,
     target: "Latest",
+    lib: ["ES2020", "DOM"],
   },
 
   package: {

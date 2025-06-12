@@ -32,7 +32,7 @@ export class Uuid58EncodeError extends Error {
  * ```
  */
 export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
-  const hex = uuid.replaceAll("-", "");
+  const hex = uuid.replace(/-/g, "");
   if (hex.length !== 32) {
     return new Uuid58EncodeError(
       `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in "${uuid}"`,
