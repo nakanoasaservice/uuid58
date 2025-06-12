@@ -17,7 +17,7 @@ await build({
   entryPoints: ["./index.ts"],
   outDir: "./dist",
   shims: {
-    deno: true,
+    deno: false,
   },
 
   test: false,
