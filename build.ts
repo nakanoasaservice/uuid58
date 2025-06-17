@@ -23,7 +23,7 @@ await build({
   test: false,
   compilerOptions: {
     ...config.compilerOptions,
-    target: "Latest",
+    target: "ES2020",
     lib: ["ES2020", "DOM"],
   },
 
@@ -32,7 +32,7 @@ await build({
     name: config.name,
     version: config.version,
     license: config.license,
-    sideEffects: config.sideEffects,
+    sideEffects: false,
     description:
       "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
     repository: {

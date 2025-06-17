@@ -3,7 +3,7 @@ import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
 /**
  * Generates a new Base58-encoded UUID (always 22 characters).
  *
- * This function combines the standard UUID generation (using crypto.randomUUID())
+ * This function combines the standard UUID generation (using crypto.getRandomValues())
  * with Base58 encoding to create a shorter, URL-safe identifier.
  *
  * @returns A 22-character Base58-encoded string representing a newly generated UUID
@@ -14,7 +14,12 @@ import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
  * ```
  */
 export function uuid58(): string {
-  let num = BigInt("0x" + crypto.randomUUID().replace(/-/g, ""));
+  const bytes = crypto.getRandomValues(new BigUint64Array(2));
+
+  bytes[0] = (bytes[0]! & 0xffffffffffff0fffn) | 0x0000000000004000n;
+  bytes[1] = (bytes[1]! & 0x3fffffffffffffffn) | 0x8000000000000000n;
+
+  let num = bytes[0] << 64n | bytes[1];
   let encoded = "";
 
   do {

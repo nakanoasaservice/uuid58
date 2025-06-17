@@ -80,6 +80,22 @@ describe("uuid58", () => {
     const short = uuid58();
     expect(uuid58Encode(uuid58Decode(short))).toBe(short);
   });
+
+  it("generates valid UUID v4 with variant 1", () => {
+    const short = uuid58();
+    const decoded = uuid58Decode(short);
+
+    // Check UUID format (8-4-4-4-12 pattern)
+    expect(decoded).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
+
+    // Check version 4 (13th character should be '4')
+    expect(decoded[14]).toBe("4");
+
+    // Check variant 1 (17th character should be '8', '9', 'a', or 'b')
+    expect(["8", "9", "a", "b"]).toContain(decoded[19]);
+  });
 });
 
 describe("uuid58Encode is case-insensitive and ignores hyphens", () => {
