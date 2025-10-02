@@ -1,5 +1,5 @@
-import { expect } from "jsr:@std/expect";
-import { describe, it } from "jsr:@std/testing/bdd";
+import { expect } from "@std/expect";
+import { describe, it } from "@std/testing/bdd";
 
 import { uuid58Encode, Uuid58EncodeError, uuid58EncodeSafe } from "./encode.ts";
 import { uuid58Decode, Uuid58DecodeError, uuid58DecodeSafe } from "./decode.ts";
