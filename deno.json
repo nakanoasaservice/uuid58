@@ -26,7 +26,8 @@
     "lib": ["deno.ns", "ES2020", "DOM"]
   },
   "imports": {
-    "@deno/dnt": "jsr:@deno/dnt@^0.42.1",
-    "@std/testing": "jsr:@std/testing@^1.0.11"
+    "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
+    "@std/expect": "jsr:@std/expect@^1.0.17",
+    "@std/testing": "jsr:@std/testing@^1.0.15"
   }
 }
