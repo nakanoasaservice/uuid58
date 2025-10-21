@@ -48,13 +48,15 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
     );
   }
 
-  let encoded = "";
-  do {
-    encoded = BASE58_ALPHABET[Number(num % ALPHABET_LENGTH)] + encoded;
-    num /= ALPHABET_LENGTH;
-  } while (num > 0n);
+  const out = new Array<string>(22).fill(BASE58_ALPHABET[0]!);
+  let i = 21;
+  while (num > 0n) {
+      const rem = Number(num % ALPHABET_LENGTH);
+      out[i--] = BASE58_ALPHABET[rem]!;
+      num /= ALPHABET_LENGTH;
+  }
 
-  return encoded.padStart(22, BASE58_ALPHABET[0]);
+  return out.join("");
 }
 
 /**
