@@ -29,8 +29,8 @@ jobs:
       - name: Build for npm
         run: deno task build
 
-      - name: Publish to jsr
-        run: npx jsr publish
+      - name: Publish to JSR
+        run: deno publish
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
