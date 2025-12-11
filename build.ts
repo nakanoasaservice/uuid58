@@ -33,11 +33,12 @@ await build({
     version: config.version,
     license: config.license,
     sideEffects: false,
+    type: "module",
     description:
       "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
     repository: {
       type: "git",
-      url: "git://github.com/nakanoasaservice/uuid58.git",
+      url: "git+https://github.com/nakanoasaservice/uuid58.git",
     },
     bugs: {
       url: "https://github.com/nakanoasaservice/uuid58/issues",
