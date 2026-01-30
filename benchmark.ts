@@ -1,7 +1,7 @@
-import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
+import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
 import { uuid58Decode } from "./decode.ts";
 import { uuid58Encode } from "./encode.ts";
-import { uuid58 } from "./uuid58.ts";
+import { uuid58 } from "./generate.ts";
 
 Deno.bench("uuid58Encode", () => {
   uuid58Encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf");
@@ -24,9 +24,9 @@ function uuid58RandomUUID(): string {
   let encoded = "";
 
   do {
-    encoded = BASE58_ALPHABET[Number(num % ALPHABET_LENGTH)] + encoded;
-    num /= ALPHABET_LENGTH;
+    encoded = UUID58_ALPHABET[Number(num % UUID58_LENGTH)] + encoded;
+    num /= UUID58_LENGTH;
   } while (num > 0n);
 
-  return encoded.padStart(22, BASE58_ALPHABET[0]);
+  return encoded.padStart(22, UUID58_ALPHABET[0]);
 }

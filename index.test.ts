@@ -3,7 +3,7 @@ import { describe, it } from "@std/testing/bdd";
 
 import { uuid58Encode, Uuid58EncodeError, uuid58EncodeSafe } from "./encode.ts";
 import { uuid58Decode, Uuid58DecodeError, uuid58DecodeSafe } from "./decode.ts";
-import { uuid58 } from "./uuid58.ts";
+import { uuid58 } from "./generate.ts";
 
 const samples = [
   "00000000-0000-0000-0000-000000000000", // All zeros

@@ -1,9 +1,9 @@
-import { ALPHABET_LENGTH, BASE58_ALPHABET } from "./alphabet.ts";
+import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
 
 // Fast lookup map from alphabet characters to their indices
 const BASE58_MAP: Record<string, bigint> = {};
-for (let i = 0; i < BASE58_ALPHABET.length; i++) {
-  BASE58_MAP[BASE58_ALPHABET[i]!] = BigInt(i);
+for (let i = 0; i < UUID58_ALPHABET.length; i++) {
+  BASE58_MAP[UUID58_ALPHABET[i]!] = BigInt(i);
 }
 
 /**
@@ -47,7 +47,7 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
         `Invalid Base58 character '${char}' found in input: ${uuid58}`,
       );
     }
-    num = num * ALPHABET_LENGTH + index;
+    num = num * UUID58_LENGTH + index;
   }
 
   const hex = num.toString(16).padStart(32, "0");
