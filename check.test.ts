@@ -15,6 +15,24 @@ const validUuids = [
 ];
 
 describe("isUuid58", () => {
+  describe("boundary values", () => {
+    it("returns true for minimum UUID value (all zeros)", () => {
+      const minUuid = "00000000-0000-0000-0000-000000000000";
+      const encoded = uuid58Encode(minUuid);
+      expect(isUuid58(encoded)).toBe(true);
+      expect(encoded).toBe("1111111111111111111111");
+    });
+
+    it("returns true for maximum UUID value", () => {
+      expect(isUuid58("YcVfxkQb6JRzqk5kF2tNLv")).toBe(true); // cspell:disable-line
+    });
+
+    it("returns false for max UUID value plus one", () => {
+      // MAX_UUID58 + 1
+      expect(isUuid58("YcVfxkQb6JRzqk5kF2tNLw")).toBe(false); // cspell:disable-line
+    });
+  });
+
   describe("valid UUID58 strings", () => {
     it("returns true for valid encoded UUID strings", () => {
       for (const uuid of validUuids) {
@@ -23,17 +41,13 @@ describe("isUuid58", () => {
       }
     });
 
-    it("returns true for minimum UUID value (all zeros)", () => {
-      const minUuid = "00000000-0000-0000-0000-000000000000";
-      const encoded = uuid58Encode(minUuid);
-      expect(isUuid58(encoded)).toBe(true);
-      expect(encoded).toBe("1111111111111111111111");
-    });
+    it("returns true for valid 22-character Base58 strings", () => {
+      // All '1' characters (minimum Base58 value, represents zero)
+      expect(isUuid58("1111111111111111111111")).toBe(true);
 
-    it("returns true for maximum UUID value (all ff)", () => {
-      const maxUuid = "ffffffff-ffff-ffff-ffff-ffffffffffff";
-      const encoded = uuid58Encode(maxUuid);
-      expect(isUuid58(encoded)).toBe(true);
+      // Mixed valid characters that decode to valid UUIDs
+      expect(isUuid58("123456789ABCDEFGHJKLMN")).toBe(true); // cspell:disable-line
+      expect(isUuid58("PQRSTUVWXYZabcdefghijk")).toBe(true); // cspell:disable-line
     });
   });
 
@@ -43,12 +57,14 @@ describe("isUuid58", () => {
       expect(isUuid58("short")).toBe(false);
       expect(isUuid58("UoWww8DGaVGLtea7zU7p")).toBe(false); // 21 characters
       expect(isUuid58("123456789012345678901")).toBe(false); // 21 characters
+      expect(isUuid58("123456789ABCDEFGHJKLM")).toBe(false); // 21 characters (cspell:disable-line)
     });
 
     it("returns false for strings longer than 22 characters", () => {
       expect(isUuid58("11111111111111111111111")).toBe(false); // 23 characters
       expect(isUuid58("1111UoWww8DGaVGLtea7zU7p")).toBe(false); // 26 characters
       expect(isUuid58("12345678901234567890123")).toBe(false); // 23 characters
+      expect(isUuid58("123456789ABCDEFGHJKLMNP")).toBe(false); // 23 characters (cspell:disable-line)
     });
   });
 
@@ -78,10 +94,6 @@ describe("isUuid58", () => {
   });
 
   describe("values exceeding 128 bits", () => {
-    it("returns true for max UUID value", () => {
-      expect(isUuid58("YcVfxkQb6JRzqk5kF2tNLv")).toBe(true); // cspell:disable-line
-    });
-
     it("returns false for Base58 strings that decode to values exceeding 128 bits", () => {
       // 22 'z' characters (maximum Base58 value) exceeds 128 bits
       expect(isUuid58("zzzzzzzzzzzzzzzzzzzzzz")).toBe(false);
@@ -94,27 +106,6 @@ describe("isUuid58", () => {
     it("returns false for strings that would exceed 128 bits during decoding", () => {
       // A string that starts with high-value characters
       expect(isUuid58("zzzzzzzzzzzzzzzzzzzzz1")).toBe(false);
-    });
-
-    it("returns false for max UUID value plus one", () => {
-      // MAX_UUID58 + 1
-      expect(isUuid58("YcVfxkQb6JRzqk5kF2tNLw")).toBe(false); // cspell:disable-line
-    });
-  });
-
-  describe("edge cases", () => {
-    it("returns true for valid 22-character Base58 strings", () => {
-      // All '1' characters (minimum Base58 value, represents zero)
-      expect(isUuid58("1111111111111111111111")).toBe(true);
-
-      // Mixed valid characters that decode to valid UUIDs
-      expect(isUuid58("123456789ABCDEFGHJKLMN")).toBe(true); // cspell:disable-line
-      expect(isUuid58("PQRSTUVWXYZabcdefghijk")).toBe(true); // cspell:disable-line
-    });
-
-    it("returns false for strings with only valid characters but wrong length", () => {
-      expect(isUuid58("123456789ABCDEFGHJKLM")).toBe(false); // 21 characters (cspell:disable-line)
-      expect(isUuid58("123456789ABCDEFGHJKLMNP")).toBe(false); // 23 characters (cspell:disable-line)
     });
   });
 
