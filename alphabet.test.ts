@@ -59,6 +59,14 @@ describe("UUID58_ALPHABET", () => {
     // Last should be lowercase letters (excluding l)
     expect(UUID58_ALPHABET.slice(33)).toBe("abcdefghijkmnopqrstuvwxyz"); // cspell:disable-line
   });
+
+  it("is strictly increasing by character code", () => {
+    for (let i = 1; i < UUID58_ALPHABET.length; i++) {
+      const prev = UUID58_ALPHABET.charCodeAt(i - 1);
+      const current = UUID58_ALPHABET.charCodeAt(i);
+      expect(prev < current).toBe(true);
+    }
+  });
 });
 
 describe("UUID58_LENGTH", () => {
