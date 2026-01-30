@@ -25,18 +25,10 @@ export const UUID58_ALPHABET: string =
 export const UUID58_LENGTH: bigint = BigInt(UUID58_ALPHABET.length);
 
 /**
- * Regular expression pattern for validating UUID58 strings.
- *
- * This regex ensures that a string:
- * - Contains exactly 22 characters
- * - Uses only characters from the Base58 alphabet
- * - Does not start with leading zeros (represented as "1" in Base58)
- *
- * @example
- * ```typescript
- * const isValid = UUID58_REGEX.test("XDY9dmBbcMBXqcRvYw8xJ2"); // true
- * const isValid = UUID58_REGEX.test("invalid"); // false
- * const isValid = UUID58_REGEX.test("123"); // false (too short)
- * ```
+ * @internal
+ * Fast lookup map from alphabet characters to their indices
  */
-export const UUID58_REGEX: RegExp = /^[1-9A-HJ-NP-Za-km-z]{22}$/u;
+export const BASE58_MAP: Record<string, bigint> = {};
+for (let i = 0; i < UUID58_ALPHABET.length; i++) {
+  BASE58_MAP[UUID58_ALPHABET[i]!] = BigInt(i);
+}
