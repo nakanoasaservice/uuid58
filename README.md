@@ -94,6 +94,15 @@ if (decodedSafe instanceof Uuid58DecodeError) {
 }
 // use decoded UUID
 console.log(decodedSafe);
+
+import { isUuid58, UUID58_REGEX } from "@nakanoaas/uuid58";
+
+// Validate UUID58 string without decoding
+const isValid = isUuid58("XDY9dmBbcMBXqcRvYw8xJ2"); // true
+const isValid2 = isUuid58("invalid"); // false
+
+// Or use regex pattern for validation
+const isValid3 = UUID58_REGEX.test("XDY9dmBbcMBXqcRvYw8xJ2"); // true
 ```
 
 ## API Reference
@@ -187,6 +196,34 @@ that are not exactly 22 characters long.
 class Uuid58DecodeError extends Error;
 ```
 
+### `isUuid58(uuid58: string)`
+
+Checks if a given string is a valid UUID58-encodable string. This function
+efficiently validates without performing full decoding.
+
+```typescript
+function isUuid58(uuid58: string): boolean;
+```
+
+- **Parameters:**
+  - `uuid58`: The string to check
+- **Returns:** `true` if the string is a valid UUID58 string, `false` otherwise
+- **Note:** This function validates:
+  - Length (must be exactly 22 characters)
+  - Base58 alphabet characters only
+  - That the decoded value fits within 128 bits (UUID size)
+
+**Example:**
+
+```typescript
+import { isUuid58 } from "@nakanoaas/uuid58";
+
+isUuid58("XDY9dmBbcMBXqcRvYw8xJ2"); // true
+isUuid58("invalid"); // false
+isUuid58("O0lI"); // false (contains invalid characters)
+isUuid58("short"); // false (too short)
+```
+
 ### Alphabet and Utilities
 
 #### `UUID58_ALPHABET`
@@ -210,6 +247,11 @@ Base58 alphabet.
 ```typescript
 const UUID58_REGEX: RegExp; // /^[1-9A-HJ-NP-Za-km-z]{22}$/
 ```
+
+**Note:** While `UUID58_REGEX` can validate the format, `isUuid58()` provides
+more comprehensive validation by also checking that the decoded value fits
+within 128 bits. For simple format checks, the regex is sufficient; for complete
+validation, use `isUuid58()`.
 
 **Example:**
 
