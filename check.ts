@@ -33,16 +33,22 @@ export function isUuid58(uuid58: string): boolean {
   let isBelowMax = false;
   for (let i = 0; i < 22; i++) {
     const code = uuid58.charCodeAt(i);
+
     // Check if character is in the Bitcoin Base58 alphabet
-    const isValid = (code >= 49 && code <= 57) || // '1'..'9'
-      (code >= 65 && code <= 72) || // 'A'..'H'
-      (code >= 74 && code <= 78) || // 'J'..'N'
-      (code >= 80 && code <= 90) || // 'P'..'Z'
-      (code >= 97 && code <= 107) || // 'a'..'k'
-      (code >= 109 && code <= 122); // 'm'..'z'
-    if (!isValid) {
+    if (
+      // Exclude characters outside the range 49..122
+      code < 49 ||
+      code > 122 ||
+      // Exclude gaps and ambiguous characters within 49..122
+      (code >= 58 && code <= 64) || // ':'..'@'
+      code === 73 || // 'I'
+      code === 79 || // 'O'
+      (code >= 91 && code <= 96) || // '['..'`'
+      code === 108 // 'l'
+    ) {
       return false;
     }
+
     if (!isBelowMax) {
       const maxCode = MAX_UUID58_CODES[i]!;
       if (code < maxCode) {
