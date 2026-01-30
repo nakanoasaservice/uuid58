@@ -1,4 +1,10 @@
-import { BASE58_MAP, UUID58_LENGTH } from "./alphabet.ts";
+import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
+
+// Fast lookup map from alphabet characters to their indices
+const BASE58_MAP: Record<string, bigint> = {};
+for (let i = 0; i < UUID58_ALPHABET.length; i++) {
+  BASE58_MAP[UUID58_ALPHABET[i]!] = BigInt(i);
+}
 
 /**
  * Error thrown when an invalid Base58 string is provided for decoding.

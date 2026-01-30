@@ -1,7 +1,8 @@
-import { BASE58_MAP, UUID58_LENGTH } from "./alphabet.ts";
-
-// Maximum value for a 128-bit UUID (2^128 - 1)
-const MAX_UUID_VALUE = (1n << 128n) - 1n;
+const MAX_UUID58_CODES = Array.from(
+  // UUID max value encoded in Base58 (length 22)
+  "YcVfxkQb6JRzqk5kF2tNLv", // cspell:disable-line
+  (char) => char.charCodeAt(0),
+);
 
 /**
  * Checks if a given string is a valid UUID58-encodable string.
@@ -28,23 +29,31 @@ export function isUuid58(value: string): boolean {
     return false;
   }
 
-  // Convert Base58 string to BigInt and check if it's within UUID range
-  let num = 0n;
-  for (const char of value) {
-    const index = BASE58_MAP[char];
-    // Check if character is in the Base58 alphabet
-    if (index === undefined) {
+  // Compare chars against the max-UUID Base58 string using ASCII order
+  let isBelowMax = false;
+  for (let i = 0; i < 22; i++) {
+    const code = value.charCodeAt(i);
+    // Check if character is in the Bitcoin Base58 alphabet
+    const isValid = (code >= 49 && code <= 57) || // '1'..'9'
+      (code >= 65 && code <= 72) || // 'A'..'H'
+      (code >= 74 && code <= 78) || // 'J'..'N'
+      (code >= 80 && code <= 90) || // 'P'..'Z'
+      (code >= 97 && code <= 107) || // 'a'..'k'
+      (code >= 109 && code <= 122); // 'm'..'z'
+    if (!isValid) {
       return false;
     }
-    num = num * UUID58_LENGTH + index;
-    // Early exit: if we exceed the maximum UUID value, it's invalid
-    if (num > MAX_UUID_VALUE) {
-      return false;
+    if (!isBelowMax) {
+      const maxCode = MAX_UUID58_CODES[i]!;
+      if (code < maxCode) {
+        isBelowMax = true;
+      } else if (code > maxCode) {
+        return false;
+      }
     }
   }
 
-  // Verify the decoded value fits within 128 bits
-  return num <= MAX_UUID_VALUE;
+  return true;
 }
 
 /**

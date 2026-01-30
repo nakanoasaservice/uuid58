@@ -23,12 +23,3 @@ export const UUID58_ALPHABET: string =
  * This is exported for internal use but not part of the public API.
  */
 export const UUID58_LENGTH: bigint = BigInt(UUID58_ALPHABET.length);
-
-/**
- * @internal
- * Fast lookup map from alphabet characters to their indices
- */
-export const BASE58_MAP: Record<string, bigint> = {};
-for (let i = 0; i < UUID58_ALPHABET.length; i++) {
-  BASE58_MAP[UUID58_ALPHABET[i]!] = BigInt(i);
-}
