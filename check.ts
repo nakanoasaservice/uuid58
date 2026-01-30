@@ -36,15 +36,13 @@ export function isUuid58(uuid58: string): boolean {
 
     // Check if character is in the Bitcoin Base58 alphabet
     if (
-      // Exclude characters outside the range 49..122
       code < 49 ||
-      code > 122 ||
-      // Exclude gaps and ambiguous characters within 49..122
       (code >= 58 && code <= 64) || // ':'..'@'
       code === 73 || // 'I'
       code === 79 || // 'O'
       (code >= 91 && code <= 96) || // '['..'`'
-      code === 108 // 'l'
+      code === 108 || // 'l'
+      code > 122
     ) {
       return false;
     }
