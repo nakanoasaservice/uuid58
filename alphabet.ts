@@ -39,4 +39,4 @@ export const UUID58_LENGTH: bigint = BigInt(UUID58_ALPHABET.length);
  * const isValid = UUID58_REGEX.test("123"); // false (too short)
  * ```
  */
-export const UUID58_REGEX: RegExp = /^[1-9A-HJ-NP-Za-km-z]{22}$/;
+export const UUID58_REGEX: RegExp = /^[1-9A-HJ-NP-Za-km-z]{22}$/u;
