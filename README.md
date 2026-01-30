@@ -170,8 +170,8 @@ function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError;
 #### `Uuid58EncodeError`
 
 Error thrown when an invalid UUID string is provided for encoding. This includes
-strings that don't match the standard UUID format (32 hexadecimal characters with
-optional hyphens).
+strings that don't match the standard UUID format (32 hexadecimal characters
+with optional hyphens).
 
 ```typescript
 class Uuid58EncodeError extends Error;
@@ -180,8 +180,8 @@ class Uuid58EncodeError extends Error;
 #### `Uuid58DecodeError`
 
 Error thrown when an invalid Base58 string is provided for decoding. This
-includes strings containing characters not in the Base58 alphabet or strings that
-are not exactly 22 characters long.
+includes strings containing characters not in the Base58 alphabet or strings
+that are not exactly 22 characters long.
 
 ```typescript
 class Uuid58DecodeError extends Error;
@@ -203,8 +203,8 @@ const UUID58_ALPHABET: string; // "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkm
 
 #### `UUID58_REGEX`
 
-Regular expression pattern for validating UUID58 strings. This regex ensures that
-a string contains exactly 22 characters and uses only characters from the
+Regular expression pattern for validating UUID58 strings. This regex ensures
+that a string contains exactly 22 characters and uses only characters from the
 Base58 alphabet.
 
 ```typescript
