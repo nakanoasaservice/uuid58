@@ -12,10 +12,10 @@
       "alphabet.ts",
       "decode.ts",
       "encode.ts",
+      "generate.ts",
       "index.ts",
       "LICENSE",
-      "README.md",
-      "uuid58.ts"
+      "README.md"
     ]
   },
   "compilerOptions": {
