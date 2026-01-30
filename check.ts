@@ -62,7 +62,10 @@ export function isUuid58(value: string): boolean {
  * This regex ensures that a string:
  * - Contains exactly 22 characters
  * - Uses only characters from the Base58 alphabet
- * - Does not start with leading zeros (represented as "1" in Base58)
+ *
+ * **Note:** This regex does NOT validate that the decoded value fits within
+ * 128 bits (UUID size). For complete validation including 128-bit range
+ * checking, use {@link isUuid58} instead.
  *
  * @example
  * ```typescript
