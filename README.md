@@ -12,7 +12,6 @@ shorter, URL-safe identifiers while maintaining the uniqueness of UUIDs.
 
 - 🚀 Generate short, URL-safe identifiers (**fixed 22 characters**)
 - 🔄 Bidirectional conversion between UUID and Base58
-- ✅ Efficient validation functions for UUID58 strings
 - 🪶 Zero dependencies
 - 💪 Type-safe with TypeScript
 - 🔒 Uses native `crypto.getRandomValues()` for secure UUID generation
@@ -197,17 +196,17 @@ that are not exactly 22 characters long.
 class Uuid58DecodeError extends Error;
 ```
 
-### `isUuid58(value: string)`
+### `isUuid58(uuid58: string)`
 
 Checks if a given string is a valid UUID58-encodable string. This function
 efficiently validates without performing full decoding.
 
 ```typescript
-function isUuid58(value: string): boolean;
+function isUuid58(uuid58: string): boolean;
 ```
 
 - **Parameters:**
-  - `value`: The string to check
+  - `uuid58`: The string to check
 - **Returns:** `true` if the string is a valid UUID58 string, `false` otherwise
 - **Note:** This function validates:
   - Length (must be exactly 22 characters)

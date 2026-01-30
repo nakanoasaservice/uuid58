@@ -13,7 +13,7 @@ const MAX_UUID58_CODES = Array.from(
  * - Contain only characters from the Base58 alphabet
  * - Decode to a value that fits within 128 bits (UUID size)
  *
- * @param value - The string to check
+ * @param uuid58 - The string to check
  * @returns `true` if the string is a valid UUID58 string, `false` otherwise
  *
  * @example
@@ -23,16 +23,16 @@ const MAX_UUID58_CODES = Array.from(
  * isUuid58("O0lI"); // false (contains invalid characters)
  * ```
  */
-export function isUuid58(value: string): boolean {
+export function isUuid58(uuid58: string): boolean {
   // Check length: UUID58 strings must be exactly 22 characters
-  if (value.length !== 22) {
+  if (uuid58.length !== 22) {
     return false;
   }
 
   // Compare chars against the max-UUID Base58 string using ASCII order
   let isBelowMax = false;
   for (let i = 0; i < 22; i++) {
-    const code = value.charCodeAt(i);
+    const code = uuid58.charCodeAt(i);
     // Check if character is in the Bitcoin Base58 alphabet
     const isValid = (code >= 49 && code <= 57) || // '1'..'9'
       (code >= 65 && code <= 72) || // 'A'..'H'
