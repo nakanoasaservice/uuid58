@@ -1,11 +1,10 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "name": "@nakanoaas/uuid58",
   "license": "MIT",
   "exports": "./index.ts",
   "tasks": {
-    "build": "deno run --allow-env --allow-read --allow-write --allow-run=npm build.ts",
-    "benchmark": "deno bench benchmark.ts"
+    "build": "deno run --allow-env --allow-read --allow-write --allow-run=npm build.ts"
   },
   "publish": {
     "include": [
