@@ -160,3 +160,11 @@ function isUuid58RegexCharCodeDirect(uuid58: string): boolean {
 Deno.bench("isUuid58RegexCharCodeDirect", () => {
   isUuid58RegexCharCodeDirect(MAX_UUID58);
 });
+
+export function isUuid58StringComparison(uuid58: string): boolean {
+  return UUID58_REGEX.test(uuid58) && uuid58 <= MAX_UUID58;
+}
+
+Deno.bench("isUuid58DirectComparison", () => {
+  isUuid58StringComparison(MAX_UUID58);
+});
