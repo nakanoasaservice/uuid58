@@ -1,8 +1,9 @@
 name: Publish
+
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [closed]
+    branches: [main]
 
 permissions:
   contents: write
@@ -11,6 +12,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'release'
     environment: production
     steps:
       - uses: actions/checkout@v6
