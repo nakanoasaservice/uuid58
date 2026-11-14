@@ -23,26 +23,6 @@
       "uuid58": "1111111111111111111121"
     },
     {
-      "description": "58^9 - 1 (largest 9-digit value)",
-      "uuid": "00000000-0000-0000-001a-636a90b079ff",
-      "uuid58": "1111111111111zzzzzzzzz"
-    },
-    {
-      "description": "58^9 (smallest 10-digit value)",
-      "uuid": "00000000-0000-0000-001a-636a90b07a00",
-      "uuid58": "1111111111112111111111"
-    },
-    {
-      "description": "58^18 - 1",
-      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa23ffff",
-      "uuid58": "1111zzzzzzzzzzzzzzzzzz"
-    },
-    {
-      "description": "58^18",
-      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa240000",
-      "uuid58": "1112111111111111111111"
-    },
-    {
       "description": "58^21 - 1 (largest 21-digit value)",
       "uuid": "0819237f-3896-f2f3-0bb8-32ce3d9fffff",
       "uuid58": "1zzzzzzzzzzzzzzzzzzzzz"
@@ -146,6 +126,221 @@
       "description": "leading zero byte",
       "uuid": "00112233-4455-6677-8899-aabbccddeeff",
       "uuid58": "11UoWww8DGaVGLtea7zU7p"
+    },
+    {
+      "description": "2^96 - 1 (low three 32-bit words all ones)",
+      "uuid": "00000000-ffff-ffff-ffff-ffffffffffff",
+      "uuid58": "111115qCHTcgbQwpvYZQ9c"
+    },
+    {
+      "description": "32-bit words alternate zero and all ones",
+      "uuid": "00000000-ffff-ffff-0000-0000ffffffff",
+      "uuid58": "111115qCHTbwmtkGPTpZoU"
+    },
+    {
+      "description": "32-bit words alternate all ones and zero",
+      "uuid": "ffffffff-0000-0000-ffff-ffff00000000",
+      "uuid58": "YcVfxfaPoqq44rLUra4oYT"
+    },
+    {
+      "description": "2^127 + 1 (middle 32-bit words zero)",
+      "uuid": "80000000-0000-0000-0000-000000000001",
+      "uuid58": "GokLUsho3eiVvNYNd1wgfz"
+    },
+    {
+      "description": "every byte 0x80 (sign bit set in every byte)",
+      "uuid": "80808080-8080-8080-8080-808080808080",
+      "uuid58": "GsLrMUhj8fYeuSijQRNh4B"
+    },
+    {
+      "description": "58^2 - 1 (largest 2-digit value)",
+      "uuid": "00000000-0000-0000-0000-000000000d23",
+      "uuid58": "11111111111111111111zz"
+    },
+    {
+      "description": "58^2 (smallest 3-digit value)",
+      "uuid": "00000000-0000-0000-0000-000000000d24",
+      "uuid58": "1111111111111111111211"
+    },
+    {
+      "description": "58^3 - 1 (largest 3-digit value)",
+      "uuid": "00000000-0000-0000-0000-00000002fa27",
+      "uuid58": "1111111111111111111zzz"
+    },
+    {
+      "description": "58^3 (smallest 4-digit value)",
+      "uuid": "00000000-0000-0000-0000-00000002fa28",
+      "uuid58": "1111111111111111112111"
+    },
+    {
+      "description": "58^4 - 1 (largest 4-digit value)",
+      "uuid": "00000000-0000-0000-0000-000000acad0f",
+      "uuid58": "111111111111111111zzzz"
+    },
+    {
+      "description": "58^4 (smallest 5-digit value)",
+      "uuid": "00000000-0000-0000-0000-000000acad10",
+      "uuid58": "1111111111111111121111"
+    },
+    {
+      "description": "58^5 - 1 (largest 5-digit value)",
+      "uuid": "00000000-0000-0000-0000-0000271f359f",
+      "uuid58": "11111111111111111zzzzz"
+    },
+    {
+      "description": "58^5 (smallest 6-digit value)",
+      "uuid": "00000000-0000-0000-0000-0000271f35a0",
+      "uuid58": "1111111111111111211111"
+    },
+    {
+      "description": "58^6 - 1 (largest 6-digit value)",
+      "uuid": "00000000-0000-0000-0000-0008dd12263f",
+      "uuid58": "1111111111111111zzzzzz"
+    },
+    {
+      "description": "58^6 (smallest 7-digit value)",
+      "uuid": "00000000-0000-0000-0000-0008dd122640",
+      "uuid58": "1111111111111112111111"
+    },
+    {
+      "description": "58^7 - 1 (largest 7-digit value)",
+      "uuid": "00000000-0000-0000-0000-0202161caa7f",
+      "uuid58": "111111111111111zzzzzzz"
+    },
+    {
+      "description": "58^7 (smallest 8-digit value)",
+      "uuid": "00000000-0000-0000-0000-0202161caa80",
+      "uuid58": "1111111111111121111111"
+    },
+    {
+      "description": "58^8 - 1 (largest 8-digit value)",
+      "uuid": "00000000-0000-0000-0000-7479027ea0ff",
+      "uuid58": "11111111111111zzzzzzzz"
+    },
+    {
+      "description": "58^8 (smallest 9-digit value)",
+      "uuid": "00000000-0000-0000-0000-7479027ea100",
+      "uuid58": "1111111111111211111111"
+    },
+    {
+      "description": "58^9 - 1 (largest 9-digit value)",
+      "uuid": "00000000-0000-0000-001a-636a90b079ff",
+      "uuid58": "1111111111111zzzzzzzzz"
+    },
+    {
+      "description": "58^9 (smallest 10-digit value)",
+      "uuid": "00000000-0000-0000-001a-636a90b07a00",
+      "uuid58": "1111111111112111111111"
+    },
+    {
+      "description": "58^10 - 1 (largest 10-digit value)",
+      "uuid": "00000000-0000-0000-05fa-8624c7fba3ff",
+      "uuid58": "111111111111zzzzzzzzzz"
+    },
+    {
+      "description": "58^10 (smallest 11-digit value)",
+      "uuid": "00000000-0000-0000-05fa-8624c7fba400",
+      "uuid58": "1111111111121111111111"
+    },
+    {
+      "description": "58^11 - 1 (largest 11-digit value)",
+      "uuid": "00000000-0000-0001-5ac2-64554f0327ff",
+      "uuid58": "11111111111zzzzzzzzzzz"
+    },
+    {
+      "description": "58^11 (smallest 12-digit value)",
+      "uuid": "00000000-0000-0001-5ac2-64554f032800",
+      "uuid58": "1111111111211111111111"
+    },
+    {
+      "description": "58^12 - 1 (largest 12-digit value)",
+      "uuid": "00000000-0000-004e-900a-bb53e6b70fff",
+      "uuid58": "1111111111zzzzzzzzzzzz"
+    },
+    {
+      "description": "58^12 (smallest 13-digit value)",
+      "uuid": "00000000-0000-004e-900a-bb53e6b71000",
+      "uuid58": "1111111112111111111111"
+    },
+    {
+      "description": "58^13 - 1 (largest 13-digit value)",
+      "uuid": "00000000-0000-11cc-a26e-710245799fff",
+      "uuid58": "111111111zzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^13 (smallest 14-digit value)",
+      "uuid": "00000000-0000-11cc-a26e-71024579a000",
+      "uuid58": "1111111121111111111111"
+    },
+    {
+      "description": "58^14 - 1 (largest 14-digit value)",
+      "uuid": "00000000-0004-085c-cd05-9a83bd8e3fff",
+      "uuid58": "11111111zzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^14 (smallest 15-digit value)",
+      "uuid": "00000000-0004-085c-cd05-9a83bd8e4000",
+      "uuid58": "1111111211111111111111"
+    },
+    {
+      "description": "58^15 - 1 (largest 15-digit value)",
+      "uuid": "00000000-00e9-e506-7345-01d8f23a7fff",
+      "uuid58": "1111111zzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^15 (smallest 16-digit value)",
+      "uuid": "00000000-00e9-e506-7345-01d8f23a8000",
+      "uuid58": "1111112111111111111111"
+    },
+    {
+      "description": "58^16 - 1 (largest 16-digit value)",
+      "uuid": "00000000-34fd-e376-1da2-6b26e140ffff",
+      "uuid58": "111111zzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^16 (smallest 17-digit value)",
+      "uuid": "00000000-34fd-e376-1da2-6b26e1410000",
+      "uuid58": "1111121111111111111111"
+    },
+    {
+      "description": "58^17 - 1 (largest 17-digit value)",
+      "uuid": "0000000c-0185-88c2-b6cc-46cf08b9ffff",
+      "uuid58": "11111zzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^17 (smallest 18-digit value)",
+      "uuid": "0000000c-0185-88c2-b6cc-46cf08ba0000",
+      "uuid58": "1111211111111111111111"
+    },
+    {
+      "description": "58^18 - 1 (largest 18-digit value)",
+      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa23ffff",
+      "uuid58": "1111zzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^18 (smallest 19-digit value)",
+      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa240000",
+      "uuid58": "1112111111111111111111"
+    },
+    {
+      "description": "58^19 - 1 (largest 19-digit value)",
+      "uuid": "00009dc3-feb9-1eaa-1452-788eac27ffff",
+      "uuid58": "111zzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^19 (smallest 20-digit value)",
+      "uuid": "00009dc3-feb9-1eaa-1452-788eac280000",
+      "uuid58": "1121111111111111111111"
+    },
+    {
+      "description": "58^20 - 1 (largest 20-digit value)",
+      "uuid": "0023be67-b5f0-f288-9aaf-5053010fffff",
+      "uuid58": "11zzzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^20 (smallest 21-digit value)",
+      "uuid": "0023be67-b5f0-f288-9aaf-505301100000",
+      "uuid58": "1211111111111111111111"
     },
     {
       "description": "smallest value with first digit Y",
@@ -725,6 +920,27 @@
       {
         "description": "contains g (after f), hyphenated",
         "input": "f4b247fd-1f87-g5d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex letter in the fourth group, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aag6-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex letter in the fifth group, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0g8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex letter as the last character, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfag",
         "errors": [
           "invalid_character"
         ]

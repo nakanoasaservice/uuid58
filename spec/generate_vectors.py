@@ -114,10 +114,6 @@ def sample_values():
         (1, "smallest non-zero value"),
         (57, "largest single-digit value"),
         (58, "smallest two-digit value"),
-        (58**9 - 1, "58^9 - 1 (largest 9-digit value)"),
-        (58**9, "58^9 (smallest 10-digit value)"),
-        (58**18 - 1, "58^18 - 1"),
-        (58**18, "58^18"),
         (58**21 - 1, "58^21 - 1 (largest 21-digit value)"),
         (58**21, "58^21 (smallest value that needs all 22 digits)"),
         ((1 << 53) - 1, "2^53 - 1"),
@@ -139,7 +135,20 @@ def sample_values():
         (0xF4B247FD1F8745D4AA061C6FC0A8DFAF, "README example (UUIDv4)"),
         (0x123E4567E89B12D3A456426614174000, "common documentation example"),
         (0x00112233445566778899AABBCCDDEEFF, "leading zero byte"),
+        # 32-bit word boundaries, for implementations that hold the value as
+        # four 32-bit words.
+        ((1 << 96) - 1, "2^96 - 1 (low three 32-bit words all ones)"),
+        (0x00000000FFFFFFFF00000000FFFFFFFF, "32-bit words alternate zero and all ones"),
+        (0xFFFFFFFF00000000FFFFFFFF00000000, "32-bit words alternate all ones and zero"),
+        ((1 << 127) + 1, "2^127 + 1 (middle 32-bit words zero)"),
+        # Signed-byte languages (e.g. Java) sign-extend 0x80 if not masked.
+        (0x80808080808080808080808080808080, "every byte 0x80 (sign bit set in every byte)"),
     ]
+    # Every digit-count boundary, whatever digit grouping an implementation
+    # uses (58^1 and 58^21 are listed above).
+    for k in range(2, 21):
+        values.append((58**k - 1, f"58^{k} - 1 (largest {k}-digit value)"))
+        values.append((58**k, f"58^{k} (smallest {k + 1}-digit value)"))
     # Values near the top of the range, given by their encoding.
     for text, description in [
         ("Y111111111111111111111", "smallest value with first digit Y"),
@@ -241,6 +250,11 @@ INVALID_ENCODE_INPUTS = [
     (EXAMPLE_HEX[:20] + "G" + EXAMPLE_HEX[21:], "contains G (after F)"),
     (EXAMPLE_HEX[:25] + "`" + EXAMPLE_HEX[26:], "contains ` (before a)"),
     (EXAMPLE[:14] + "g" + EXAMPLE[15:], "contains g (after f), hyphenated"),
+    # A non-hex letter in the fourth and fifth groups of the hyphenated form
+    # (the first three are covered above).
+    (EXAMPLE[:21] + "g" + EXAMPLE[22:], "non-hex letter in the fourth group, hyphenated"),
+    (EXAMPLE[:30] + "g" + EXAMPLE[31:], "non-hex letter in the fifth group, hyphenated"),
+    (EXAMPLE[:35] + "g", "non-hex letter as the last character, hyphenated"),
 ]
 
 MAX_UUID58 = encode_value(MAX_VALUE)
@@ -379,6 +393,8 @@ def build():
     ]
 
     # Self-checks on the reference implementation.
+    uuids = [case["uuid"] for case in roundtrip]
+    assert len(uuids) == len(set(uuids)), "duplicate round-trip value"
     for case in roundtrip:
         assert decode_uuid58(case["uuid58"]) == int(case["uuid"].replace("-", ""), 16)
         assert parse_uuid(case["uuid"]) == decode_uuid58(case["uuid58"])
