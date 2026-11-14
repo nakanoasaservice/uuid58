@@ -95,7 +95,7 @@ JavaScript package lives, so it can go before Phase 2.
   - Update the check in `publish.yml` that compares the tag with the version
     in package.json to use the `js/v…` form
 - [x] Split the README into a repository overview and one README per language
-- [ ] Repository settings (done by a maintainer): add `js/v*` to the
+- [x] Repository settings (done by a maintainer): add `js/v*` to the
       `release-tags` tag ruleset and to the deployment tag policy of the
       `production` environment
 
