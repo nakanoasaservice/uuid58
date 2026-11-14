@@ -1,21 +1,18 @@
 name: Publish
 
+# Release by pushing a version tag:
+#   1. Bump "version" in package.json and merge it into main.
+#   2. git tag v1.2.3 <commit on main> && git push origin v1.2.3
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    tags:
+      - "v*"
 
 permissions: {}
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Only a merged PR from this repository's own `release` branch publishes;
-    # a fork's branch that happens to be named `release` does not.
-    if: |
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'release' &&
-      github.event.pull_request.head.repo.full_name == github.repository
     environment: production
     permissions:
       contents: read
@@ -23,7 +20,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Verify tag matches package.json and is on main
+        run: |
+          VERSION=$(jq -r .version package.json)
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version v$VERSION"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
 
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@v1.22.0
@@ -57,19 +67,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Create Release
+      - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION=$(jq -r .version package.json)
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
-            echo "Tag v$VERSION already exists. Skipping release creation."
-          else
-            echo "Creating release for v$VERSION"
-            gh release create "v$VERSION" --generate-notes
-          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes
