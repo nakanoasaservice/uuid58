@@ -19,27 +19,30 @@ Encoded strings sort in the same order as the UUIDs they encode.
 [`spec/SPEC.md`](spec/SPEC.md) defines the format, and
 [`spec/vectors.json`](spec/vectors.json) holds test vectors that every
 implementation must pass. The spec is a draft (`1.0.0-draft`) until the
-implementations listed below, plus Swift, pass the vectors (see
-[ROADMAP.md](ROADMAP.md)).
+implementations listed below pass the vectors (see [ROADMAP.md](ROADMAP.md)).
 
 ## Implementations
 
-| Language              | Directory            | Package                                                                                                                   |
-| --------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| JavaScript/TypeScript | [`js/`](js/)         | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58) |
-| Go                    | [`go/`](go/)         | `github.com/nakanoasaservice/uuid58/go`                                                                                   |
-| Python                | [`python/`](python/) | `uuid58` on PyPI                                                                                                          |
-| Rust                  | [`rust/`](rust/)     | `uuid58` on crates.io                                                                                                     |
-| Java/Kotlin           | [`java/`](java/)     | `io.github.nakanoasaservice:uuid58` on Maven Central                                                                      |
+| Language              | Directory                                                        | Package                                                                                                                   |
+| --------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| JavaScript/TypeScript | [`js/`](js/)                                                     | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58) |
+| Go                    | [`go/`](go/)                                                     | `github.com/nakanoasaservice/uuid58/go`                                                                                   |
+| Python                | [`python/`](python/)                                             | `uuid58` on PyPI                                                                                                          |
+| Rust                  | [`rust/`](rust/)                                                 | `uuid58` on crates.io                                                                                                     |
+| Java/Kotlin           | [`java/`](java/)                                                 | `io.github.nakanoasaservice:uuid58` on Maven Central                                                                      |
+| Swift                 | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                                                                                                     |
 
-The Go, Python, Rust, and Java/Kotlin implementations are not released yet.
+The Go, Python, Rust, Java/Kotlin, and Swift implementations are not released
+yet. Swift has its own repository because Swift Package Manager expects
+`Package.swift` at the root of a repository.
 The JavaScript package 1.x accepts hyphens anywhere in its input, which the
 spec does not allow; 2.0 will follow the spec.
 
 ## Releases
 
 Each implementation is released on its own, with tags prefixed by its
-directory, such as `js/v1.2.3`.
+directory, such as `js/v1.2.3`. Swift releases are plain version tags in
+uuid58-swift.
 
 ## License
 
