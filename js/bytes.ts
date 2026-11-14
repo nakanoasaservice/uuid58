@@ -31,11 +31,14 @@ export function uuid58EncodeBytesSafe(
     );
   }
   // Big-endian; storing into the Uint32Array makes the results unsigned.
-  const b = bytes;
-  words[0] = (b[0]! << 24) | (b[1]! << 16) | (b[2]! << 8) | b[3]!;
-  words[1] = (b[4]! << 24) | (b[5]! << 16) | (b[6]! << 8) | b[7]!;
-  words[2] = (b[8]! << 24) | (b[9]! << 16) | (b[10]! << 8) | b[11]!;
-  words[3] = (b[12]! << 24) | (b[13]! << 16) | (b[14]! << 8) | b[15]!;
+  for (let i = 0; i < 4; i++) {
+    const j = i * 4;
+    words[i] =
+      (bytes[j]! << 24) |
+      (bytes[j + 1]! << 16) |
+      (bytes[j + 2]! << 8) |
+      bytes[j + 3]!;
+  }
   return encodeWords(words);
 }
 

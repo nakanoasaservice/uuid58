@@ -13,7 +13,9 @@ const words = new Uint32Array(4);
 
 /**
  * Appends the hex digits of `uuid` in `[start, end)` to `acc`, or returns a
- * negative number if any of them is not a hex digit (or `acc` is negative).
+ * negative number if any of them is not a hex digit. A negative `acc` stays
+ * negative (at most `16^n - 1` is added to `acc * 16^n`), so chained calls
+ * carry the failure through.
  */
 function parseHex(
   uuid: string,
@@ -23,11 +25,11 @@ function parseHex(
 ): number {
   for (let i = start; i < end; i++) {
     const code = uuid.charCodeAt(i);
-    const value = code < 128 ? HEX_VALUE[code]! : -1;
-    if (value < 0) {
+    const digit = code < 128 ? HEX_VALUE[code]! : -1;
+    if (digit < 0) {
       return -1;
     }
-    acc = acc * 16 + value;
+    acc = acc * 16 + digit;
   }
   return acc;
 }
@@ -62,55 +64,46 @@ export class Uuid58EncodeError extends Error {
  * trailing newline, or non-ASCII digits are rejected.
  */
 export function parseUuidString(uuid: string): Uint32Array | Uuid58EncodeError {
+  let w0: number;
+  let w1: number;
+  let w2: number;
+  let w3: number;
+  let hyphensValid = true;
   if (uuid.length === 32) {
-    const w0 = parseHex(uuid, 0, 8, 0);
-    const w1 = parseHex(uuid, 8, 16, 0);
-    const w2 = parseHex(uuid, 16, 24, 0);
-    const w3 = parseHex(uuid, 24, 32, 0);
-    if (w0 < 0 || w1 < 0 || w2 < 0 || w3 < 0) {
-      return new Uuid58EncodeError(
-        `Invalid UUID: ${previewInput(uuid)} must be 32 hexadecimal digits`,
-        "invalid_character",
-      );
-    }
-    words[0] = w0;
-    words[1] = w1;
-    words[2] = w2;
-    words[3] = w3;
-    return words;
+    w0 = parseHex(uuid, 0, 8, 0);
+    w1 = parseHex(uuid, 8, 16, 0);
+    w2 = parseHex(uuid, 16, 24, 0);
+    w3 = parseHex(uuid, 24, 32, 0);
+  } else if (uuid.length === 36) {
+    w0 = parseHex(uuid, 0, 8, 0);
+    w1 = parseHex(uuid, 14, 18, parseHex(uuid, 9, 13, 0));
+    w2 = parseHex(uuid, 24, 28, parseHex(uuid, 19, 23, 0));
+    w3 = parseHex(uuid, 28, 36, 0);
+    hyphensValid =
+      uuid.charCodeAt(8) === 45 &&
+      uuid.charCodeAt(13) === 45 &&
+      uuid.charCodeAt(18) === 45 &&
+      uuid.charCodeAt(23) === 45;
+  } else {
+    return new Uuid58EncodeError(
+      `Invalid UUID length: expected 32 or 36 characters, got ${uuid.length} in ${previewInput(uuid)}`,
+      "invalid_length",
+    );
   }
-  if (uuid.length === 36) {
-    // A -1 from the first group stays negative after 4 more digits
-    // (-1 * 16^4 + at most 16^4 - 1), so the error carries through.
-    const w0 = parseHex(uuid, 0, 8, 0);
-    const w1 = parseHex(uuid, 14, 18, parseHex(uuid, 9, 13, 0));
-    const w2 = parseHex(uuid, 24, 28, parseHex(uuid, 19, 23, 0));
-    const w3 = parseHex(uuid, 28, 36, 0);
-    if (
-      w0 < 0 ||
-      w1 < 0 ||
-      w2 < 0 ||
-      w3 < 0 ||
-      uuid.charCodeAt(8) !== 45 ||
-      uuid.charCodeAt(13) !== 45 ||
-      uuid.charCodeAt(18) !== 45 ||
-      uuid.charCodeAt(23) !== 45
-    ) {
-      return new Uuid58EncodeError(
-        `Invalid UUID: ${previewInput(uuid)} must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`,
-        "invalid_character",
-      );
-    }
-    words[0] = w0;
-    words[1] = w1;
-    words[2] = w2;
-    words[3] = w3;
-    return words;
+
+  if (!hyphensValid || w0 < 0 || w1 < 0 || w2 < 0 || w3 < 0) {
+    return new Uuid58EncodeError(
+      uuid.length === 32
+        ? `Invalid UUID: ${previewInput(uuid)} must be 32 hexadecimal digits`
+        : `Invalid UUID: ${previewInput(uuid)} must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`,
+      "invalid_character",
+    );
   }
-  return new Uuid58EncodeError(
-    `Invalid UUID length: expected 32 or 36 characters, got ${uuid.length} in ${previewInput(uuid)}`,
-    "invalid_length",
-  );
+  words[0] = w0;
+  words[1] = w1;
+  words[2] = w2;
+  words[3] = w3;
+  return words;
 }
 
 /**

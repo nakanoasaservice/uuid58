@@ -25,6 +25,19 @@ for (let i = 0; i < 58; i++) {
 const digits = new Uint8Array(22);
 
 /**
+ * Writes the low `count` Base58 digits of `value` into `digits`, ending at
+ * `pos`, and returns the position before them.
+ */
+function writeDigits(value: number, count: number, pos: number): number {
+  for (let n = 0; n < count; n++) {
+    const quotient = (value / 58) >>> 0;
+    digits[pos--] = ALPHABET_CODES[value - quotient * 58]!;
+    value = quotient;
+  }
+  return pos;
+}
+
+/**
  * @internal
  * Encodes an unsigned 128-bit integer, given as four 32-bit words (most
  * significant first), as a 22-character Base58 string.
@@ -41,32 +54,23 @@ export function encodeWords(words: ArrayLike<number>): string {
   let w3 = words[3]!;
   let pos = 21;
   for (let round = 0; round < 6; round++) {
-    let quotient = Math.floor(w0 / BASE58_CUBE);
-    let rem = w0 - quotient * BASE58_CUBE;
-    w0 = quotient;
-    let cur = rem * WORD + w1;
-    quotient = Math.floor(cur / BASE58_CUBE);
-    rem = cur - quotient * BASE58_CUBE;
-    w1 = quotient;
+    // Long division by 58^3, most significant word first.
+    let cur = w0;
+    w0 = Math.floor(cur / BASE58_CUBE);
+    let rem = cur - w0 * BASE58_CUBE;
+    cur = rem * WORD + w1;
+    w1 = Math.floor(cur / BASE58_CUBE);
+    rem = cur - w1 * BASE58_CUBE;
     cur = rem * WORD + w2;
-    quotient = Math.floor(cur / BASE58_CUBE);
-    rem = cur - quotient * BASE58_CUBE;
-    w2 = quotient;
+    w2 = Math.floor(cur / BASE58_CUBE);
+    rem = cur - w2 * BASE58_CUBE;
     cur = rem * WORD + w3;
-    quotient = Math.floor(cur / BASE58_CUBE);
-    rem = cur - quotient * BASE58_CUBE;
-    w3 = quotient;
-    for (let n = 0; n < 3; n++) {
-      const q = (rem / 58) >>> 0;
-      digits[pos--] = ALPHABET_CODES[rem - q * 58]!;
-      rem = q;
-    }
+    w3 = Math.floor(cur / BASE58_CUBE);
+    rem = cur - w3 * BASE58_CUBE;
+    pos = writeDigits(rem, 3, pos);
   }
-  for (let n = 0; n < 4; n++) {
-    const q = (w3 / 58) >>> 0;
-    digits[pos--] = ALPHABET_CODES[w3 - q * 58]!;
-    w3 = q;
-  }
+  writeDigits(w3, 4, pos);
+
   const d = digits;
   // prettier-ignore
   return String.fromCharCode(

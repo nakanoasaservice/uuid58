@@ -21,13 +21,47 @@ for (let i = 0; i < 16; i++) {
 const chars = new Uint8Array(36);
 chars[8] = chars[13] = chars[18] = chars[23] = 45; // "-"
 
-/** Writes `value` as 8 hex digits at `pos`, or 4 + 4 around a hyphen. */
-function writeHex32(value: number, pos: number, split: boolean): void {
-  const gap = split ? 1 : 0;
-  for (let i = 7; i >= 0; i--) {
-    chars[pos + i + (i >= 4 ? gap : 0)] = HEX_CODES[value & 0xf]!;
+/** Writes `value` (16 bits) as 4 hex digits into `chars` at `pos`. */
+function writeHex16(value: number, pos: number): void {
+  for (let i = 3; i >= 0; i--) {
+    chars[pos + i] = HEX_CODES[value & 0xf]!;
     value >>>= 4;
   }
+}
+
+/** Alphabet index of the character at `i`, or -1 if it is not in it. */
+function digitAt(uuid58: string, i: number): number {
+  const code = uuid58.charCodeAt(i);
+  return code < 128 ? BASE58_INDEX[code]! : -1;
+}
+
+/**
+ * Value of the `count` Base58 digits of `uuid58` from `start`, or -1 if any
+ * of them is not in the alphabet.
+ */
+function readDigits(uuid58: string, start: number, count: number): number {
+  let value = 0;
+  for (let i = start; i < start + count; i++) {
+    const digit = digitAt(uuid58, i);
+    if (digit < 0) {
+      return -1;
+    }
+    value = value * 58 + digit;
+  }
+  return value;
+}
+
+/** The error for the first character of `uuid58` not in the alphabet. */
+function invalidCharacterError(uuid58: string): Uuid58DecodeError {
+  let i = 0;
+  while (digitAt(uuid58, i) >= 0) {
+    i++;
+  }
+  const char = String.fromCodePoint(uuid58.codePointAt(i)!);
+  return new Uuid58DecodeError(
+    `Invalid Base58 character ${JSON.stringify(char)} found in input: ${previewInput(uuid58)}`,
+    "invalid_character",
+  );
 }
 
 /**
@@ -58,7 +92,7 @@ export class Uuid58DecodeError extends Error {
  * range (specification, Section 4). The returned array is reused across
  * calls.
  *
- * Avoids BigInt: the first 4 digits, then 6 groups of 3 digits, are each
+ * Avoids BigInt: the first 4 digits, then 6 groups of 3 digits, are
  * multiplied into the words in Number arithmetic (every intermediate stays
  * below 2^50). A carry out of the top word means the value exceeds 128 bits.
  */
@@ -70,25 +104,20 @@ export function decodeWords(uuid58: string): Uint32Array | Uuid58DecodeError {
     );
   }
 
+  // The first 4 digits fit in the low word (58^4 < 2^32).
   let w0 = 0;
   let w1 = 0;
   let w2 = 0;
-  let w3 = 0;
-  for (let start = 0; start < 22;) {
-    const end = start === 0 ? 4 : start + 3;
-    let chunk = 0;
-    for (let i = start; i < end; i++) {
-      const code = uuid58.charCodeAt(i);
-      const index = code < 128 ? BASE58_INDEX[code]! : -1;
-      if (index < 0) {
-        const char = String.fromCodePoint(uuid58.codePointAt(i)!);
-        return new Uuid58DecodeError(
-          `Invalid Base58 character ${JSON.stringify(char)} found in input: ${previewInput(uuid58)}`,
-          "invalid_character",
-        );
-      }
-      chunk = chunk * 58 + index;
+  let w3 = readDigits(uuid58, 0, 4);
+  if (w3 < 0) {
+    return invalidCharacterError(uuid58);
+  }
+  for (let start = 4; start < 22; start += 3) {
+    const chunk = readDigits(uuid58, start, 3);
+    if (chunk < 0) {
+      return invalidCharacterError(uuid58);
     }
+    // Multiply the words by 58^3 and add the chunk, carrying upward.
     let cur = w3 * BASE58_CUBE + chunk;
     w3 = cur >>> 0;
     cur = w2 * BASE58_CUBE + (cur - w3) / WORD;
@@ -98,7 +127,6 @@ export function decodeWords(uuid58: string): Uint32Array | Uuid58DecodeError {
     // w0 keeps any carry out of the top word. 58^19 < 2^128, so a carry can
     // only appear in the last group, after every character has been checked.
     w0 = w0 * BASE58_CUBE + (cur - w1) / WORD;
-    start = end;
   }
 
   if (w0 >= WORD) {
@@ -136,10 +164,18 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
     return decoded;
   }
 
-  writeHex32(decoded[0]!, 0, false);
-  writeHex32(decoded[1]!, 9, true);
-  writeHex32(decoded[2]!, 19, true);
-  writeHex32(decoded[3]!, 28, false);
+  const w0 = decoded[0]!;
+  const w1 = decoded[1]!;
+  const w2 = decoded[2]!;
+  const w3 = decoded[3]!;
+  writeHex16(w0 >>> 16, 0);
+  writeHex16(w0 & 0xffff, 4);
+  writeHex16(w1 >>> 16, 9);
+  writeHex16(w1 & 0xffff, 14);
+  writeHex16(w2 >>> 16, 19);
+  writeHex16(w2 & 0xffff, 24);
+  writeHex16(w3 >>> 16, 28);
+  writeHex16(w3 & 0xffff, 32);
   const c = chars;
   // prettier-ignore
   return String.fromCharCode(
