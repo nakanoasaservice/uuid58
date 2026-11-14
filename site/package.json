@@ -1,0 +1,22 @@
+{
+  "name": "uuid58-site",
+  "private": true,
+  "description": "The uuid58 website, published at https://nakanoasaservice.github.io/uuid58/",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview",
+    "check": "vp check"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.17"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
+    "vite-plugin-solid": "^2.11.14",
+    "vite-plus": "^1.6.0"
+  },
+  "packageManager": "pnpm@10.34.5"
+}

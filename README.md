@@ -12,7 +12,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 
 Encoded strings sort in the same order as the UUIDs they encode.
 
-[Try it in the Playground](https://nakanoasaservice.github.io/uuid58-playground/).
+[Try it on the website](https://nakanoasaservice.github.io/uuid58/).
 
 ## Specification
 
@@ -35,6 +35,14 @@ Swift has its own repository because Swift Package Manager expects
 `Package.swift` at the root of a repository.
 The JavaScript package follows the spec from 2.0; 1.x accepts hyphens
 anywhere in its input, which the spec does not allow.
+
+## Website
+
+[`site/`](site/) is the website at
+<https://nakanoasaservice.github.io/uuid58/>. It builds against the library
+source in `js/`, so it always matches `main`. Run it locally with
+`pnpm install && pnpm dev` in `site/`. Pushes to `main` that touch `site/`,
+`js/`, or `spec/` deploy it with the Pages workflow.
 
 ## Releases
 
