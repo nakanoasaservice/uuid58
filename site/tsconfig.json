@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "types": ["vite-plus/client", "node"],
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@nakanoaas/uuid58": ["../js/index.ts"]
+    }
+  },
+  "include": ["*.tsx", "*.ts"]
+}

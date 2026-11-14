@@ -36,3 +36,22 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: "development"
+
+  - package-ecosystem: "npm"
+    directory: "/site"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      site-dependencies:
+        patterns:
+          - "*"

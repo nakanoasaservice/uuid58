@@ -19,6 +19,7 @@ jobs:
       python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
+      site: ${{ steps.filter.outputs.site }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -61,6 +62,12 @@ jobs:
             echo "java=true" >> "$GITHUB_OUTPUT"
           else
             echo "java=false" >> "$GITHUB_OUTPUT"
+          fi
+          # The site builds against js/ and reads spec/, so check it when those change too.
+          if [ "$all" = true ] || echo "$files" | grep -qE '^(site|js)/'; then
+            echo "site=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "site=false" >> "$GITHUB_OUTPUT"
           fi
 
   spec:
@@ -269,6 +276,31 @@ jobs:
       - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
         run: ./mvnw -B verify
 
+  site:
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
+        with:
+          working-directory: site
+          node-version: "24"
+          cache: true
+
+      - name: Run fmt, lint and type check
+        run: vp check
+
+      - name: Build
+        run: vp build
+
   # Fails when .github/workflows/actions.lock is out of sync with the
   # workflows or a locked pin no longer verifies upstream.
   actions-lock:
@@ -289,7 +321,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, site, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:

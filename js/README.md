@@ -20,7 +20,7 @@ shorter, URL-safe identifiers while maintaining the uniqueness of UUIDs.
 
 ## Try it out!
 
-[UUID58 Playground](https://nakanoasaservice.github.io/uuid58-playground/) - Try
+[uuid58 website](https://nakanoasaservice.github.io/uuid58/) - Try
 generating, encoding, and decoding UUID58 in real-time!
 
 ## Installation
