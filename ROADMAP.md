@@ -49,11 +49,13 @@ Taken from the current JavaScript behavior.
   checks `<= MAX`.)
 - **Errors**: the spec defines error kinds only. Messages are up to each
   implementation.
-  - Encoding: `invalid_length`, `invalid_character`
+  - Encoding from a UUID string: `invalid_length`, `invalid_character`
+  - Encoding from bytes or an integer: `invalid_length`, `overflow`
   - Decoding: `invalid_length`, `invalid_character`, `overflow`
   - Implementations may measure string length differently (UTF-16 code units,
     bytes, or code points). Any input containing non-ASCII characters is an
-    error under every measure, so the result is the same.
+    error under every measure, but the kind may differ, so either
+    `invalid_length` or `invalid_character` is allowed for it.
 - **Validation (`isUuid58`)**: exactly 22 characters, only alphabet
   characters, and a value that fits in 128 bits.
 
@@ -73,10 +75,14 @@ JavaScript package lives, so it can go before Phase 2.
   - Invalid decoder inputs, each with its expected error kind (wrong length,
     `0OIl`, non-ASCII characters, overflow)
   - Inputs that only JavaScript 1.x accepts are marked `lenient`
+  - Invalid byte sequences and integers for APIs that encode from bytes or
+    integers
 - [x] `spec/generate_vectors.py`: generates the vectors from the independent
       reference implementation
 - [x] JavaScript conformance test: loads `vectors.json` and checks every case
-      (on 1.x, `lenient` cases are expected to be accepted with `lenient_output`)
+      that applies to its API (on 1.x, `lenient` cases are expected to be
+      accepted with `lenient_output`; error kinds are not checked, because
+      1.x does not expose them)
 
 ### Phase 2: Repository Layout
 
@@ -106,6 +112,11 @@ parallel. Each one is done when it has:
 | Python      | `python/`                                              | PyPI          | `int` / `uuid.UUID`                                                                              |
 | Rust        | `rust/`                                                | crates.io     | `u128` / the `uuid` crate behind a feature flag                                                  |
 | Java/Kotlin | `java/`                                                | Maven Central | two `long`s / `java.util.UUID`. Kotlin uses the Java library; add extension functions if needed. |
+
+The spec stays at `1.0.0-draft` until all four implementations pass the test
+vectors, so that gaps found while implementing can be fixed without a version
+bump. Then drop the draft marker from `SPEC.md` and `vectors.json` and release
+the spec as `1.0.0`.
 
 ### Phase 4: JavaScript 2.0
 

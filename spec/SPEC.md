@@ -24,7 +24,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 interpreted as described in [RFC 2119] and [RFC 8174] when, and only when,
 they appear in all capitals, as shown here.
 
-All characters named in this document are ASCII. `U+002D` is the hyphen
+All characters in the alphabet and in accepted inputs are ASCII. `U+002D` is the hyphen
 (`-`).
 
 ### 1.2. Scope
@@ -141,13 +141,20 @@ following checks in this order and report the first one that fails:
    this step have the same length, fail if `S` is greater than `MAX_UUID58`
    in ASCII order (Section 3.2).
 
-Otherwise the result is `V`.
+Otherwise the result is `V`. An implementation that returns bytes MUST
+return `V` as 16 bytes in big-endian order. An implementation that returns a
+native UUID type MUST build it from those bytes in the order of RFC 9562
+(see Section 3.3 for platforms whose native byte order differs).
 
 The order matters when an input fails more than one check. For example,
 `Zzzzzzzzzzzzzzzzzzzzz0` has digits that overflow, but its last character is
 not in the alphabet, so it fails with `invalid_character`. An implementation
-that computes `V` in a single pass and detects overflow along the way MUST
-still report `invalid_character` if a later character is not in the alphabet.
+that rejects early, for example by comparing a prefix of `S` with
+`MAX_UUID58` or by checking whether the first character is greater than `Y`,
+MUST still report `invalid_character` if a later character is not in the
+alphabet. (An implementation that accumulates `V` exactly cannot overflow
+before the last digit, because `58^21 - 1 < 2^128`, so it gets this right
+without special handling.)
 
 Decoding MUST NOT trim whitespace, ignore unknown characters, or accept
 strings shorter than 22 characters.
@@ -166,9 +173,18 @@ character, an implementation MAY report either `invalid_length` or
 `invalid_character`, whatever unit it uses. This also allows an
 implementation to reject non-ASCII input before checking the length.
 
-An implementation MUST NOT map a non-ASCII character to an ASCII one, for
-example by keeping only its low 7 or 8 bits. U+0141 (`Ł`) is not `A`, even
-though its low byte is `0x41`.
+For string types that can hold arbitrary bytes or ill-formed text (such as
+Go `string`, Rust `&[u8]`, or PHP and Ruby strings), any byte `0x80` or above,
+any unpaired surrogate, and any ill-formed UTF-8 or UTF-16 sequence counts as
+a non-ASCII character: the input MUST be rejected, with either kind.
+
+An implementation MUST NOT map a non-ASCII character to an ASCII one. This
+includes keeping only its low 7 or 8 bits (U+0141 `Ł` is not `A`, even though
+its low byte is `0x41`), applying Unicode normalization, comparing under
+canonical or compatibility equivalence (U+212A KELVIN SIGN is not `K`, even
+though Swift's `Character` comparison treats them as equal), and classifying
+digits with Unicode-aware functions (U+FF10 FULLWIDTH DIGIT ZERO is not
+`0`). Compare code units, code points, or bytes directly.
 
 ## 5. UUID Strings
 
@@ -254,11 +270,11 @@ full-match API or anchors such as `\A...\z` where available.
 
 This specification defines the following error kinds:
 
-| Kind                | Raised by                                   | Meaning                                                                                      |
-| ------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `invalid_length`    | UUID parsing, decoding, encoding from bytes | The input has the wrong length.                                                              |
-| `invalid_character` | UUID parsing, decoding                      | The input has the right length but contains a character that is not allowed in its position. |
-| `overflow`          | decoding, encoding from an integer          | The input is well formed but its value is outside `0..2^128 - 1`.                            |
+| Kind                | Raised by                                   | Meaning                                                                                                                                                                     |
+| ------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid_length`    | UUID parsing, decoding, encoding from bytes | The input has the wrong length (or contains a non-ASCII character; see Section 4.1).                                                                                        |
+| `invalid_character` | UUID parsing, decoding                      | The input has the right length but contains a character that is not allowed in its position (or, for input of any length, contains a non-ASCII character; see Section 4.1). |
+| `overflow`          | decoding, encoding from an integer          | The input is well formed but its value is outside `0..2^128 - 1`.                                                                                                           |
 
 How errors are reported (exceptions, result types, error values) is up to
 each implementation. An implementation SHOULD let callers distinguish the
@@ -273,7 +289,7 @@ An implementation conforms to this specification if it passes every case in
 
 ```jsonc
 {
-  "spec_version": "1.0.0",
+  "spec_version": "1.0.0-draft",
   "alphabet": "123456789ABC...",
   // Pairs that MUST round-trip in both directions.
   // `uuid` is the produced form (Section 5.2).
@@ -325,10 +341,21 @@ An implementation conforms to this specification if it passes every case in
 An implementation that does not report error kinds only needs to check that
 each invalid input fails.
 
+JSON strings cannot hold ill-formed text, so `vectors.json` cannot express
+the inputs of Section 4.1 that are not valid Unicode. An implementation whose
+string type can hold arbitrary bytes or unpaired surrogates MUST also test
+such inputs itself, for example a 22-byte input containing `0xFF`, an input
+containing a lone `0x80` or `0xC1` byte, or a lone surrogate.
+
 An implementation that works with 16-byte or integer values instead of UUID
 strings (Section 5) can still use `roundtrip`: remove the hyphens from `uuid`
 and read the 32 hexadecimal digits as 16 bytes in big-endian order (or as an
-unsigned integer in base 16). It then skips `encode.valid` and
+unsigned integer in base 16).
+
+An implementation that works with a native UUID type MUST NOT test only by
+round-tripping its own values, which would hide a byte-order mistake.
+It MUST compare the decoded value against `uuid`, either through the type's
+canonical text form or through the 16 bytes derived from `uuid` as above. It then skips `encode.valid` and
 `encode.invalid`, which test UUID string parsing.
 
 An implementation of validation (Section 6) MUST return true for every
@@ -364,11 +391,13 @@ this specification requires. New implementations MUST NOT accept them.
 - It does not expose error kinds. It throws (or, in the `Safe` variants,
   returns) `Uuid58EncodeError` or `Uuid58DecodeError`, distinguished only by
   their messages.
-- Its encoder checks the length after removing the hyphens. So the wording
-  of its messages does not always match the kind this specification assigns.
-  For example, 36 hexadecimal digits without hyphens, or
-  `f4b247fd_1f87_45d4_aa06_1c6fc0a8dfaf`, get a message about the length,
-  where Section 5.1 assigns `invalid_character`.
+- Its encoder checks the length after removing the hyphens. So for any input
+  whose length changes when hyphens are removed, or that is 36 characters
+  long without being hyphenated, the wording of its messages may not match
+  the kind this specification assigns. For example, 36 hexadecimal digits
+  without hyphens, `f4b247fd_1f87_45d4_aa06_1c6fc0a8dfaf`, and
+  `-4b247fd1f8745d4aa061c6fc0a8dfaf` get a message about the length, where
+  Section 5.1 assigns `invalid_character`.
 
 Error messages are not part of this specification, so these are not
 conformance failures, but they should not be mapped to kinds by parsing the

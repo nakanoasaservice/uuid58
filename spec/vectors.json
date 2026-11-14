@@ -1,5 +1,5 @@
 {
-  "spec_version": "1.0.0",
+  "spec_version": "1.0.0-draft",
   "alphabet": "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
   "roundtrip": [
     {
@@ -138,7 +138,7 @@
       "uuid58": "XDY9dmBbcMBXqcRvYw8xJ2"
     },
     {
-      "description": "RFC 4122 example",
+      "description": "common documentation example",
       "uuid": "123e4567-e89b-12d3-a456-426614174000",
       "uuid58": "3FfGK34vwMvVFDedyb2nkf"
     },
@@ -156,6 +156,16 @@
       "description": "max UUID with the last digit zeroed",
       "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffca",
       "uuid58": "YcVfxkQb6JRzqk5kF2tNL1"
+    },
+    {
+      "description": "below max only in ASCII order (Z < v)",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffea",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNLZ"
+    },
+    {
+      "description": "below max only in ASCII order (B < b)",
+      "uuid": "ffffffff-ff9f-374c-c779-83a63aa9ffff",
+      "uuid58": "YcVfxkQB6JRzqk5kF2tNLv"
     },
     {
       "description": "pseudo-random #0",
@@ -419,6 +429,68 @@
         "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
       },
       {
+        "description": "second hyphen in the wrong position",
+        "input": "f4b247fd-1f874-5d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "third hyphen in the wrong position",
+        "input": "f4b247fd-1f87-45d4a-a06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "fourth hyphen in the wrong position",
+        "input": "f4b247fd-1f87-45d4-aa061-c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "digit at index 8 instead of a hyphen",
+        "input": "f4b247fd01f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 13 instead of a hyphen",
+        "input": "f4b247fd-1f87045d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 18 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d40aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 23 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d4-aa0601c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "underscore at index 23 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d4-aa06_1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
         "description": "trailing hyphen",
         "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf-",
         "errors": [
@@ -498,6 +570,20 @@
         ]
       },
       {
+        "description": "leading plus sign, hyphenated",
+        "input": "+4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "plus sign at index 16, 32 characters",
+        "input": "f4b247fd1f8745d4+a061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
         "description": "underscore between digits, 32 characters",
         "input": "f4b247fd_f8745d4aa061c6fc0a8dfaf",
         "errors": [
@@ -546,6 +632,58 @@
         "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\u0130",
         "errors": [
           "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "30 hex digits and U+00B1 (32 UTF-8 bytes)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8df\u00b1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "34 characters and U+00B1 (36 UTF-8 bytes)",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8df\u00b1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "30 hex digits and U+1F600 (32 UTF-16 code units)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8df\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+0010 (0x10 | 0x20 is 0)",
+        "input": "f4b247fd1f87\u00105d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "U+0019 (0x19 | 0x20 is 9)",
+        "input": "f4b247fd1f8745d4aa06\u0019c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "32 hex digits and NUL",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf\u0000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "hyphenated UUID and NUL",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf\u0000",
+        "errors": [
           "invalid_length"
         ]
       },
@@ -876,6 +1014,20 @@
         ]
       },
       {
+        "description": "above max only in ASCII order (a > V)",
+        "input": "Yca1111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "above max only in ASCII order (v > V)",
+        "input": "Ycv1111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
         "description": "CRLF at the end, 22 code units",
         "input": "XDY9dmBbcMBXqcRvYw8x\r\n",
         "errors": [
@@ -899,10 +1051,41 @@
         ]
       },
       {
-        "description": "21 characters and U+00E9 (22 UTF-8 bytes)",
+        "description": "20 characters and U+00E9 (22 UTF-8 bytes)",
         "input": "XDY9dmBbcMBXqcRvYw8x\u00e9",
         "errors": [
           "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "20 characters and U+00F1 (22 UTF-8 bytes)",
+        "input": "XDY9dmBbcMBXqcRvYw8x\u00f1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "20 characters and U+1F600 (22 UTF-16 code units)",
+        "input": "XDY9dmBbcMBXqcRvYw8x\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+212A KELVIN SIGN in place of K",
+        "input": "\u212aKj6FuLStPJZaGMVmm9i2Y",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "22 characters and NUL",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ2\u0000",
+        "errors": [
           "invalid_length"
         ]
       },

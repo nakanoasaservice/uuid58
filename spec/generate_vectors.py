@@ -19,7 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-SPEC_VERSION = "1.0.0"
+SPEC_VERSION = "1.0.0-draft"
 ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 UUID58_LENGTH = 22
 MAX_VALUE = (1 << 128) - 1
@@ -137,13 +137,17 @@ def sample_values():
         (MAX_VALUE - 1, "max UUID - 1"),
         (MAX_VALUE, "max UUID (all one bits)"),
         (0xF4B247FD1F8745D4AA061C6FC0A8DFAF, "README example (UUIDv4)"),
-        (0x123E4567E89B12D3A456426614174000, "RFC 4122 example"),
+        (0x123E4567E89B12D3A456426614174000, "common documentation example"),
         (0x00112233445566778899AABBCCDDEEFF, "leading zero byte"),
     ]
     # Values near the top of the range, given by their encoding.
     for text, description in [
         ("Y111111111111111111111", "smallest value with first digit Y"),
         ("YcVfxkQb6JRzqk5kF2tNL1", "max UUID with the last digit zeroed"),
+        # Below max in ASCII order, but not under case-insensitive or
+        # dictionary-style comparison (SPEC.md Section 3.2).
+        ("YcVfxkQb6JRzqk5kF2tNLZ", "below max only in ASCII order (Z < v)"),
+        ("YcVfxkQB6JRzqk5kF2tNLv", "below max only in ASCII order (B < b)"),
     ]:
         value = decode_uuid58(text)
         assert isinstance(value, int), text
@@ -188,6 +192,15 @@ INVALID_ENCODE_INPUTS = [
     (EXAMPLE_HEX[:8] + "-" + EXAMPLE_HEX[8:], "one hyphen only (33 characters)"),
     ("f4b247f-d1f87-45d4-aa06-1c6fc0a8dfaf", "hyphen in the wrong position"),
     ("f4b247fd1f87-45d4-aa06-1c6fc0a8dfaf", "first hyphen missing"),
+    ("f4b247fd-1f874-5d4-aa06-1c6fc0a8dfaf", "second hyphen in the wrong position"),
+    ("f4b247fd-1f87-45d4a-a06-1c6fc0a8dfaf", "third hyphen in the wrong position"),
+    ("f4b247fd-1f87-45d4-aa061-c6fc0a8dfaf", "fourth hyphen in the wrong position"),
+    # A hex digit or another character where exactly one hyphen belongs.
+    ("f4b247fd01f87-45d4-aa06-1c6fc0a8dfaf", "digit at index 8 instead of a hyphen"),
+    ("f4b247fd-1f87045d4-aa06-1c6fc0a8dfaf", "digit at index 13 instead of a hyphen"),
+    ("f4b247fd-1f87-45d40aa06-1c6fc0a8dfaf", "digit at index 18 instead of a hyphen"),
+    ("f4b247fd-1f87-45d4-aa0601c6fc0a8dfaf", "digit at index 23 instead of a hyphen"),
+    ("f4b247fd-1f87-45d4-aa06_1c6fc0a8dfaf", "underscore at index 23 instead of a hyphen"),
     (EXAMPLE + "-", "trailing hyphen"),
     ("-" * 4 + EXAMPLE_HEX, "hyphens before the digits"),
     ("f4b2-47fd-1f87-45d4-aa06-1c6f-c0a8-dfaf", "hyphen every four digits"),
@@ -199,6 +212,8 @@ INVALID_ENCODE_INPUTS = [
     ("-" + EXAMPLE_HEX[1:], "leading minus sign, 32 characters"),
     ("-" + EXAMPLE[1:], "leading minus sign, hyphenated"),
     (EXAMPLE[:9] + "+" + EXAMPLE[10:], "plus sign inside a group, hyphenated"),
+    ("+" + EXAMPLE[1:], "leading plus sign, hyphenated"),
+    (EXAMPLE_HEX[:16] + "+" + EXAMPLE_HEX[17:], "plus sign at index 16, 32 characters"),
     (EXAMPLE_HEX[:8] + "_" + EXAMPLE_HEX[9:], "underscore between digits, 32 characters"),
     (EXAMPLE_HEX + "\n", "32 hex digits and a trailing newline"),
     ("1-2-3-4-5", "short groups"),
@@ -208,6 +223,17 @@ INVALID_ENCODE_INPUTS = [
     (EXAMPLE_HEX[:31] + "\u0141", "U+0141 (low byte is A)"),
     (EXAMPLE_HEX[:31] + "\u0161", "U+0161 (low byte is a)"),
     (EXAMPLE_HEX[:31] + "\u0130", "U+0130 (low byte is 0)"),
+    # Non-ASCII input that is exactly 32 or 36 long in UTF-8 bytes or UTF-16
+    # code units, so it reaches the character check in those implementations.
+    (EXAMPLE_HEX[:30] + "\u00b1", "30 hex digits and U+00B1 (32 UTF-8 bytes)"),
+    (EXAMPLE[:34] + "\u00b1", "34 characters and U+00B1 (36 UTF-8 bytes)"),
+    (EXAMPLE_HEX[:30] + "\U0001f600", "30 hex digits and U+1F600 (32 UTF-16 code units)"),
+    # Control characters that become digits when OR-ed with 0x20.
+    (EXAMPLE_HEX[:12] + "\x10" + EXAMPLE_HEX[13:], "U+0010 (0x10 | 0x20 is 0)"),
+    (EXAMPLE_HEX[:20] + "\x19" + EXAMPLE_HEX[21:], "U+0019 (0x19 | 0x20 is 9)"),
+    # NUL after a valid UUID (C-string truncation).
+    (EXAMPLE_HEX + "\x00", "32 hex digits and NUL"),
+    (EXAMPLE + "\x00", "hyphenated UUID and NUL"),
     # ASCII neighbours of the hex digit ranges, at interior positions.
     (EXAMPLE_HEX[:5] + "/" + EXAMPLE_HEX[6:], "contains / (before 0)"),
     (EXAMPLE_HEX[:10] + ":" + EXAMPLE_HEX[11:], "contains : (after 9)"),
@@ -255,12 +281,23 @@ INVALID_DECODE_INPUTS = [
     # Overflow detected at different positions.
     ("Yd" + "1" * 20, "overflow decided by the second digit"),
     ("YcVfxkQb6JS" + "1" * 11, "overflow decided by the eleventh digit"),
+    # Above max in ASCII order, but not under case-insensitive or
+    # dictionary-style comparison (SPEC.md Section 3.2).
+    ("Yca" + "1" * 19, "above max only in ASCII order (a > V)"),
+    ("Ycv" + "1" * 19, "above max only in ASCII order (v > V)"),
     # ASCII line break that some languages count as one character.
     (VALID_UUID58[:20] + "\r\n", "CRLF at the end, 22 code units"),
     # Characters whose low 8 bits are an alphabet character.
     (VALID_UUID58[:10] + "\u0141" + VALID_UUID58[11:], "U+0141 (low byte is A)"),
     (VALID_UUID58[:10] + "\u0171" + VALID_UUID58[11:], "U+0171 (low byte is q)"),
-    (VALID_UUID58[:20] + "\u00e9", "21 characters and U+00E9 (22 UTF-8 bytes)"),
+    (VALID_UUID58[:20] + "\u00e9", "20 characters and U+00E9 (22 UTF-8 bytes)"),
+    (VALID_UUID58[:20] + "\u00f1", "20 characters and U+00F1 (22 UTF-8 bytes)"),
+    (VALID_UUID58[:20] + "\U0001f600", "20 characters and U+1F600 (22 UTF-16 code units)"),
+    # Canonically equivalent to an alphabet character (Swift compares
+    # Characters this way, and NFKC normalization maps it too).
+    ("\u212a" + "Kj6FuLStPJZaGMVmm9i2Y", "U+212A KELVIN SIGN in place of K"),
+    # NUL after a valid uuid58 string (C-string truncation).
+    (VALID_UUID58 + "\x00", "22 characters and NUL"),
     # ASCII neighbours of the alphabet ranges, at chunk boundaries.
     (VALID_UUID58[:3] + ":" + VALID_UUID58[4:], "contains : (after 9) at index 3"),
     (VALID_UUID58[:4] + "@" + VALID_UUID58[5:], "contains @ (before A) at index 4"),
