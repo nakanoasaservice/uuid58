@@ -15,12 +15,12 @@ implementations in several languages.
 
 ## Decisions
 
-| Topic | Decision |
-|---|---|
-| Hyphens in encoder input | The spec is strict: only `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` and 32 hex digits are valid. JavaScript 1.x keeps its current lenient behavior (it strips every hyphen, at any position and in any number) for compatibility, and the spec lists this as a known deviation. JavaScript 2.0 will follow the spec. |
-| Location of the JavaScript package | Move it to `js/`. Its release tags become `js/v…`. |
-| First target languages | Go, Python, Rust, Java/Kotlin |
-| Generation (`uuid58()`) | Out of scope for the spec. The spec covers encoding, decoding, and validation only. Implementations may offer a UUIDv4 generator as an optional extra. |
+| Topic                              | Decision                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hyphens in encoder input           | The spec is strict: only `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` and 32 hex digits are valid. JavaScript 1.x keeps its current lenient behavior (it strips every hyphen, at any position and in any number) for compatibility, and the spec lists this as a known deviation. JavaScript 2.0 will follow the spec. |
+| Location of the JavaScript package | Move it to `js/`. Its release tags become `js/v…`.                                                                                                                                                                                                                                                               |
+| First target languages             | Go, Python, Rust, Java/Kotlin                                                                                                                                                                                                                                                                                    |
+| Generation (`uuid58()`)            | Out of scope for the spec. The spec covers encoding, decoding, and validation only. Implementations may offer a UUIDv4 generator as an optional extra.                                                                                                                                                           |
 
 ## What the Spec Must Define
 
@@ -64,19 +64,19 @@ Taken from the current JavaScript behavior.
 Add `spec/` at the repository root. This does not depend on where the
 JavaScript package lives, so it can go before Phase 2.
 
-- [ ] `spec/SPEC.md`: uses RFC 2119 keywords and carries a version number.
+- [x] `spec/SPEC.md`: uses RFC 2119 keywords and carries a version number.
       Covers everything in "What the Spec Must Define".
-- [ ] `spec/vectors.json`
+- [x] `spec/vectors.json`
   - Valid pairs: nil, max, random values, uppercase input, input without
     hyphens
   - Invalid encoder inputs, each with its expected error kind
   - Invalid decoder inputs, each with its expected error kind (wrong length,
     `0OIl`, non-ASCII characters, overflow)
   - Inputs that only JavaScript 1.x accepts are marked `lenient`
-- [ ] `spec/generate_vectors.py`: generates the vectors from the independent
+- [x] `spec/generate_vectors.py`: generates the vectors from the independent
       reference implementation
-- [ ] JavaScript conformance test: loads `vectors.json` and checks every case
-      (skipping `lenient` cases on 1.x)
+- [x] JavaScript conformance test: loads `vectors.json` and checks every case
+      (on 1.x, `lenient` cases are expected to be accepted with `lenient_output`)
 
 ### Phase 2: Repository Layout
 
@@ -100,17 +100,17 @@ parallel. Each one is done when it has:
 - everything ready to publish to its registry (check that the package name is
   available before starting)
 
-| Language | Location | Registry | 128-bit handling / native UUID type |
-|---|---|---|---|
-| Go | `go/` (module `github.com/nakanoasaservice/uuid58/go`) | Go modules | two `uint64`s / `[16]byte` |
-| Python | `python/` | PyPI | `int` / `uuid.UUID` |
-| Rust | `rust/` | crates.io | `u128` / the `uuid` crate behind a feature flag |
-| Java/Kotlin | `java/` | Maven Central | two `long`s / `java.util.UUID`. Kotlin uses the Java library; add extension functions if needed. |
+| Language    | Location                                               | Registry      | 128-bit handling / native UUID type                                                              |
+| ----------- | ------------------------------------------------------ | ------------- | ------------------------------------------------------------------------------------------------ |
+| Go          | `go/` (module `github.com/nakanoasaservice/uuid58/go`) | Go modules    | two `uint64`s / `[16]byte`                                                                       |
+| Python      | `python/`                                              | PyPI          | `int` / `uuid.UUID`                                                                              |
+| Rust        | `rust/`                                                | crates.io     | `u128` / the `uuid` crate behind a feature flag                                                  |
+| Java/Kotlin | `java/`                                                | Maven Central | two `long`s / `java.util.UUID`. Kotlin uses the Java library; add extension functions if needed. |
 
 ### Phase 4: JavaScript 2.0
 
-- [ ] Make encoding strict to match the spec, and stop skipping the `lenient`
-      vectors
+- [ ] Make encoding strict to match the spec, and expect the `lenient`
+      vectors to be rejected
 - [ ] Consider adding an API that takes bytes (`Uint8Array`)
 
 ### Later

@@ -25,6 +25,9 @@ jobs:
       - name: Run fmt, lint and type check
         run: vp check
 
+      - name: Check that spec/vectors.json is up to date
+        run: python3 spec/generate_vectors.py --check
+
       - name: Run tests
         run: vp test run
 
