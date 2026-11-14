@@ -1,0 +1,67 @@
+[project]
+name = "uuid58"
+version = "0.1.0"
+description = "Encode UUIDs as 22-character, order-preserving Base58 strings (uuid58)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Nakano as a Service" }]
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["uuid", "base58", "uuid58", "short-id", "encoding"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/nakanoasaservice/uuid58/tree/main/python"
+Repository = "https://github.com/nakanoasaservice/uuid58"
+Specification = "https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md"
+Issues = "https://github.com/nakanoasaservice/uuid58/issues"
+
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+  "hypothesis>=6",
+  "mypy>=1.13",
+  "pytest>=8",
+  "ruff>=0.8",
+]
+
+[tool.uv]
+# Keep in sync with mise.toml. setup-uv in CI reads this too.
+required-version = ">=0.13,<0.14"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF", "PT", "N"]
+
+[tool.ruff.lint.per-file-ignores]
+# The tests deliberately use confusable non-ASCII characters (SPEC.md 4.1).
+"tests/**" = ["RUF001"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+addopts = ["--doctest-modules", "--strict-markers", "--strict-config", "-ra"]
+xfail_strict = true
