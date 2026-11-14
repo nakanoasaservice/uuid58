@@ -151,7 +151,7 @@ the spec as `1.0.0`.
 - [x] Expose error kinds (`kind` on `Uuid58EncodeError` and
       `Uuid58DecodeError`)
 - [x] Add an API that takes bytes (`uuid58EncodeBytes`, `uuid58DecodeBytes`)
-- [ ] Release `js/v2.0.0`
+- [x] Release `js/v2.0.0`
 
 ### Later
 

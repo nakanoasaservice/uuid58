@@ -34,8 +34,8 @@ implementation must pass. The current version of the spec is 1.0.0.
 The Go, Python, Rust, Java/Kotlin, and Swift implementations are not released
 yet. Swift has its own repository because Swift Package Manager expects
 `Package.swift` at the root of a repository.
-The JavaScript package follows the spec from 2.0 (not released yet); 1.x
-accepts hyphens anywhere in its input, which the spec does not allow.
+The JavaScript package follows the spec from 2.0; 1.x accepts hyphens
+anywhere in its input, which the spec does not allow.
 
 ## Releases
 
