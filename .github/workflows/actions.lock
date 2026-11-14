@@ -5,7 +5,11 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
+        - 'actions/setup-java@v6.1.0'
         - 'voidzero-dev/setup-vp@v1.22.0'
+    '.github/workflows/publish-java.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'actions/setup-java@v6.1.0'
     '.github/workflows/publish.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
@@ -16,6 +20,11 @@ dependencies:
         commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
+    'actions/setup-java@v6.1.0':
+        ref: 'v6.1.0'
+        commit: 'sha1-b843ebf9b913146b38da2eaa7aeddf76074ae1ad'
+        owner_id: 44036562
+        repo_id: 196057608
     'actions/setup-node@v7.1.0':
         ref: 'v7.1.0'
         commit: 'sha1-949feb2413d6458794dcd2491c4babbbce0c15c1'

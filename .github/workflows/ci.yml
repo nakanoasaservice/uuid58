@@ -15,6 +15,7 @@ jobs:
     outputs:
       spec: ${{ steps.filter.outputs.spec }}
       js: ${{ steps.filter.outputs.js }}
+      java: ${{ steps.filter.outputs.java }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -37,6 +38,11 @@ jobs:
             echo "js=true" >> "$GITHUB_OUTPUT"
           else
             echo "js=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^java/'; then
+            echo "java=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "java=false" >> "$GITHUB_OUTPUT"
           fi
 
   spec:
@@ -82,6 +88,33 @@ jobs:
       - name: Dry-run JSR publish
         run: vp exec jsr publish --dry-run
 
+  java:
+    needs: changes
+    if: needs.changes.outputs.java == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8: the bytecode target and oldest supported runtime.
+        # 25: the JDK used for releases.
+        java: ["8", "17", "21", "25"]
+    defaults:
+      run:
+        working-directory: java
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
+        run: ./mvnw -B verify
+
   # Fails when .github/workflows/actions.lock is out of sync with the
   # workflows or a locked pin no longer verifies upstream.
   actions-lock:
@@ -102,7 +135,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, actions-lock]
+    needs: [changes, spec, js, java, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
