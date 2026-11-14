@@ -18,8 +18,7 @@ Encoded strings sort in the same order as the UUIDs they encode.
 
 [`spec/SPEC.md`](spec/SPEC.md) defines the format, and
 [`spec/vectors.json`](spec/vectors.json) holds test vectors that every
-implementation must pass. The spec is a draft (`1.0.0-draft`) until the
-implementations listed below pass the vectors (see [ROADMAP.md](ROADMAP.md)).
+implementation must pass. The current version of the spec is 1.0.0.
 
 ## Implementations
 

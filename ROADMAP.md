@@ -124,11 +124,11 @@ the spec as `1.0.0`.
 - [x] Go (`go/`), Python (`python/`), Rust (`rust/`), and Java (`java/`)
       implementations, each with CI and, except Go, a publish workflow
 - [x] Spec clarifications raised while implementing
-- [ ] Swift implementation, added before the spec is released, in its own
+- [x] Swift implementation, added before the spec is released, in its own
       repository [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift)
       (Swift Package Manager needs `Package.swift` at the repository root and
       reads the old `v1.x` JavaScript tags here as versions)
-- [ ] Release the spec as `1.0.0`
+- [x] Release the spec as `1.0.0`
 - [x] Repository settings: `go/v*`, `python/v*`, `rust/v*`, and `java/v*` in
       the `release-tags` ruleset; the last three in the `production`
       environment's deployment tag policy
