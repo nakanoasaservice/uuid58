@@ -142,3 +142,58 @@ describe("uuid58Encode is case-insensitive and ignores hyphens", () => {
     expect(encodedSet.size).toBe(1);
   });
 });
+
+describe("chunked Base58 conversion matches the digit-by-digit reference", () => {
+  const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  const MAX = (1n << 128n) - 1n;
+
+  function referenceEncode(num: bigint): string {
+    let encoded = "";
+    do {
+      encoded = ALPHABET[Number(num % 58n)] + encoded;
+      num /= 58n;
+    } while (num > 0n);
+    return encoded.padStart(22, "1");
+  }
+
+  const toUuid = (num: bigint) => {
+    const hex = num.toString(16).padStart(32, "0");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  };
+
+  // Values around every power of 58 (chunk boundaries at 58^9 and 58^18),
+  // around 2^64, and at the 128-bit limits.
+  const values = new Set<bigint>([0n, 1n, MAX, MAX - 1n, 1n << 64n]);
+  for (let k = 1n; k <= 21n; k++) {
+    for (const v of [58n ** k - 1n, 58n ** k, 58n ** k + 1n]) values.add(v);
+  }
+  for (let i = 0; i < 500; i++) {
+    values.add(BigInt("0x" + crypto.randomUUID().replace(/-/g, "")));
+  }
+
+  it("encodes and decodes boundary and random values identically", () => {
+    for (const value of values) {
+      const expected = referenceEncode(value);
+      expect(uuid58Encode(toUuid(value))).toBe(expected);
+      expect(uuid58Decode(expected)).toBe(toUuid(value));
+    }
+  });
+
+  it("rejects values just above 128 bits", () => {
+    expect(uuid58DecodeSafe(referenceEncode(MAX + 1n))).toBeInstanceOf(
+      Uuid58DecodeError,
+    );
+    expect(uuid58DecodeSafe("z".repeat(22))).toBeInstanceOf(Uuid58DecodeError);
+  });
+
+  it("rejects invalid characters in every chunk, including non-ASCII", () => {
+    const valid = referenceEncode(MAX);
+    for (const position of [0, 3, 4, 12, 13, 21]) {
+      for (const bad of ["0", "O", "I", "l", "é", "\u{1F600}".slice(0, 1)]) {
+        const input =
+          valid.slice(0, position) + bad + valid.slice(position + 1);
+        expect(uuid58DecodeSafe(input)).toBeInstanceOf(Uuid58DecodeError);
+      }
+    }
+  });
+});

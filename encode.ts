@@ -1,5 +1,4 @@
-import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
-import { previewInput } from "./internal.ts";
+import { encodeUint128, previewInput } from "./internal.ts";
 
 const HEX32_REGEX = /^[0-9a-f]{32}$/i;
 
@@ -50,15 +49,7 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
     );
   }
 
-  let num = BigInt("0x" + hex);
-
-  let encoded = "";
-  do {
-    encoded = UUID58_ALPHABET[Number(num % UUID58_LENGTH)] + encoded;
-    num /= UUID58_LENGTH;
-  } while (num > 0n);
-
-  return encoded.padStart(22, UUID58_ALPHABET[0]);
+  return encodeUint128(BigInt("0x" + hex));
 }
 
 /**
