@@ -158,4 +158,32 @@ the spec as `1.0.0`.
 - [x] Add a table of supported languages to the README
 - [x] Show per-language code samples in the
       [Playground](https://nakanoasaservice.github.io/uuid58-playground/)
-- [ ] Add C#, Ruby, PHP, and others as demand appears
+- [ ] More implementations, in the order below
+
+### More Implementations
+
+nanoid's list of ports was the starting point. nanoid generates IDs, but
+uuid58 converts UUIDs that already exist, so the order favors the places
+where UUIDs are stored and handled: databases and server-side frameworks.
+Some nanoid variants do not apply to uuid58: the spec fixes the alphabet
+and length, so there is nothing like `customAlphabet` or a size calculator.
+uuid58 uses no randomness, so it needs no non-secure build either.
+
+Before adding anything, finish the first releases of Go, Python, Rust, and
+Java (Phase 3). Those implementations already exist, so releasing them
+brings four languages to users for less work than any new one.
+
+| Order | Target                               | Notes                                                                                                                                                                             |
+| ----- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | PostgreSQL (PL/pgSQL functions)      | Encode and decode `uuid` columns in SQL, such as `uuid58_encode(id)`. Plain functions need no extension, so they work on managed databases. Use `numeric` for 128-bit arithmetic. |
+| 2     | CLI (built on the Go implementation) | A thin `main` package around `go/`. Ship it as a single binary, with Homebrew in mind.                                                                                            |
+| 3     | C# / .NET                            | `Guid.ToByteArray()` puts the first three fields in little-endian order. Convert to big-endian bytes, and let the test vectors catch mistakes.                                    |
+| 4     | PHP                                  | Used with ramsey/uuid, Laravel, and Symfony. Do 128-bit arithmetic with GMP or 32-bit words.                                                                                      |
+| 5     | Ruby                                 | For Rails apps with UUID primary keys.                                                                                                                                            |
+| 6     | Dart / Flutter                       | With Swift and Kotlin, this covers mobile apps.                                                                                                                                   |
+| 7     | Elixir                               | Ecto often uses UUID primary keys.                                                                                                                                                |
+| 8     | MySQL / MariaDB (stored functions)   | 128-bit arithmetic in stored functions is awkward (it needs `DECIMAL(39)` or similar), so this comes last.                                                                        |
+
+C#, PHP, and Ruby do not depend on each other and can be built in parallel,
+as in Phase 3. After these, add others (C, Zig, Haskell, OCaml, Gleam, and so
+on) as demand appears.
