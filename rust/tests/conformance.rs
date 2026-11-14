@@ -67,7 +67,7 @@ fn uuid_bytes(uuid: &str) -> [u8; 16] {
 
 #[test]
 fn spec_version() {
-    assert_eq!(vectors()["spec_version"], "1.0.0-draft");
+    assert_eq!(vectors()["spec_version"], "1.0.0");
 }
 
 #[test]
