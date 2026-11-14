@@ -153,5 +153,5 @@ the spec as `1.0.0`.
 ### Later
 
 - Add a table of supported languages to the README
-- Add Swift, C#, Ruby, PHP, and others as demand appears
+- Add C#, Ruby, PHP, and others as demand appears
 - Show per-language code samples in the Playground
