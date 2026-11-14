@@ -1,4 +1,8 @@
-import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
+import { encodeUint128 } from "./internal.ts";
+
+// Reused across calls to avoid allocating a typed array per ID. It is
+// overwritten with fresh random values on every call.
+const random = new BigUint64Array(2);
 
 /**
  * Generates a new Base58-encoded UUID (always 22 characters).
@@ -14,18 +18,11 @@ import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
  * ```
  */
 export function uuid58(): string {
-  const bytes = crypto.getRandomValues(new BigUint64Array(2));
+  crypto.getRandomValues(random);
 
-  bytes[0] = (bytes[0]! & 0xffffffffffff0fffn) | 0x0000000000004000n;
-  bytes[1] = (bytes[1]! & 0x3fffffffffffffffn) | 0x8000000000000000n;
+  // UUID v4: version nibble = 4, variant bits = 10.
+  const high = (random[0]! & 0xffffffffffff0fffn) | 0x0000000000004000n;
+  const low = (random[1]! & 0x3fffffffffffffffn) | 0x8000000000000000n;
 
-  let num = (bytes[0] << 64n) | bytes[1];
-  let encoded = "";
-
-  do {
-    encoded = UUID58_ALPHABET[Number(num % UUID58_LENGTH)] + encoded;
-    num /= UUID58_LENGTH;
-  } while (num > 0n);
-
-  return encoded.padStart(22, UUID58_ALPHABET[0]);
+  return encodeUint128((high << 64n) | low);
 }
