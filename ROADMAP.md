@@ -116,15 +116,16 @@ parallel. Each one is done when it has:
 | Rust        | `rust/`                                                | crates.io     | `u128` / the `uuid` crate behind a feature flag                                                  |
 | Java/Kotlin | `java/`                                                | Maven Central | two `long`s / `java.util.UUID`. Kotlin uses the Java library; add extension functions if needed. |
 
-The spec stays at `1.0.0-draft` until all four implementations pass the test
-vectors, so that gaps found while implementing can be fixed without a version
+The spec stays at `1.0.0-draft` until all four implementations and the Swift
+implementation (see below) pass the test vectors, so that gaps found while implementing can be fixed without a version
 bump. Then drop the draft marker from `SPEC.md` and `vectors.json` and release
 the spec as `1.0.0`.
 
 - [x] Go (`go/`), Python (`python/`), Rust (`rust/`), and Java (`java/`)
       implementations, each with CI and, except Go, a publish workflow
-- [x] Spec clarifications raised while implementing, and the spec released as
-      `1.0.0`
+- [x] Spec clarifications raised while implementing
+- [ ] Swift implementation, added before the spec is released
+- [ ] Release the spec as `1.0.0`
 - [x] Repository settings: `go/v*`, `python/v*`, `rust/v*`, and `java/v*` in
       the `release-tags` ruleset; the last three in the `production`
       environment's deployment tag policy
