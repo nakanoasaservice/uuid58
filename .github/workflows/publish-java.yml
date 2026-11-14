@@ -1,0 +1,85 @@
+name: Publish Java
+
+# Release the Java package by pushing a java/v… tag:
+#   1. Bump <version> in java/pom.xml and merge it into main.
+#   2. git tag java/v1.2.3 <commit on main> && git push origin java/v1.2.3
+#
+# Required secrets (in the production environment):
+#   MAVEN_CENTRAL_USERNAME, MAVEN_CENTRAL_PASSWORD: a Central Portal user token
+#     (https://central.sonatype.com/account) for the io.github.nakanoasaservice namespace.
+#   MAVEN_GPG_PRIVATE_KEY: ASCII-armored secret key used to sign the artifacts;
+#     its public key must be on a public key server (e.g. keys.openpgp.org).
+#   MAVEN_GPG_PASSPHRASE: the passphrase of that key.
+on:
+  push:
+    tags:
+      - "java/v*"
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: java
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag matches java/pom.xml and is on main
+        run: |
+          VERSION=$(python3 -c 'import xml.etree.ElementTree as ET; print(ET.parse("pom.xml").getroot().find("{http://maven.apache.org/POM/4.0.0}version").text)')
+          if [ "$GITHUB_REF_NAME" != "java/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match java/pom.xml version java/v$VERSION"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          # No dependency cache in the release job, to rule out cache poisoning.
+          # Writes ~/.m2/settings.xml with a "central" server whose credentials
+          # are read from these environment variables (set only on the deploy step).
+          server-id: central
+          server-username-env-var: MAVEN_CENTRAL_USERNAME
+          server-password-env-var: MAVEN_CENTRAL_PASSWORD
+
+      - name: Run tests
+        run: ./mvnw -B verify
+
+      - name: Sign and publish to Maven Central
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        # Tests already ran above; skip them so no test code runs with the secrets.
+        run: ./mvnw -B -Prelease deploy -DskipTests
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes

@@ -18,6 +18,7 @@ jobs:
       go: ${{ steps.filter.outputs.go }}
       python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
+      java: ${{ steps.filter.outputs.java }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -55,6 +56,11 @@ jobs:
             echo "rust=true" >> "$GITHUB_OUTPUT"
           else
             echo "rust=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^java/'; then
+            echo "java=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "java=false" >> "$GITHUB_OUTPUT"
           fi
 
   spec:
@@ -236,6 +242,33 @@ jobs:
       - name: Dry-run crates.io publish
         run: cargo publish --locked --dry-run
 
+  java:
+    needs: changes
+    if: needs.changes.outputs.java == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8: the bytecode target and oldest supported runtime.
+        # 25: the JDK used for releases.
+        java: ["8", "17", "21", "25"]
+    defaults:
+      run:
+        working-directory: java
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
+        run: ./mvnw -B verify
+
   # Fails when .github/workflows/actions.lock is out of sync with the
   # workflows or a locked pin no longer verifies upstream.
   actions-lock:
@@ -256,7 +289,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
