@@ -121,6 +121,25 @@ vectors, so that gaps found while implementing can be fixed without a version
 bump. Then drop the draft marker from `SPEC.md` and `vectors.json` and release
 the spec as `1.0.0`.
 
+- [x] Go (`go/`), Python (`python/`), Rust (`rust/`), and Java (`java/`)
+      implementations, each with CI and, except Go, a publish workflow
+- [x] Spec clarifications raised while implementing, and the spec released as
+      `1.0.0`
+- [x] Repository settings: `go/v*`, `python/v*`, `rust/v*`, and `java/v*` in
+      the `release-tags` ruleset; the last three in the `production`
+      environment's deployment tag policy
+- [ ] Registry setup (done by a maintainer) before the first releases:
+  - PyPI: a (pending) Trusted Publisher for `uuid58`, workflow
+    `publish-python.yml`, environment `production`
+  - crates.io: Trusted Publishing for `uuid58`, workflow `publish-rust.yml`,
+    environment `production` (the first publish may need a token)
+  - Maven Central: verify the `io.github.nakanoasaservice` namespace, and add
+    `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`,
+    `MAVEN_GPG_PRIVATE_KEY`, and `MAVEN_GPG_PASSPHRASE` to the `production`
+    environment
+- [ ] First releases: `go/v0.1.0`, `python/v0.1.0`, `rust/v0.1.0`,
+      `java/v0.1.0`
+
 ### Phase 4: JavaScript 2.0
 
 - [ ] Make encoding strict to match the spec, and expect the `lenient`

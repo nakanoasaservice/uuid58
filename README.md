@@ -18,16 +18,21 @@ Encoded strings sort in the same order as the UUIDs they encode.
 
 [`spec/SPEC.md`](spec/SPEC.md) defines the format, and
 [`spec/vectors.json`](spec/vectors.json) holds test vectors that every
-implementation must pass. The spec is a draft until the first implementations
-in other languages are done (see [ROADMAP.md](ROADMAP.md)).
+implementation must pass. The current version of the spec is 1.0.0.
 
 ## Implementations
 
-| Language              | Directory    | Package                                                                                                                   |
-| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| JavaScript/TypeScript | [`js/`](js/) | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58) |
+| Language              | Directory            | Package                                                                                                                   |
+| --------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| JavaScript/TypeScript | [`js/`](js/)         | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58) |
+| Go                    | [`go/`](go/)         | `github.com/nakanoasaservice/uuid58/go`                                                                                   |
+| Python                | [`python/`](python/) | `uuid58` on PyPI                                                                                                          |
+| Rust                  | [`rust/`](rust/)     | `uuid58` on crates.io                                                                                                     |
+| Java/Kotlin           | [`java/`](java/)     | `io.github.nakanoasaservice:uuid58` on Maven Central                                                                      |
 
-Go, Python, Rust, and Java/Kotlin are planned.
+The Go, Python, Rust, and Java/Kotlin implementations are not released yet.
+The JavaScript package 1.x accepts hyphens anywhere in its input, which the
+spec does not allow; 2.0 will follow the spec.
 
 ## Releases
 
