@@ -22,17 +22,16 @@ implementation must pass. The current version of the spec is 1.0.0.
 
 ## Implementations
 
-| Language              | Directory                                                        | Package                                                                                                                   |
-| --------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| JavaScript/TypeScript | [`js/`](js/)                                                     | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58) |
-| Go                    | [`go/`](go/)                                                     | `github.com/nakanoasaservice/uuid58/go`                                                                                   |
-| Python                | [`python/`](python/)                                             | `uuid58` on PyPI                                                                                                          |
-| Rust                  | [`rust/`](rust/)                                                 | `uuid58` on crates.io                                                                                                     |
-| Java/Kotlin           | [`java/`](java/)                                                 | `io.github.nakanoasaservice:uuid58` on Maven Central                                                                      |
-| Swift                 | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                                                                                                     |
+| Language              | Directory                                                        | Package                                                                                                                         |
+| --------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| JavaScript/TypeScript | [`js/`](js/)                                                     | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58)       |
+| Go                    | [`go/`](go/)                                                     | [`github.com/nakanoasaservice/uuid58/go`](https://pkg.go.dev/github.com/nakanoasaservice/uuid58/go)                             |
+| Python                | [`python/`](python/)                                             | [`uuid58`](https://pypi.org/project/uuid58/) on PyPI                                                                            |
+| Rust                  | [`rust/`](rust/)                                                 | [`uuid58`](https://crates.io/crates/uuid58) on crates.io                                                                        |
+| Java/Kotlin           | [`java/`](java/)                                                 | [`io.github.nakanoasaservice:uuid58`](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58) on Maven Central |
+| Swift                 | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                                                                                                           |
 
-The Go, Python, Rust, Java/Kotlin, and Swift implementations are not released
-yet. Swift has its own repository because Swift Package Manager expects
+Swift has its own repository because Swift Package Manager expects
 `Package.swift` at the root of a repository.
 The JavaScript package follows the spec from 2.0; 1.x accepts hyphens
 anywhere in its input, which the spec does not allow.

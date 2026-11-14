@@ -132,7 +132,7 @@ the spec as `1.0.0`.
 - [x] Repository settings: `go/v*`, `python/v*`, `rust/v*`, and `java/v*` in
       the `release-tags` ruleset; the last three in the `production`
       environment's deployment tag policy
-- [ ] Registry setup (done by a maintainer) before the first releases:
+- [x] Registry setup (done by a maintainer) before the first releases:
   - PyPI: a (pending) Trusted Publisher for `uuid58`, workflow
     `publish-python.yml`, environment `production`
   - crates.io: Trusted Publishing for `uuid58`, workflow `publish-rust.yml`,
@@ -141,8 +141,9 @@ the spec as `1.0.0`.
     `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`,
     `MAVEN_GPG_PRIVATE_KEY`, and `MAVEN_GPG_PASSPHRASE` to the `production`
     environment
-- [ ] First releases: `go/v0.1.0`, `python/v0.1.0`, `rust/v0.1.0`,
-      `java/v0.1.0`
+- [x] First releases: `go/v0.1.0`, `python/v0.1.0`, `rust/v0.1.0`,
+      `java/v0.1.0`, and `v0.1.0` in uuid58-swift (Rust 0.1.0 was published
+      by hand with a token; later versions use Trusted Publishing)
 
 ### Phase 4: JavaScript 2.0
 
