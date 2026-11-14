@@ -1,0 +1,1150 @@
+{
+  "spec_version": "1.0.0-draft",
+  "alphabet": "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+  "roundtrip": [
+    {
+      "description": "nil UUID (all zero bits)",
+      "uuid": "00000000-0000-0000-0000-000000000000",
+      "uuid58": "1111111111111111111111"
+    },
+    {
+      "description": "smallest non-zero value",
+      "uuid": "00000000-0000-0000-0000-000000000001",
+      "uuid58": "1111111111111111111112"
+    },
+    {
+      "description": "largest single-digit value",
+      "uuid": "00000000-0000-0000-0000-000000000039",
+      "uuid58": "111111111111111111111z"
+    },
+    {
+      "description": "smallest two-digit value",
+      "uuid": "00000000-0000-0000-0000-00000000003a",
+      "uuid58": "1111111111111111111121"
+    },
+    {
+      "description": "58^9 - 1 (largest 9-digit value)",
+      "uuid": "00000000-0000-0000-001a-636a90b079ff",
+      "uuid58": "1111111111111zzzzzzzzz"
+    },
+    {
+      "description": "58^9 (smallest 10-digit value)",
+      "uuid": "00000000-0000-0000-001a-636a90b07a00",
+      "uuid58": "1111111111112111111111"
+    },
+    {
+      "description": "58^18 - 1",
+      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa23ffff",
+      "uuid58": "1111zzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^18",
+      "uuid": "000002b8-5840-fc1d-6a48-0ae7fa240000",
+      "uuid58": "1112111111111111111111"
+    },
+    {
+      "description": "58^21 - 1 (largest 21-digit value)",
+      "uuid": "0819237f-3896-f2f3-0bb8-32ce3d9fffff",
+      "uuid58": "1zzzzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "58^21 (smallest value that needs all 22 digits)",
+      "uuid": "0819237f-3896-f2f3-0bb8-32ce3da00000",
+      "uuid58": "2111111111111111111111"
+    },
+    {
+      "description": "2^53 - 1",
+      "uuid": "00000000-0000-0000-001f-ffffffffffff",
+      "uuid58": "1111111111112DLNrMSKug"
+    },
+    {
+      "description": "2^53",
+      "uuid": "00000000-0000-0000-0020-000000000000",
+      "uuid58": "1111111111112DLNrMSKuh"
+    },
+    {
+      "description": "2^64 - 1",
+      "uuid": "00000000-0000-0000-ffff-ffffffffffff",
+      "uuid58": "11111111111jpXCZedGfVQ"
+    },
+    {
+      "description": "2^64",
+      "uuid": "00000000-0000-0001-0000-000000000000",
+      "uuid58": "11111111111jpXCZedGfVR"
+    },
+    {
+      "description": "2^32 - 1",
+      "uuid": "00000000-0000-0000-0000-0000ffffffff",
+      "uuid58": "11111111111111117YXq9G"
+    },
+    {
+      "description": "2^32",
+      "uuid": "00000000-0000-0000-0000-000100000000",
+      "uuid58": "11111111111111117YXq9H"
+    },
+    {
+      "description": "2^63 - 1 (largest signed 64-bit value)",
+      "uuid": "00000000-0000-0000-7fff-ffffffffffff",
+      "uuid58": "11111111111NQm6nKp8qFC"
+    },
+    {
+      "description": "2^63 (sign bit of a signed 64-bit low half)",
+      "uuid": "00000000-0000-0000-8000-000000000000",
+      "uuid58": "11111111111NQm6nKp8qFD"
+    },
+    {
+      "description": "2^64 + 2^63",
+      "uuid": "00000000-0000-0001-8000-000000000000",
+      "uuid58": "111111111127EHJLySQVjd"
+    },
+    {
+      "description": "2^96",
+      "uuid": "00000001-0000-0000-0000-000000000000",
+      "uuid58": "111115qCHTcgbQwpvYZQ9d"
+    },
+    {
+      "description": "2^127 - 1",
+      "uuid": "7fffffff-ffff-ffff-ffff-ffffffffffff",
+      "uuid58": "GokLUsho3eiVvNYNd1wgfx"
+    },
+    {
+      "description": "2^127 (only the top bit set)",
+      "uuid": "80000000-0000-0000-0000-000000000000",
+      "uuid58": "GokLUsho3eiVvNYNd1wgfy"
+    },
+    {
+      "description": "2^127 + 2^63 (sign bit set in both halves)",
+      "uuid": "80000000-0000-0000-8000-000000000000",
+      "uuid58": "GokLUsho3eisL8e9wq5WvB"
+    },
+    {
+      "description": "2^128 - 2^64 (high half all ones, low half zero)",
+      "uuid": "ffffffff-ffff-ffff-0000-000000000000",
+      "uuid58": "YcVfxkQb6JRG2DtBbQchrX"
+    },
+    {
+      "description": "max UUID - 1",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffffffffe",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNLu"
+    },
+    {
+      "description": "max UUID (all one bits)",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNLv"
+    },
+    {
+      "description": "README example (UUIDv4)",
+      "uuid": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+      "uuid58": "XDY9dmBbcMBXqcRvYw8xJ2"
+    },
+    {
+      "description": "common documentation example",
+      "uuid": "123e4567-e89b-12d3-a456-426614174000",
+      "uuid58": "3FfGK34vwMvVFDedyb2nkf"
+    },
+    {
+      "description": "leading zero byte",
+      "uuid": "00112233-4455-6677-8899-aabbccddeeff",
+      "uuid58": "11UoWww8DGaVGLtea7zU7p"
+    },
+    {
+      "description": "smallest value with first digit Y",
+      "uuid": "fb0b4c67-da47-6b6e-6b4e-26f976600000",
+      "uuid58": "Y111111111111111111111"
+    },
+    {
+      "description": "max UUID with the last digit zeroed",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffca",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNL1"
+    },
+    {
+      "description": "below max only in ASCII order (Z < v)",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffea",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNLZ"
+    },
+    {
+      "description": "below max only in ASCII order (B < b)",
+      "uuid": "ffffffff-ff9f-374c-c779-83a63aa9ffff",
+      "uuid58": "YcVfxkQB6JRzqk5kF2tNLv"
+    },
+    {
+      "description": "pseudo-random #0",
+      "uuid": "45ba151a-6929-cb0e-08e4-4d26609b82ef",
+      "uuid58": "9cPd4sUhN3KeSnqsvndJLn"
+    },
+    {
+      "description": "pseudo-random #1",
+      "uuid": "338e4981-1cc9-88bf-82be-9ccb3c1fc6c8",
+      "uuid58": "7NFLbS272HBhAHHZfaEjv7"
+    },
+    {
+      "description": "pseudo-random #2",
+      "uuid": "cb9f108d-39ee-35b9-7cce-020d5aa8e14d",
+      "uuid58": "S9MXMioWBoFEJxgnsodHaL"
+    },
+    {
+      "description": "pseudo-random #3",
+      "uuid": "9461d2b1-33d6-28f7-3a9f-eb5fb769b49d",
+      "uuid58": "KKj6FuLStPJZaGMVmm9i2Y"
+    },
+    {
+      "description": "pseudo-random #4",
+      "uuid": "8bd6fa4f-e7ca-d152-f957-b14b1f2f2793",
+      "uuid58": "JGYaqqDGvqyuq72hMoKgwk"
+    },
+    {
+      "description": "pseudo-random #5",
+      "uuid": "f859acd0-94d7-0dbe-d5d3-0ab653a6c78b",
+      "uuid58": "XfhyaJb7pMxdgG8aWDNZhL"
+    },
+    {
+      "description": "pseudo-random #6",
+      "uuid": "4e293331-875e-a510-da56-1762a5035096",
+      "uuid58": "Aeo8ujGnQsCphjQ5W2skY5"
+    },
+    {
+      "description": "pseudo-random #7",
+      "uuid": "02f01ff9-ef77-9cdf-37d6-68cbc6abb4b1",
+      "uuid58": "1N3SiGFwLEq2jsT7g43XEg"
+    },
+    {
+      "description": "pseudo-random #8",
+      "uuid": "51bccd34-8285-2b89-26c8-f1f58007486d",
+      "uuid58": "B6Qr7k9qSpAWxWBMr4TKJk"
+    },
+    {
+      "description": "pseudo-random #9",
+      "uuid": "4535942a-8ba3-1797-ae69-62774a942207",
+      "uuid58": "9YgcaURoqrureaoF9pfTTU"
+    },
+    {
+      "description": "pseudo-random #10",
+      "uuid": "5f798fee-6b8f-1536-b5dc-5551ae7c4a50",
+      "uuid58": "CnoMbRpz6rGqUV1fPQfwqy"
+    },
+    {
+      "description": "pseudo-random #11",
+      "uuid": "05afca7a-013c-9ee0-0eac-2fa7ac675e58",
+      "uuid58": "1hjFkPj3gWzXFUwqApBT3V"
+    },
+    {
+      "description": "pseudo-random #12",
+      "uuid": "9e8939c3-2052-538b-9f6f-5fa41597c4eb",
+      "uuid58": "LaT3DuNoWPT2eE3i5i1azE"
+    },
+    {
+      "description": "pseudo-random #13",
+      "uuid": "9a55f55e-0c1d-5cb7-a35e-d2ab5b8e1bd2",
+      "uuid58": "L4NFCk8dAZEFQP6bNDRcKs"
+    },
+    {
+      "description": "pseudo-random #14",
+      "uuid": "dccb4ab3-0f29-df80-75d5-56807b67043c",
+      "uuid58": "UGM7DCYi7rgBMsMSgp5hLX"
+    },
+    {
+      "description": "pseudo-random #15",
+      "uuid": "87b570ef-1a49-010b-dbc0-51f9e6b1cc57",
+      "uuid58": "HkxZX6AiXUh9Ps4AiDBqXU"
+    }
+  ],
+  "encode": {
+    "valid": [
+      {
+        "description": "32 hex digits without hyphens",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "uppercase, hyphenated",
+        "input": "F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF",
+        "output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "uppercase, without hyphens",
+        "input": "F4B247FD1F8745D4AA061C6FC0A8DFAF",
+        "output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "mixed case",
+        "input": "F4b247Fd-1F87-45d4-Aa06-1c6FC0a8DfAf",
+        "output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "every uppercase hex letter",
+        "input": "ABCDEF01-2345-6789-ABCD-EF0123456789",
+        "output": "NDUk2XJP6rucJnnxJmpHUt"
+      },
+      {
+        "description": "every lowercase hex letter, without hyphens",
+        "input": "abcdef0123456789abcdef0123456789",
+        "output": "NDUk2XJP6rucJnnxJmpHUt"
+      }
+    ],
+    "invalid": [
+      {
+        "description": "empty string",
+        "input": "",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "too short",
+        "input": "f4b247fd",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "31 hex digits",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "33 hex digits",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf0",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "35 characters, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfa",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "37 characters, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf0",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "36 hex digits without hyphens",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf0000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex letter, 32 characters",
+        "input": "g4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex letter, hyphenated",
+        "input": "g4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "0x prefix",
+        "input": "0xb247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading space, 32 characters",
+        "input": " 4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "trailing newline, 32 characters",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\n",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading space, hyphenated",
+        "input": " f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "trailing newline, hyphenated",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf\n",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "braces",
+        "input": "{f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf}",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "URN prefix",
+        "input": "urn:uuid:f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "underscores instead of hyphens",
+        "input": "f4b247fd_1f87_45d4_aa06_1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "one hyphen only (33 characters)",
+        "input": "f4b247fd-1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_length"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "hyphen in the wrong position",
+        "input": "f4b247f-d1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "first hyphen missing",
+        "input": "f4b247fd1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_length"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "second hyphen in the wrong position",
+        "input": "f4b247fd-1f874-5d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "third hyphen in the wrong position",
+        "input": "f4b247fd-1f87-45d4a-a06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "fourth hyphen in the wrong position",
+        "input": "f4b247fd-1f87-45d4-aa061-c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "digit at index 8 instead of a hyphen",
+        "input": "f4b247fd01f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 13 instead of a hyphen",
+        "input": "f4b247fd-1f87045d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 18 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d40aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "digit at index 23 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d4-aa0601c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "underscore at index 23 instead of a hyphen",
+        "input": "f4b247fd-1f87-45d4-aa06_1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "trailing hyphen",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf-",
+        "errors": [
+          "invalid_length"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "hyphens before the digits",
+        "input": "----f4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "hyphen every four digits",
+        "input": "f4b2-47fd-1f87-45d4-aa06-1c6f-c0a8-dfaf",
+        "errors": [
+          "invalid_length"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "non-ASCII letter (U+00E9)",
+        "input": "e4b247fd1f8745d4aa061c6fc0a8dfa\u00e9",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "fullwidth digit zero (U+FF10)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\uff10",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "astral-plane character (U+1F600)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "leading plus sign, 32 characters",
+        "input": "+4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading minus sign, 32 characters",
+        "input": "-4b247fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading minus sign, hyphenated",
+        "input": "-4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "plus sign inside a group, hyphenated",
+        "input": "f4b247fd-+f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading plus sign, hyphenated",
+        "input": "+4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "plus sign at index 16, 32 characters",
+        "input": "f4b247fd1f8745d4+a061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "underscore between digits, 32 characters",
+        "input": "f4b247fd_f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "32 hex digits and a trailing newline",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf\n",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "short groups",
+        "input": "1-2-3-4-5",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "CRLF at the end, 32 code units",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8df\r\n",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "U+0141 (low byte is A)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\u0141",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+0161 (low byte is a)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\u0161",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+0130 (low byte is 0)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfa\u0130",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "30 hex digits and U+00B1 (32 UTF-8 bytes)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8df\u00b1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "34 characters and U+00B1 (36 UTF-8 bytes)",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8df\u00b1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "30 hex digits and U+1F600 (32 UTF-16 code units)",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8df\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+0010 (0x10 | 0x20 is 0)",
+        "input": "f4b247fd1f87\u00105d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "U+0019 (0x19 | 0x20 is 9)",
+        "input": "f4b247fd1f8745d4aa06\u0019c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "32 hex digits and NUL",
+        "input": "f4b247fd1f8745d4aa061c6fc0a8dfaf\u0000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "hyphenated UUID and NUL",
+        "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf\u0000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "contains / (before 0)",
+        "input": "f4b24/fd1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains : (after 9)",
+        "input": "f4b247fd1f:745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains @ (before A)",
+        "input": "f4b247fd1f8745d@aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains G (after F)",
+        "input": "f4b247fd1f8745d4aa06Gc6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains ` (before a)",
+        "input": "f4b247fd1f8745d4aa061c6fc`a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains g (after f), hyphenated",
+        "input": "f4b247fd-1f87-g5d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      }
+    ],
+    "invalid_bytes": [
+      {
+        "description": "no bytes",
+        "bytes": "",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "15 bytes",
+        "bytes": "000000000000000000000000000000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "17 bytes",
+        "bytes": "0000000000000000000000000000000000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "32 bytes",
+        "bytes": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "errors": [
+          "invalid_length"
+        ]
+      }
+    ],
+    "invalid_integers": [
+      {
+        "description": "-1",
+        "integer": "-1",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "-2^127",
+        "integer": "-170141183460469231731687303715884105728",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "2^128",
+        "integer": "340282366920938463463374607431768211456",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "2^128 + 1",
+        "integer": "340282366920938463463374607431768211457",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "2^129",
+        "integer": "680564733841876926926749214863536422912",
+        "errors": [
+          "overflow"
+        ]
+      }
+    ]
+  },
+  "decode": {
+    "invalid": [
+      {
+        "description": "empty string",
+        "input": "",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "21 characters",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "23 characters",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ21",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "23 characters of the zero digit",
+        "input": "11111111111111111111111",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "contains 0 (zero)",
+        "input": "0DY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains O (capital o)",
+        "input": "ODY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains I (capital i)",
+        "input": "IDY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains l (lowercase L)",
+        "input": "lDY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains +",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ+",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains /",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ/",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains -",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ-",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains _",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ_",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading space, 22 characters",
+        "input": " DY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "trailing newline, 22 characters",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ\n",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "leading space, 23 characters",
+        "input": " XDY9dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "trailing newline, 23 characters",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ2\n",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "NUL character",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ\u0000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-ASCII letter (U+00E9)",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ\u00e9",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "fullwidth A (U+FF21)",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ\uff21",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "astral-plane character (U+1F600)",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "max UUID + 1",
+        "input": "YcVfxkQb6JRzqk5kF2tNLw",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "first digit Z (exceeds 128 bits)",
+        "input": "Z111111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "largest 22-character value",
+        "input": "zzzzzzzzzzzzzzzzzzzzzz",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "invalid first character, overflowing digits",
+        "input": "0zzzzzzzzzzzzzzzzzzzzz",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "overflowing digits, invalid last character",
+        "input": "Zzzzzzzzzzzzzzzzzzzzz0",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "max UUID prefix, invalid last character",
+        "input": "YcVfxkQb6JRzqk5kF2tNL0",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "overflowing digits, invalid middle character",
+        "input": "zzzzzzzzzzz!zzzzzzzzzz",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "23 characters that would overflow",
+        "input": "zzzzzzzzzzzzzzzzzzzzzzz",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "overflow decided by the second digit",
+        "input": "Yd11111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "overflow decided by the eleventh digit",
+        "input": "YcVfxkQb6JS11111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "above max only in ASCII order (a > V)",
+        "input": "Yca1111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "above max only in ASCII order (v > V)",
+        "input": "Ycv1111111111111111111",
+        "errors": [
+          "overflow"
+        ]
+      },
+      {
+        "description": "CRLF at the end, 22 code units",
+        "input": "XDY9dmBbcMBXqcRvYw8x\r\n",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "U+0141 (low byte is A)",
+        "input": "XDY9dmBbcM\u0141XqcRvYw8xJ2",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+0171 (low byte is q)",
+        "input": "XDY9dmBbcM\u0171XqcRvYw8xJ2",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "20 characters and U+00E9 (22 UTF-8 bytes)",
+        "input": "XDY9dmBbcMBXqcRvYw8x\u00e9",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "20 characters and U+00F1 (22 UTF-8 bytes)",
+        "input": "XDY9dmBbcMBXqcRvYw8x\u00f1",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "20 characters and U+1F600 (22 UTF-16 code units)",
+        "input": "XDY9dmBbcMBXqcRvYw8x\ud83d\ude00",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "U+212A KELVIN SIGN in place of K",
+        "input": "\u212aKj6FuLStPJZaGMVmm9i2Y",
+        "errors": [
+          "invalid_character",
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "22 characters and NUL",
+        "input": "XDY9dmBbcMBXqcRvYw8xJ2\u0000",
+        "errors": [
+          "invalid_length"
+        ]
+      },
+      {
+        "description": "contains : (after 9) at index 3",
+        "input": "XDY:dmBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains @ (before A) at index 4",
+        "input": "XDY9@mBbcMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains [ (after Z) at index 12",
+        "input": "XDY9dmBbcMBX[cRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains ` (before a) at index 13",
+        "input": "XDY9dmBbcMBXq`RvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains { (after z) at index 17",
+        "input": "XDY9dmBbcMBXqcRvY{8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains O at index 8",
+        "input": "XDY9dmBbOMBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains l at index 9",
+        "input": "XDY9dmBbclBXqcRvYw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "contains I at index 16",
+        "input": "XDY9dmBbcMBXqcRvIw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      }
+    ]
+  }
+}
