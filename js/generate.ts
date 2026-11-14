@@ -1,8 +1,8 @@
-import { encodeUint128 } from "./internal.ts";
+import { encodeWords } from "./internal.ts";
 
 // Reused across calls to avoid allocating a typed array per ID. It is
 // overwritten with fresh random values on every call.
-const random = new BigUint64Array(2);
+const random = new Uint32Array(4);
 
 /**
  * Generates a new Base58-encoded UUID (always 22 characters).
@@ -21,8 +21,10 @@ export function uuid58(): string {
   crypto.getRandomValues(random);
 
   // UUID v4: version nibble = 4, variant bits = 10.
-  const high = (random[0]! & 0xffffffffffff0fffn) | 0x0000000000004000n;
-  const low = (random[1]! & 0x3fffffffffffffffn) | 0x8000000000000000n;
+  // Words are most significant first; the version is in word 1 and the
+  // variant in word 2.
+  random[1] = (random[1]! & 0xffff0fff) | 0x4000;
+  random[2] = (random[2]! & 0x3fffffff) | 0x80000000;
 
-  return encodeUint128((high << 64n) | low);
+  return encodeWords(random);
 }

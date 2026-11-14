@@ -5,7 +5,7 @@ import { compareWithBaseline } from "./harness.ts";
 
 // Copy imports into module-local constants: imported bindings are getters
 // under Vite's module runner, which would add overhead inside timed loops.
-const { MASK, UUID58S, UUIDS } = fixtures;
+const { MASK, UUID58S, UUID_BYTES, UUIDS } = fixtures;
 
 test("uuid58Encode", async ({ bench }) => {
   await compareWithBaseline(bench, ({ uuid58Encode }) => {
@@ -21,6 +21,24 @@ test("uuid58Decode", async ({ bench }) => {
     let i = 0;
     return () => {
       uuid58Decode(UUID58S[i++ & MASK]!);
+    };
+  });
+});
+
+test("uuid58EncodeBytes", async ({ bench }) => {
+  await compareWithBaseline(bench, ({ uuid58EncodeBytes }) => {
+    let i = 0;
+    return () => {
+      uuid58EncodeBytes(UUID_BYTES[i++ & MASK]!);
+    };
+  });
+});
+
+test("uuid58DecodeBytes", async ({ bench }) => {
+  await compareWithBaseline(bench, ({ uuid58DecodeBytes }) => {
+    let i = 0;
+    return () => {
+      uuid58DecodeBytes(UUID58S[i++ & MASK]!);
     };
   });
 });

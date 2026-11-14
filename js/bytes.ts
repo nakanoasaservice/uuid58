@@ -1,6 +1,9 @@
-import { decodeUint128, Uuid58DecodeError } from "./decode.ts";
+import { decodeWords, Uuid58DecodeError } from "./decode.ts";
 import { Uuid58EncodeError } from "./encode.ts";
-import { encodeUint128 } from "./internal.ts";
+import { encodeWords } from "./internal.ts";
+
+/** Reused input for {@link encodeWords}; overwritten on every call. */
+const words = new Uint32Array(4);
 
 /**
  * Encodes 16 bytes, in big-endian (RFC 9562) order, as a 22-character uuid58
@@ -27,8 +30,13 @@ export function uuid58EncodeBytesSafe(
       "invalid_length",
     );
   }
-  const view = new DataView(bytes.buffer, bytes.byteOffset, 16);
-  return encodeUint128((view.getBigUint64(0) << 64n) | view.getBigUint64(8));
+  // Big-endian; storing into the Uint32Array makes the results unsigned.
+  const b = bytes;
+  words[0] = (b[0]! << 24) | (b[1]! << 16) | (b[2]! << 8) | b[3]!;
+  words[1] = (b[4]! << 24) | (b[5]! << 16) | (b[6]! << 8) | b[7]!;
+  words[2] = (b[8]! << 24) | (b[9]! << 16) | (b[10]! << 8) | b[11]!;
+  words[3] = (b[12]! << 24) | (b[13]! << 16) | (b[14]! << 8) | b[15]!;
+  return encodeWords(words);
 }
 
 /**
@@ -69,14 +77,19 @@ export function uuid58EncodeBytes(bytes: Uint8Array): string {
 export function uuid58DecodeBytesSafe(
   uuid58: string,
 ): Uint8Array | Uuid58DecodeError {
-  const num = decodeUint128(uuid58);
-  if (typeof num !== "bigint") {
-    return num;
+  const decoded = decodeWords(uuid58);
+  if (decoded instanceof Uuid58DecodeError) {
+    return decoded;
   }
+  // Big-endian; the Uint8Array stores keep the low 8 bits of each shift.
   const bytes = new Uint8Array(16);
-  const view = new DataView(bytes.buffer);
-  view.setBigUint64(0, num >> 64n);
-  view.setBigUint64(8, num & 0xffffffffffffffffn);
+  for (let i = 0; i < 4; i++) {
+    const word = decoded[i]!;
+    bytes[i * 4] = word >>> 24;
+    bytes[i * 4 + 1] = word >>> 16;
+    bytes[i * 4 + 2] = word >>> 8;
+    bytes[i * 4 + 3] = word;
+  }
   return bytes;
 }
 

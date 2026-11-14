@@ -118,6 +118,14 @@ describe("uuid58", () => {
     // Check variant 1 (17th character should be '8', '9', 'a', or 'b')
     expect(["8", "9", "a", "b"]).toContain(decoded[19]);
   });
+
+  it("sets the version and variant on every call", () => {
+    const v4 =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+    for (let i = 0; i < 1000; i++) {
+      expect(uuid58Decode(uuid58())).toMatch(v4);
+    }
+  });
 });
 
 describe("uuid58Encode is case-insensitive and accepts both forms", () => {
@@ -143,7 +151,7 @@ describe("uuid58Encode is case-insensitive and accepts both forms", () => {
   });
 });
 
-describe("chunked Base58 conversion matches the digit-by-digit reference", () => {
+describe("word-based Base58 conversion matches the BigInt reference", () => {
   const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
   const MAX = (1n << 128n) - 1n;
 
@@ -161,11 +169,27 @@ describe("chunked Base58 conversion matches the digit-by-digit reference", () =>
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   };
 
-  // Values around every power of 58 (chunk boundaries at 58^9 and 58^18),
-  // around 2^64, and at the 128-bit limits.
-  const values = new Set<bigint>([0n, 1n, MAX, MAX - 1n, 1n << 64n]);
+  // Values around every power of 58 (digit-group boundaries), around each
+  // 32-bit word boundary, and at the 128-bit limits.
+  const values = new Set<bigint>([0n, 1n, MAX, MAX - 1n]);
   for (let k = 1n; k <= 21n; k++) {
     for (const v of [58n ** k - 1n, 58n ** k, 58n ** k + 1n]) values.add(v);
+  }
+  for (let k = 32n; k <= 96n; k += 32n) {
+    for (const v of [(1n << k) - 1n, 1n << k, (1n << k) + 1n]) values.add(v);
+  }
+  // Every combination of all-zero and all-one 32-bit words, and words near
+  // the 58^3 divisor (where long-division remainders peak).
+  for (let mask = 0; mask < 16; mask++) {
+    let allOnes = 0n;
+    let nearCube = 0n;
+    for (let word = 0; word < 4; word++) {
+      const on = (mask >> word) & 1;
+      allOnes = (allOnes << 32n) | (on ? 0xffffffffn : 0n);
+      nearCube = (nearCube << 32n) | (on ? 195111n : 195112n);
+    }
+    values.add(allOnes);
+    values.add(nearCube);
   }
   for (let i = 0; i < 500; i++) {
     values.add(BigInt("0x" + crypto.randomUUID().replace(/-/g, "")));
@@ -179,11 +203,50 @@ describe("chunked Base58 conversion matches the digit-by-digit reference", () =>
     }
   });
 
-  it("rejects values just above 128 bits", () => {
-    expect(uuid58DecodeSafe(referenceEncode(MAX + 1n))).toBeInstanceOf(
-      Uuid58DecodeError,
+  it("rejects every value from 2^128 up to 58^22 - 1 as overflow", () => {
+    const tooLarge = [MAX + 1n, MAX + 2n, 58n ** 22n - 1n];
+    for (let k = 0n; k < 128n; k += 17n) tooLarge.push(MAX + 1n + (1n << k));
+    for (const value of tooLarge) {
+      const result = uuid58DecodeSafe(referenceEncode(value));
+      expect(result).toBeInstanceOf(Uuid58DecodeError);
+      expect((result as Uuid58DecodeError).kind).toBe("overflow");
+    }
+    expect((uuid58DecodeSafe("z".repeat(22)) as Uuid58DecodeError).kind).toBe(
+      "overflow",
     );
-    expect(uuid58DecodeSafe("z".repeat(22))).toBeInstanceOf(Uuid58DecodeError);
+  });
+
+  it("is unaffected by earlier calls, including failed ones", () => {
+    const first = uuid58Encode(toUuid(MAX));
+    const decoded = uuid58Decode(first);
+    // Fail at each stage, then succeed with different values.
+    uuid58DecodeSafe("z".repeat(22)); // overflow after filling every word
+    uuid58DecodeSafe("1".repeat(21) + "0"); // invalid character at the end
+    uuid58EncodeSafe("f".repeat(31) + "g");
+    expect(uuid58Encode(toUuid(0n))).toBe("1".repeat(22));
+    expect(uuid58Decode("1".repeat(22))).toBe(toUuid(0n));
+    expect(uuid58Encode(toUuid(MAX))).toBe(first);
+    expect(uuid58Decode(first)).toBe(decoded);
+    expect(first).toBe(referenceEncode(MAX));
+    expect(decoded).toBe(toUuid(MAX));
+  });
+
+  it("rejects a non-hex character at every UUID position", () => {
+    const hyphenated = toUuid(MAX);
+    const plain = hyphenated.replace(/-/g, "");
+    for (const uuid of [hyphenated, plain]) {
+      for (let position = 0; position < uuid.length; position++) {
+        const expected = uuid[position] === "-" ? "f" : "-";
+        for (const bad of [expected, "g", " ", "\uFF11", "\u212A"]) {
+          if (bad === uuid[position]) continue;
+          const input =
+            uuid.slice(0, position) + bad + uuid.slice(position + 1);
+          const result = uuid58EncodeSafe(input);
+          expect(result, input).toBeInstanceOf(Uuid58EncodeError);
+          expect((result as Uuid58EncodeError).kind).toBe("invalid_character");
+        }
+      }
+    }
   });
 
   it("rejects invalid characters in every chunk, including non-ASCII", () => {
