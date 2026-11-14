@@ -54,7 +54,7 @@ export default defineConfig({
     },
   },
   lint: {
-    ignorePatterns: ["dist/**"],
+    ignorePatterns: ["dist/**", "bench/.baseline/**"],
     options: {
       typeAware: true,
       typeCheck: true,
@@ -62,6 +62,6 @@ export default defineConfig({
   },
   fmt: {
     printWidth: 80,
-    ignorePatterns: ["dist/**", "pnpm-lock.yaml"],
+    ignorePatterns: ["dist/**", "bench/.baseline/**", "pnpm-lock.yaml"],
   },
 });

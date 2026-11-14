@@ -35,7 +35,8 @@
     "build": "vp pack",
     "check": "vp check",
     "test": "vp test run",
-    "bench": "vp test bench --run",
+    "bench": "vp pack && vp test bench --run --reporter=default",
+    "bench:baseline": "sh bench/save-baseline.sh",
     "jsr:dry-run": "vp pack && jsr publish --dry-run"
   },
   "devDependencies": {
