@@ -1,0 +1,48 @@
+{
+  "name": "@nakanoaas/uuid58",
+  "version": "1.2.1",
+  "description": "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
+  "bugs": {
+    "url": "https://github.com/nakanoasaservice/uuid58/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nakanoasaservice/uuid58.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check",
+    "test": "vp test run",
+    "bench": "vp test bench --run",
+    "jsr:dry-run": "vp pack && jsr publish --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "jsr": "^0.14.3",
+    "typescript": "^7.0.2",
+    "vite-plus": "^1.6.0"
+  },
+  "packageManager": "pnpm@10.34.5"
+}

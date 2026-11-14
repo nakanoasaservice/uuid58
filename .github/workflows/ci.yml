@@ -14,23 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
         with:
-          deno-version: v2.x
+          node-version: "24"
           cache: true
 
-      - name: Run fmt
-        run: deno fmt --check
-
-      - name: Run lint
-        run: deno lint
+      - name: Run fmt, lint and type check
+        run: vp check
 
       - name: Run tests
-        run: deno test
+        run: vp test run
 
-      - name: Build for deno
-        run: deno publish --dry-run
+      - name: Build (also generates jsr.json)
+        run: vp pack
 
-      - name: Build for npm
-        run: deno task build
+      - name: Dry-run JSR publish
+        run: vp exec jsr publish --dry-run

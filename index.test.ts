@@ -1,5 +1,4 @@
-import { expect } from "@std/expect";
-import { describe, it } from "@std/testing/bdd";
+import { describe, expect, it } from "vite-plus/test";
 
 import { uuid58Encode, Uuid58EncodeError, uuid58EncodeSafe } from "./encode.ts";
 import { uuid58Decode, Uuid58DecodeError, uuid58DecodeSafe } from "./decode.ts";
