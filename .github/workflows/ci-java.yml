@@ -1,0 +1,34 @@
+name: CI (Java)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  java:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8: the bytecode target and oldest supported runtime.
+        # 25: the JDK used for releases.
+        java: ["8", "17", "21", "25"]
+    defaults:
+      run:
+        working-directory: java
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
+        run: ./mvnw -B verify

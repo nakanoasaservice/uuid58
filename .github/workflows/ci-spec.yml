@@ -1,0 +1,19 @@
+name: CI (Spec)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check that spec/vectors.json is up to date
+        run: python3 spec/generate_vectors.py --check

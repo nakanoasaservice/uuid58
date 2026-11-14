@@ -1,0 +1,44 @@
+name: CI (Go)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The minimum version in go/go.mod, and the latest release.
+        go-version: ["1.26", "stable"]
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: false
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l . | tee /dev/stderr)"
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Run fuzz tests briefly
+        run: |
+          go test -run='^$' -fuzz='^FuzzBytesRoundTrip$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzDecode$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzEncode$' -fuzztime=10s .
