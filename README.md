@@ -280,7 +280,7 @@ This project uses [Vite+](https://viteplus.dev/) (`vp`) and pnpm.
 pnpm install
 pnpm check   # format, lint and type check
 pnpm test    # run tests
-pnpm bench   # run benchmarks
+pnpm bench   # build and benchmark (see bench/README.md)
 pnpm build   # build the npm package into dist/
 ```
 
