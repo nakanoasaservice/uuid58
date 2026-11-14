@@ -1,8 +1,12 @@
+import { test } from "vite-plus/test";
+
 import { UUID58_ALPHABET, UUID58_LENGTH } from "../alphabet.ts";
 import { uuid58 } from "../generate.ts";
 
-Deno.bench("uuid58 (current)", () => {
-  uuid58();
+test("uuid58 (current)", async ({ bench }) => {
+  await bench("uuid58 (current)", () => {
+    uuid58();
+  }).run();
 });
 
 function uuid58RandomUUID(): string {
@@ -17,6 +21,8 @@ function uuid58RandomUUID(): string {
   return encoded.padStart(22, UUID58_ALPHABET[0]);
 }
 
-Deno.bench("uuid58RandomUUID", () => {
-  uuid58RandomUUID();
+test("uuid58RandomUUID", async ({ bench }) => {
+  await bench("uuid58RandomUUID", () => {
+    uuid58RandomUUID();
+  }).run();
 });

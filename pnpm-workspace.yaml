@@ -1,0 +1,3 @@
+overrides:
+  vite@*: npm:@voidzero-dev/vite-plus-core@1.6.0 # Match the installed vite-plus version
+  vitest@*: 5.1.0 # Match the version from `vp toolchain vitest`

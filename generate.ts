@@ -19,7 +19,7 @@ export function uuid58(): string {
   bytes[0] = (bytes[0]! & 0xffffffffffff0fffn) | 0x0000000000004000n;
   bytes[1] = (bytes[1]! & 0x3fffffffffffffffn) | 0x8000000000000000n;
 
-  let num = bytes[0] << 64n | bytes[1];
+  let num = (bytes[0] << 64n) | bytes[1];
   let encoded = "";
 
   do {

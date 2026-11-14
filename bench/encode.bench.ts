@@ -1,10 +1,14 @@
+import { test } from "vite-plus/test";
+
 import { UUID58_ALPHABET, UUID58_LENGTH } from "../alphabet.ts";
 import { Uuid58EncodeError, uuid58EncodeSafe } from "../encode.ts";
 
 const TEST_UUID = "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf";
 
-Deno.bench("uuid58Encode (current)", () => {
-  uuid58EncodeSafe(TEST_UUID);
+test("uuid58Encode (current)", async ({ bench }) => {
+  await bench("uuid58Encode (current)", () => {
+    uuid58EncodeSafe(TEST_UUID);
+  }).run();
 });
 
 function uuid58EncodeArrayBased(uuid: string) {
@@ -24,7 +28,7 @@ function uuid58EncodeArrayBased(uuid: string) {
     );
   }
 
-  const out = new Array<string>(22).fill(UUID58_ALPHABET[0]!);
+  const out = Array.from<string>({ length: 22 }).fill(UUID58_ALPHABET[0]!);
   let i = 21;
   while (num > 0n) {
     const rem = Number(num % UUID58_LENGTH);
@@ -35,6 +39,8 @@ function uuid58EncodeArrayBased(uuid: string) {
   return out.join("");
 }
 
-Deno.bench("uuid58EncodeArrayBased", () => {
-  uuid58EncodeArrayBased(TEST_UUID);
+test("uuid58EncodeArrayBased", async ({ bench }) => {
+  await bench("uuid58EncodeArrayBased", () => {
+    uuid58EncodeArrayBased(TEST_UUID);
+  }).run();
 });

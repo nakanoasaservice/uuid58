@@ -1,8 +1,16 @@
 {
-  "deno.enable": true,
-  "deno.lint": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "denoland.vscode-deno",
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
   "cSpell.words": [
     "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
     "deno",
@@ -11,6 +19,10 @@
     "naas",
     "nakano",
     "nakanoaas",
-    "nakanoasaservice"
+    "nakanoasaservice",
+    "oxfmt",
+    "oxlint",
+    "tsdown",
+    "voidzero"
   ]
 }

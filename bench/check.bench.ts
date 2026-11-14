@@ -1,3 +1,5 @@
+import { test } from "vite-plus/test";
+
 import { UUID58_ALPHABET, UUID58_LENGTH } from "../alphabet.ts";
 import { isUuid58, UUID58_REGEX } from "../check.ts";
 
@@ -30,12 +32,16 @@ function isUuid58Naive(value: string): boolean {
   return num <= MAX_UUID_VALUE;
 }
 
-Deno.bench("isUuid58Naive", () => {
-  isUuid58Naive(MAX_UUID58);
+test("isUuid58Naive", async ({ bench }) => {
+  await bench("isUuid58Naive", () => {
+    isUuid58Naive(MAX_UUID58);
+  }).run();
 });
 
-Deno.bench("isUuid58 (current)", () => {
-  isUuid58(MAX_UUID58);
+test("isUuid58 (current)", async ({ bench }) => {
+  await bench("isUuid58 (current)", () => {
+    isUuid58(MAX_UUID58);
+  }).run();
 });
 
 function isUuid58CharCodeRangeCheck(value: string): boolean {
@@ -46,7 +52,8 @@ function isUuid58CharCodeRangeCheck(value: string): boolean {
   let isBelowMax = false;
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i);
-    const isValid = (code >= 49 && code <= 57) || // '1'..'9'
+    const isValid =
+      (code >= 49 && code <= 57) || // '1'..'9'
       (code >= 65 && code <= 72) || // 'A'..'H'
       (code >= 74 && code <= 78) || // 'J'..'N'
       (code >= 80 && code <= 90) || // 'P'..'Z'
@@ -69,8 +76,10 @@ function isUuid58CharCodeRangeCheck(value: string): boolean {
   return true;
 }
 
-Deno.bench("isUuid58CharCodeRangeCheck", () => {
-  isUuid58CharCodeRangeCheck(MAX_UUID58);
+test("isUuid58CharCodeRangeCheck", async ({ bench }) => {
+  await bench("isUuid58CharCodeRangeCheck", () => {
+    isUuid58CharCodeRangeCheck(MAX_UUID58);
+  }).run();
 });
 
 function isUuid58CharCodeExcludeCheck(uuid58: string): boolean {
@@ -107,14 +116,14 @@ function isUuid58CharCodeExcludeCheck(uuid58: string): boolean {
   return true;
 }
 
-Deno.bench("isUuid58CharCodeExcludeCheck", () => {
-  isUuid58CharCodeExcludeCheck(MAX_UUID58);
+test("isUuid58CharCodeExcludeCheck", async ({ bench }) => {
+  await bench("isUuid58CharCodeExcludeCheck", () => {
+    isUuid58CharCodeExcludeCheck(MAX_UUID58);
+  }).run();
 });
 
 function isUuid58RegexCharCode(uuid58: string): boolean {
-  if (
-    !UUID58_REGEX.test(uuid58)
-  ) {
+  if (!UUID58_REGEX.test(uuid58)) {
     return false;
   }
 
@@ -132,14 +141,14 @@ function isUuid58RegexCharCode(uuid58: string): boolean {
   return true;
 }
 
-Deno.bench("isUuid58RegexCharCode", () => {
-  isUuid58RegexCharCode(MAX_UUID58);
+test("isUuid58RegexCharCode", async ({ bench }) => {
+  await bench("isUuid58RegexCharCode", () => {
+    isUuid58RegexCharCode(MAX_UUID58);
+  }).run();
 });
 
 function isUuid58RegexCharCodeDirect(uuid58: string): boolean {
-  if (
-    !UUID58_REGEX.test(uuid58)
-  ) {
+  if (!UUID58_REGEX.test(uuid58)) {
     return false;
   }
 
@@ -157,14 +166,18 @@ function isUuid58RegexCharCodeDirect(uuid58: string): boolean {
   return true;
 }
 
-Deno.bench("isUuid58RegexCharCodeDirect", () => {
-  isUuid58RegexCharCodeDirect(MAX_UUID58);
+test("isUuid58RegexCharCodeDirect", async ({ bench }) => {
+  await bench("isUuid58RegexCharCodeDirect", () => {
+    isUuid58RegexCharCodeDirect(MAX_UUID58);
+  }).run();
 });
 
 export function isUuid58StringComparison(uuid58: string): boolean {
   return UUID58_REGEX.test(uuid58) && uuid58 <= MAX_UUID58;
 }
 
-Deno.bench("isUuid58DirectComparison", () => {
-  isUuid58StringComparison(MAX_UUID58);
+test("isUuid58DirectComparison", async ({ bench }) => {
+  await bench("isUuid58DirectComparison", () => {
+    isUuid58StringComparison(MAX_UUID58);
+  }).run();
 });

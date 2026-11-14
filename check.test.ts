@@ -1,5 +1,4 @@
-import { expect } from "@std/expect";
-import { describe, it } from "@std/testing/bdd";
+import { describe, expect, it } from "vite-plus/test";
 
 import { isUuid58, UUID58_REGEX } from "./check.ts";
 import { UUID58_ALPHABET } from "./alphabet.ts";
@@ -233,9 +232,9 @@ describe("UUID58_REGEX", () => {
     for (const str of realEncodedUuids) {
       // Only test if the string is exactly 22 characters and uses valid Base58 chars
       if (str.length === 22) {
-        const hasOnlyValidChars = [...str].every((char) =>
-          UUID58_ALPHABET.includes(char)
-        );
+        const hasOnlyValidChars = str
+          .split("")
+          .every((char) => UUID58_ALPHABET.includes(char));
         if (hasOnlyValidChars) {
           expect(UUID58_REGEX.test(str)).toBe(true);
         }

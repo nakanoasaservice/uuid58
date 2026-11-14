@@ -21,36 +21,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
         with:
-          deno-version: v2.x
+          node-version: "24"
           cache: true
 
       - name: Run tests
-        run: deno test
+        run: vp test run
 
-      - name: Build for npm
-        run: deno task build
+      - name: Build (also generates jsr.json)
+        run: vp pack
 
       - name: Publish to JSR
-        run: deno publish
+        run: vp exec jsr publish
 
-      - name: Setup Node.js
+      - name: Setup npm registry
         uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish to npm
-        working-directory: ./dist
         run: npm publish --provenance --access public
 
       - name: Create Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=$(jq -r .version deno.json)
+          VERSION=$(jq -r .version package.json)
           if git rev-parse "v$VERSION" >/dev/null 2>&1; then
             echo "Tag v$VERSION already exists. Skipping release creation."
           else

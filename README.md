@@ -272,6 +272,21 @@ characters. The Base58 alphabet used in this library is the same as Bitcoin's,
 which excludes similar-looking characters (0, O, I, l) to prevent visual
 ambiguity and confusion.
 
+## Development
+
+This project uses [Vite+](https://viteplus.dev/) (`vp`) and pnpm.
+
+```bash
+pnpm install
+pnpm check   # format, lint and type check
+pnpm test    # run tests
+pnpm bench   # run benchmarks
+pnpm build   # build the npm package into dist/
+```
+
+The version lives only in `package.json`. `jsr.json` is generated from it
+by `vp pack` and is not committed.
+
 ## License
 
 MIT License - see the [LICENSE](LICENSE) file for details
