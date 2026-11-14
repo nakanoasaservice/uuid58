@@ -15,6 +15,7 @@ jobs:
     outputs:
       spec: ${{ steps.filter.outputs.spec }}
       js: ${{ steps.filter.outputs.js }}
+      go: ${{ steps.filter.outputs.go }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -37,6 +38,11 @@ jobs:
             echo "js=true" >> "$GITHUB_OUTPUT"
           else
             echo "js=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^go/'; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
           fi
 
   spec:
@@ -82,6 +88,43 @@ jobs:
       - name: Dry-run JSR publish
         run: vp exec jsr publish --dry-run
 
+  go:
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The minimum version in go/go.mod, and the latest release.
+        go-version: ["1.26", "stable"]
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: false
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l . | tee /dev/stderr)"
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Run fuzz tests briefly
+        run: |
+          go test -run='^$' -fuzz='^FuzzBytesRoundTrip$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzDecode$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzEncode$' -fuzztime=10s .
+
   # Fails when .github/workflows/actions.lock is out of sync with the
   # workflows or a locked pin no longer verifies upstream.
   actions-lock:
@@ -102,7 +145,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, actions-lock]
+    needs: [changes, spec, js, go, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
