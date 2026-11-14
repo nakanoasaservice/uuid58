@@ -25,6 +25,7 @@ function generateJsrJson(): void {
         "encode.ts",
         "generate.ts",
         "index.ts",
+        "internal.ts",
         "LICENSE",
         "README.md",
       ],

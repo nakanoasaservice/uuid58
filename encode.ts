@@ -1,4 +1,7 @@
 import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
+import { previewInput } from "./internal.ts";
+
+const HEX32_REGEX = /^[0-9a-f]{32}$/i;
 
 /**
  * Error thrown when an invalid UUID string is provided for encoding.
@@ -35,18 +38,19 @@ export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
   const hex = uuid.replace(/-/g, "");
   if (hex.length !== 32) {
     return new Uuid58EncodeError(
-      `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in "${uuid}"`,
+      `Invalid UUID length: expected 32 characters (excluding hyphens), got ${hex.length} characters in ${previewInput(uuid)}`,
     );
   }
 
-  let num;
-  try {
-    num = BigInt("0x" + hex);
-  } catch {
+  // Validate explicitly: BigInt() silently trims surrounding whitespace, so
+  // relying on it alone would accept inputs like 31 hex digits plus "\n".
+  if (!HEX32_REGEX.test(hex)) {
     return new Uuid58EncodeError(
-      `Invalid UUID format: "${uuid}" contains non-hexadecimal characters`,
+      `Invalid UUID format: ${previewInput(uuid)} contains non-hexadecimal characters`,
     );
   }
+
+  let num = BigInt("0x" + hex);
 
   let encoded = "";
   do {

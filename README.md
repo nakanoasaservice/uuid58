@@ -287,6 +287,19 @@ pnpm build   # build the npm package into dist/
 The version lives only in `package.json`. `jsr.json` is generated from it
 by `vp pack` and is not committed.
 
+### Releasing
+
+1. Bump `version` in `package.json` and merge the change into `main`.
+2. Tag that commit and push the tag:
+
+   ```bash
+   git tag v1.2.3 && git push origin v1.2.3
+   ```
+
+The `Publish` workflow then checks that the tag matches `package.json` and
+is on `main`, runs the tests, publishes to JSR and npm, and creates the
+GitHub Release.
+
 ## License
 
 MIT License - see the [LICENSE](LICENSE) file for details
