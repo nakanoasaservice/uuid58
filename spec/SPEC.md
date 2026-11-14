@@ -107,6 +107,13 @@ The comparison must be by character code (or byte), as in a binary or `C`
 collation. Locale-aware or case-insensitive collations, common as database
 defaults, do not preserve this order.
 
+> **Note (non-normative).** The order of a platform's native UUID type may
+> differ from this order. For example, Java's `UUID.compareTo` compares the
+> two halves as signed 64-bit integers, so it sorts
+> `ffffffff-ffff-ffff-ffff-ffffffffffff` before
+> `00000000-0000-0000-0000-000000000001`, while their encodings sort the other
+> way.
+
 ### 3.3. Inputs that are not exactly 128 bits
 
 Some input types can hold values that are not a 128-bit value: a byte
@@ -119,7 +126,8 @@ pad the input, and MUST reject it as follows:
 - An integer less than 0 or greater than `2^128 - 1` fails with `overflow`.
 
 Types that can only hold 128-bit values, such as a 16-byte array, an
-unsigned 128-bit integer, or a native UUID type, need no checks.
+unsigned 128-bit integer, a pair of 64-bit integers taken as the high and low
+halves, or a native UUID type, need no checks.
 
 When converting from a native UUID type, use the 16 bytes in the order of
 RFC 9562 (network byte order). Some platforms store UUIDs in a different
@@ -236,8 +244,10 @@ that contains a non-ASCII character, an implementation MAY report either
 > not rely on them for validation. For example, Python's `uuid.UUID` accepts
 > braces, the `urn:uuid:` prefix, and misplaced hyphens; Python's
 > `int(s, 16)` accepts a leading `+` or `-` and `_` between digits; Java's
-> `UUID.fromString` accepts groups shorter than their normal width; and in
-> many regular expression engines `$` also matches before a trailing newline.
+> `UUID.fromString` accepts groups shorter than their normal width; Rust's
+> `u128::from_str_radix(s, 16)` accepts a leading `+`, and the `uuid` crate's
+> `Uuid::parse_str` accepts braces and the `urn:uuid:` prefix; and in many
+> regular expression engines `$` also matches before a trailing newline.
 > Check every character explicitly instead.
 
 ### 5.2. Produced form
@@ -314,7 +324,8 @@ An implementation conforms to this specification if it passes every case in
         "lenient_output": "XDY9...",
       },
     ],
-    // For APIs that encode from a byte sequence (Section 3.3).
+    // For APIs that encode from a byte sequence of any length (Section 3.3).
+    // APIs that take a fixed 16-byte array skip these.
     // `bytes` is the byte sequence written as hexadecimal.
     "invalid_bytes": [
       {
@@ -344,8 +355,10 @@ each invalid input fails.
 JSON strings cannot hold ill-formed text, so `vectors.json` cannot express
 the inputs of Section 4.1 that are not valid Unicode. An implementation whose
 string type can hold arbitrary bytes or unpaired surrogates MUST also test
-such inputs itself, for example a 22-byte input containing `0xFF`, an input
-containing a lone `0x80` or `0xC1` byte, or a lone surrogate.
+such inputs itself, both for decoding and for UUID string parsing. Examples
+are a 22-byte input containing `0xFF`, an input containing a lone `0x80` or
+`0xC1` byte, a 36-byte UUID string with `0xFF` in place of a hexadecimal
+digit, or a lone surrogate.
 
 An implementation that works with 16-byte or integer values instead of UUID
 strings (Section 5) can still use `roundtrip`: remove the hyphens from `uuid`
@@ -355,8 +368,13 @@ unsigned integer in base 16).
 An implementation that works with a native UUID type MUST NOT test only by
 round-tripping its own values, which would hide a byte-order mistake.
 It MUST compare the decoded value against `uuid`, either through the type's
-canonical text form or through the 16 bytes derived from `uuid` as above. It then skips `encode.valid` and
-`encode.invalid`, which test UUID string parsing.
+canonical text form or through the 16 bytes derived from `uuid` as above.
+
+`encode.valid` and `encode.invalid` test UUID string parsing (Section 5). An
+implementation that does not parse UUID strings, for example one that only
+works with a native UUID type, bytes, or integers, skips them. An
+implementation that parses UUID strings in addition to other inputs MUST
+test them.
 
 An implementation of validation (Section 6) MUST return true for every
 `uuid58` in `roundtrip` and false for every `input` in `decode.invalid`.

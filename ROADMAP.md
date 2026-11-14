@@ -116,10 +116,33 @@ parallel. Each one is done when it has:
 | Rust        | `rust/`                                                | crates.io     | `u128` / the `uuid` crate behind a feature flag                                                  |
 | Java/Kotlin | `java/`                                                | Maven Central | two `long`s / `java.util.UUID`. Kotlin uses the Java library; add extension functions if needed. |
 
-The spec stays at `1.0.0-draft` until all four implementations pass the test
-vectors, so that gaps found while implementing can be fixed without a version
+The spec stays at `1.0.0-draft` until all four implementations and the Swift
+implementation (see below) pass the test vectors, so that gaps found while implementing can be fixed without a version
 bump. Then drop the draft marker from `SPEC.md` and `vectors.json` and release
 the spec as `1.0.0`.
+
+- [x] Go (`go/`), Python (`python/`), Rust (`rust/`), and Java (`java/`)
+      implementations, each with CI and, except Go, a publish workflow
+- [x] Spec clarifications raised while implementing
+- [ ] Swift implementation, added before the spec is released, in its own
+      repository [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift)
+      (Swift Package Manager needs `Package.swift` at the repository root and
+      reads the old `v1.x` JavaScript tags here as versions)
+- [ ] Release the spec as `1.0.0`
+- [x] Repository settings: `go/v*`, `python/v*`, `rust/v*`, and `java/v*` in
+      the `release-tags` ruleset; the last three in the `production`
+      environment's deployment tag policy
+- [ ] Registry setup (done by a maintainer) before the first releases:
+  - PyPI: a (pending) Trusted Publisher for `uuid58`, workflow
+    `publish-python.yml`, environment `production`
+  - crates.io: Trusted Publishing for `uuid58`, workflow `publish-rust.yml`,
+    environment `production` (the first publish may need a token)
+  - Maven Central: verify the `io.github.nakanoasaservice` namespace, and add
+    `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`,
+    `MAVEN_GPG_PRIVATE_KEY`, and `MAVEN_GPG_PASSPHRASE` to the `production`
+    environment
+- [ ] First releases: `go/v0.1.0`, `python/v0.1.0`, `rust/v0.1.0`,
+      `java/v0.1.0`
 
 ### Phase 4: JavaScript 2.0
 
@@ -130,5 +153,5 @@ the spec as `1.0.0`.
 ### Later
 
 - Add a table of supported languages to the README
-- Add Swift, C#, Ruby, PHP, and others as demand appears
+- Add C#, Ruby, PHP, and others as demand appears
 - Show per-language code samples in the Playground
