@@ -1,5 +1,5 @@
 {
-  "spec_version": "1.0.0-draft",
+  "spec_version": "1.0.0",
   "alphabet": "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
   "roundtrip": [
     {

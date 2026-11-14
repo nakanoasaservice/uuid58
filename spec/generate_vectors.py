@@ -19,7 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-SPEC_VERSION = "1.0.0-draft"
+SPEC_VERSION = "1.0.0"
 ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 UUID58_LENGTH = 22
 MAX_VALUE = (1 << 128) - 1

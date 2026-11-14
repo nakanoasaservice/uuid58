@@ -40,7 +40,7 @@ def expect_kind(exc: uuid58.Uuid58Error, errors: list[str]) -> None:
 
 
 def test_vectors_metadata() -> None:
-    assert VECTORS["spec_version"] == "1.0.0-draft"
+    assert VECTORS["spec_version"] == "1.0.0"
     assert VECTORS["alphabet"] == uuid58.ALPHABET
     assert max(ROUNDTRIP, key=lambda c: c["uuid58"])["uuid58"] == uuid58.MAX_UUID58
 
