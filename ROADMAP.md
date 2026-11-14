@@ -155,6 +155,7 @@ the spec as `1.0.0`.
 
 ### Later
 
-- Add a table of supported languages to the README
-- Add C#, Ruby, PHP, and others as demand appears
-- Show per-language code samples in the Playground
+- [x] Add a table of supported languages to the README
+- [x] Show per-language code samples in the
+      [Playground](https://nakanoasaservice.github.io/uuid58-playground/)
+- [ ] Add C#, Ruby, PHP, and others as demand appears
