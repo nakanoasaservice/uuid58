@@ -19,6 +19,7 @@ jobs:
       python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
+      postgres: ${{ steps.filter.outputs.postgres }}
       site: ${{ steps.filter.outputs.site }}
     steps:
       - uses: actions/checkout@v7.0.1
@@ -62,6 +63,11 @@ jobs:
             echo "java=true" >> "$GITHUB_OUTPUT"
           else
             echo "java=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^postgres/'; then
+            echo "postgres=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "postgres=false" >> "$GITHUB_OUTPUT"
           fi
           # The site builds against js/ and reads spec/, so check it when those change too.
           if [ "$all" = true ] || echo "$files" | grep -qE '^(site|js)/'; then
@@ -276,6 +282,49 @@ jobs:
       - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
         run: ./mvnw -B verify
 
+  postgres:
+    needs: changes
+    if: needs.changes.outputs.postgres == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest supported version, and the latest release.
+        postgres: ["14", "18"]
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    defaults:
+      run:
+        working-directory: postgres
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      # psql comes preinstalled on the runner.
+      - name: Test in a UTF8 database (spec/vectors.json conformance)
+        run: psql -v ON_ERROR_STOP=1 -f test.sql
+
+      - name: Test in a SQL_ASCII database (input that is not valid UTF-8)
+        env:
+          PGCLIENTENCODING: SQL_ASCII
+        run: |
+          createdb -E SQL_ASCII -T template0 --lc-collate=C --lc-ctype=C uuid58_ascii
+          psql -d uuid58_ascii -v ON_ERROR_STOP=1 -f test.sql
+
   site:
     needs: changes
     if: needs.changes.outputs.site == 'true'
@@ -321,7 +370,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, site, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, postgres, site, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:

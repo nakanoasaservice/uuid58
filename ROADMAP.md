@@ -159,7 +159,8 @@ the spec as `1.0.0`.
 - [x] Add a table of supported languages to the README
 - [x] Show per-language code samples in the
       [Playground](https://nakanoasaservice.github.io/uuid58/)
-- [ ] More implementations, in the order below
+- [ ] More implementations, in the order below (PostgreSQL done in
+      [`postgres/`](postgres/))
 
 ### More Implementations
 
