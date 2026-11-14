@@ -20,9 +20,11 @@ function generateJsrJson(): void {
     publish: {
       include: [
         "alphabet.ts",
+        "bytes.ts",
         "check.ts",
         "decode.ts",
         "encode.ts",
+        "errors.ts",
         "generate.ts",
         "index.ts",
         "internal.ts",

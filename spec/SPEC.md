@@ -401,8 +401,9 @@ are and however many there are (for example
 
 To stay compatible, 1.x keeps this behavior. The test vectors mark these
 inputs with `"lenient": true` and give the value 1.x returns in
-`lenient_output`. Version 2.0 of the JavaScript package will reject them as
-this specification requires. New implementations MUST NOT accept them.
+`lenient_output`. Version 2.0 and later of the JavaScript package reject them
+as this specification requires, and expose error kinds through the `kind`
+property of their errors. New implementations MUST NOT accept them.
 
 1.x also differs from Section 7 in how it reports errors:
 

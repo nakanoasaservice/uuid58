@@ -120,7 +120,7 @@ describe("uuid58", () => {
   });
 });
 
-describe("uuid58Encode is case-insensitive and ignores hyphens", () => {
+describe("uuid58Encode is case-insensitive and accepts both forms", () => {
   const uuidVariants = [
     "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
     "F4B247FD-1F87-45D4-AA06-1C6FC0A8DFAF",

@@ -146,9 +146,12 @@ the spec as `1.0.0`.
 
 ### Phase 4: JavaScript 2.0
 
-- [ ] Make encoding strict to match the spec, and expect the `lenient`
+- [x] Make encoding strict to match the spec, and expect the `lenient`
       vectors to be rejected
-- [ ] Consider adding an API that takes bytes (`Uint8Array`)
+- [x] Expose error kinds (`kind` on `Uuid58EncodeError` and
+      `Uuid58DecodeError`)
+- [x] Add an API that takes bytes (`uuid58EncodeBytes`, `uuid58DecodeBytes`)
+- [ ] Release `js/v2.0.0`
 
 ### Later
 

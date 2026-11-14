@@ -124,7 +124,10 @@ function uuid58Encode(uuid: string): string; // always returns a 22-character st
 ```
 
 - **Parameters:**
-  - `uuid`: The UUID string to encode (with or without hyphens)
+  - `uuid`: The UUID string to encode: hyphenated
+    (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) or 32 hexadecimal digits, in any
+    letter case. Other forms (braces, `urn:uuid:`, whitespace, hyphens in other
+    positions) are rejected.
 - **Returns:** A 22-character Base58-encoded string
 - **Throws:** `Uuid58EncodeError` if the input is not a valid UUID
 
@@ -139,7 +142,7 @@ function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError; // string i
 ```
 
 - **Parameters:**
-  - `uuid`: The UUID string to encode (with or without hyphens)
+  - `uuid`: The UUID string to encode (same forms as `uuid58Encode`)
 - **Returns:** A 22-character Base58-encoded string, or an `Uuid58EncodeError`
   if the input is not a valid UUID
 - **Note:** This function does not throw; it returns the error object instead.
@@ -174,26 +177,70 @@ function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError;
   `Uuid58DecodeError` if the input is not a valid 22-character Base58 string
 - **Note:** This function does not throw; it returns the error object instead.
 
+### `uuid58EncodeBytes(bytes: Uint8Array)` / `uuid58EncodeBytesSafe`
+
+Encodes 16 bytes, in big-endian (RFC 9562) order, as a 22-character string.
+
+```typescript
+function uuid58EncodeBytes(bytes: Uint8Array): string;
+function uuid58EncodeBytesSafe(bytes: Uint8Array): string | Uuid58EncodeError;
+```
+
+- **Throws / returns:** `Uuid58EncodeError` with kind `"invalid_length"` if
+  `bytes` is not exactly 16 bytes long
+
+### `uuid58DecodeBytes(uuid58: string)` / `uuid58DecodeBytesSafe`
+
+Decodes a 22-character string to a new 16-byte `Uint8Array` in big-endian
+(RFC 9562) order.
+
+```typescript
+function uuid58DecodeBytes(uuid58: string): Uint8Array;
+function uuid58DecodeBytesSafe(uuid58: string): Uint8Array | Uuid58DecodeError;
+```
+
+- **Throws / returns:** `Uuid58DecodeError`, as for `uuid58Decode`
+
 ### Error Classes
+
+Both error classes have a `kind` property with the error kind defined by the
+[specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+(type `Uuid58ErrorKind`). Use it instead of parsing the message, which may
+change.
+
+| `kind`                | Meaning                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `"invalid_length"`    | Wrong length: not 32 or 36 characters (UUID), not 22 (uuid58), or not 16 bytes |
+| `"invalid_character"` | Right length, but a character not allowed in its position                      |
+| `"overflow"`          | (decoding only) Well formed, but the value is greater than 2^128 − 1           |
+
+```typescript
+const result = uuid58DecodeSafe(input);
+if (result instanceof Uuid58DecodeError && result.kind === "overflow") {
+  // ...
+}
+```
 
 #### `Uuid58EncodeError`
 
-Error thrown when an invalid UUID string is provided for encoding. This includes
-strings that don't match the standard UUID format (32 hexadecimal characters
-with optional hyphens).
+Error thrown when an invalid UUID string or byte array is provided for
+encoding. `kind` is `"invalid_length"` or `"invalid_character"`.
 
 ```typescript
-class Uuid58EncodeError extends Error;
+class Uuid58EncodeError extends Error {
+  readonly kind: "invalid_length" | "invalid_character";
+}
 ```
 
 #### `Uuid58DecodeError`
 
-Error thrown when an invalid Base58 string is provided for decoding. This
-includes strings containing characters not in the Base58 alphabet or strings
-that are not exactly 22 characters long.
+Error thrown when an invalid string is provided for decoding. `kind` is
+`"invalid_length"`, `"invalid_character"`, or `"overflow"`.
 
 ```typescript
-class Uuid58DecodeError extends Error;
+class Uuid58DecodeError extends Error {
+  readonly kind: Uuid58ErrorKind;
+}
 ```
 
 ### `isUuid58(uuid58: string)`
@@ -274,9 +321,25 @@ ambiguity and confusion.
 
 This package implements the
 [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md).
-It deviates from the spec in one way: it accepts hyphens anywhere in the input
-of `uuid58Encode` (see Section 9.1 of the spec). Version 2.0 will follow the
-spec.
+Since 2.0 it follows the spec fully. 1.x accepted hyphens anywhere in the
+input of `uuid58Encode` (see Section 9.1 of the spec).
+
+## Migrating from 1.x
+
+2.0 has two breaking changes:
+
+- **Stricter UUID input.** `uuid58Encode` and `uuid58EncodeSafe` accept only
+  the hyphenated form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and 32
+  hexadecimal digits. 1.x removed every hyphen first, so inputs such as
+  `f4b247f-d1f87-45d4-aa06-1c6fc0a8dfaf` or `f4b247fd-1f8745d4aa061c6fc0a8dfaf`
+  were accepted; they are now rejected. Normalize such input yourself before
+  encoding if you need it, for example with `uuid.replace(/-/g, "")`.
+- **Error constructors** take a second argument, the error kind
+  (`new Uuid58EncodeError(message, kind)`). This matters only if you
+  construct these errors yourself.
+
+New in 2.0: the `kind` property on errors, and `uuid58EncodeBytes` /
+`uuid58DecodeBytes` for `Uint8Array`.
 
 ## Development
 
