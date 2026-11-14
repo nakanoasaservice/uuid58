@@ -72,6 +72,29 @@ describe("uuid58EncodeSafe / uuid58DecodeSafe", () => {
     expect(uuid58DecodeSafe("O0lI")).toBeInstanceOf(Uuid58DecodeError);
     expect(uuid58DecodeSafe("$$$")).toBeInstanceOf(Uuid58DecodeError);
   });
+
+  it("rejects UUIDs padded with whitespace instead of hex digits", () => {
+    const hex31 = "f4b247fd1f8745d4aa061c6fc0a8dfa";
+    for (const ws of [" ", "\n", "\t", " "]) {
+      expect(uuid58EncodeSafe(hex31 + ws)).toBeInstanceOf(Uuid58EncodeError);
+      expect(uuid58EncodeSafe(ws + hex31)).toBeInstanceOf(Uuid58EncodeError);
+    }
+  });
+
+  it("truncates and escapes untrusted input in error messages", () => {
+    const huge = "x".repeat(1_000_000);
+    const encodeError = uuid58EncodeSafe(huge);
+    const decodeError = uuid58DecodeSafe(huge);
+    for (const error of [encodeError, decodeError]) {
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message.length).toBeLessThan(300);
+      expect((error as Error).message).toContain("1000000 characters");
+    }
+
+    const forged = uuid58DecodeSafe("1111111111111111111\nab");
+    expect(forged).toBeInstanceOf(Uuid58DecodeError);
+    expect((forged as Error).message).not.toContain("\n");
+  });
 });
 
 describe("uuid58", () => {

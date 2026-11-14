@@ -16,3 +16,23 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    # Wait a few days before proposing a fresh release, so compromised
+    # versions are more likely to be pulled before they reach us.
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      dev-dependencies:
+        dependency-type: "development"

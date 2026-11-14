@@ -1,4 +1,5 @@
 import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
+import { previewInput } from "./internal.ts";
 
 // Fast lookup map from alphabet characters to their indices
 const BASE58_MAP: Record<string, bigint> = {};
@@ -35,7 +36,7 @@ export class Uuid58DecodeError extends Error {
 export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
   if (uuid58.length !== 22) {
     return new Uuid58DecodeError(
-      `Expected Base58 string of length 22, but received string of length ${uuid58.length}: ${uuid58}`,
+      `Expected Base58 string of length 22, but received string of length ${uuid58.length}: ${previewInput(uuid58)}`,
     );
   }
 
@@ -44,7 +45,7 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
     const index = BASE58_MAP[char];
     if (index === undefined) {
       return new Uuid58DecodeError(
-        `Invalid Base58 character '${char}' found in input: ${uuid58}`,
+        `Invalid Base58 character ${JSON.stringify(char)} found in input: ${previewInput(uuid58)}`,
       );
     }
     num = num * UUID58_LENGTH + index;
@@ -53,7 +54,7 @@ export function uuid58DecodeSafe(uuid58: string): string | Uuid58DecodeError {
   const hex = num.toString(16).padStart(32, "0");
   if (hex.length !== 32) {
     return new Uuid58DecodeError(
-      `Decoded value exceeds 128 bits of UUID: ${uuid58}`,
+      `Decoded value exceeds 128 bits of UUID: ${previewInput(uuid58)}`,
     );
   }
 
