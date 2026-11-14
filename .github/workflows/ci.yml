@@ -8,9 +8,56 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  # Decides which language jobs to run from the files the PR changes.
+  # Changes under spec/ or to this workflow run every job.
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      spec: ${{ steps.filter.outputs.spec }}
+      js: ${{ steps.filter.outputs.js }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
+      - id: filter
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          files=$(git diff --name-only "$(git merge-base "$BASE" "$HEAD")" "$HEAD")
+          echo "$files"
+          all=false
+          if echo "$files" | grep -qE '^(spec/|\.github/workflows/ci\.yml$)'; then
+            all=true
+          fi
+          echo "spec=$all" >> "$GITHUB_OUTPUT"
+          if [ "$all" = true ] || echo "$files" | grep -q '^js/'; then
+            echo "js=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "js=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  spec:
+    needs: changes
+    if: needs.changes.outputs.spec == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check that spec/vectors.json is up to date
+        run: python3 spec/generate_vectors.py --check
+
+  js:
+    needs: changes
+    if: needs.changes.outputs.js == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -19,14 +66,12 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@v1.22.0
         with:
+          working-directory: js
           node-version: "24"
           cache: true
 
       - name: Run fmt, lint and type check
         run: vp check
-
-      - name: Check that spec/vectors.json is up to date
-        run: python3 spec/generate_vectors.py --check
 
       - name: Run tests
         run: vp test run
@@ -53,3 +98,21 @@ jobs:
 
       - name: Verify Actions lockfile
         run: gh actions-lock --verify
+
+  # The single required status check. Language jobs that were skipped
+  # because the PR does not touch them count as passing.
+  check:
+    needs: [changes, spec, js, actions-lock]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "$RESULTS"
+          for r in $RESULTS; do
+            case "$r" in
+              success | skipped) ;;
+              *) exit 1 ;;
+            esac
+          done

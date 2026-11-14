@@ -1,12 +1,12 @@
 name: Publish
 
-# Release by pushing a version tag:
-#   1. Bump "version" in package.json and merge it into main.
-#   2. git tag v1.2.3 <commit on main> && git push origin v1.2.3
+# Release the JavaScript package by pushing a js/v… tag:
+#   1. Bump "version" in js/package.json and merge it into main.
+#   2. git tag js/v1.2.3 <commit on main> && git push origin js/v1.2.3
 on:
   push:
     tags:
-      - "v*"
+      - "js/v*"
 
 permissions: {}
 
@@ -17,17 +17,20 @@ jobs:
     permissions:
       contents: read
       id-token: write # OIDC for JSR and npm trusted publishing / provenance
+    defaults:
+      run:
+        working-directory: js
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify tag matches package.json and is on main
+      - name: Verify tag matches js/package.json and is on main
         run: |
           VERSION=$(jq -r .version package.json)
-          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version v$VERSION"
+          if [ "$GITHUB_REF_NAME" != "js/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match js/package.json version js/v$VERSION"
             exit 1
           fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
@@ -38,6 +41,7 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@v1.22.0
         with:
+          working-directory: js
           node-version: "24"
           # No dependency cache in the release job, to rule out cache poisoning.
           cache: false

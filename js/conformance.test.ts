@@ -36,7 +36,7 @@ interface Vectors {
 }
 
 const vectors = JSON.parse(
-  readFileSync(new URL("./spec/vectors.json", import.meta.url), "utf8"),
+  readFileSync(new URL("../spec/vectors.json", import.meta.url), "utf8"),
 ) as Vectors;
 
 describe(`spec vectors (spec ${vectors.spec_version})`, () => {

@@ -86,15 +86,18 @@ JavaScript package lives, so it can go before Phase 2.
 
 ### Phase 2: Repository Layout
 
-- [ ] Move the JavaScript package into `js/` (package.json, vite.config.ts,
+- [x] Move the JavaScript package into `js/` (package.json, vite.config.ts,
       tsconfig.json, bench/, tests, mise.toml, pnpm files)
-- [ ] Split CI into one job per language, filtered by path. Changes under
+- [x] Split CI into one job per language, filtered by path. Changes under
       `spec/` run every language's job.
-- [ ] Make the release workflows use per-language tags (`js/v…`, `go/v…`,
+- [x] Make the release workflows use per-language tags (`js/v…`, `go/v…`,
       `python/v…`, `rust/v…`, `java/v…`)
   - Update the check in `publish.yml` that compares the tag with the version
     in package.json to use the `js/v…` form
-- [ ] Split the README into a repository overview and one README per language
+- [x] Split the README into a repository overview and one README per language
+- [x] Repository settings (done by a maintainer): add `js/v*` to the
+      `release-tags` tag ruleset and to the deployment tag policy of the
+      `production` environment
 
 ### Phase 3: Four Implementations
 

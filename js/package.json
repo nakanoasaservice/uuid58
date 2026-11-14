@@ -8,7 +8,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nakanoasaservice/uuid58.git"
+    "url": "git+https://github.com/nakanoasaservice/uuid58.git",
+    "directory": "js"
   },
   "files": [
     "dist"
