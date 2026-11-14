@@ -16,10 +16,3 @@
  */
 export const UUID58_ALPHABET: string =
   "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-/**
- * @internal
- * The length of the Base58 alphabet as BigInt for encoding/decoding operations.
- * This is exported for internal use but not part of the public API.
- */
-export const UUID58_LENGTH: bigint = BigInt(UUID58_ALPHABET.length);

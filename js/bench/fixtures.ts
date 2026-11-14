@@ -51,3 +51,10 @@ export const UUID58S: readonly string[] = UUIDS.map((uuid) => {
   }
   return out;
 });
+
+/** UUIDS as 16-byte arrays. */
+export const UUID_BYTES: readonly Uint8Array[] = UUIDS.map((uuid) =>
+  Uint8Array.from(uuid.replace(/-/g, "").match(/../g)!, (h) =>
+    Number.parseInt(h, 16),
+  ),
+);

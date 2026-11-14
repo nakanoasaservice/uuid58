@@ -41,6 +41,24 @@ describe("uuid58EncodeBytes / uuid58DecodeBytes", () => {
     );
   });
 
+  it("returns a new byte array on every call", () => {
+    const first = uuid58DecodeBytes("XDY9dmBbcMBXqcRvYw8xJ2");
+    const second = uuid58DecodeBytes("1111111111111111111111");
+    expect(second).not.toBe(first);
+    expect(first).toEqual(bytes);
+    expect(second).toEqual(new Uint8Array(16));
+  });
+
+  it("round-trips bytes with the high bit set in every position", () => {
+    const allOnes = new Uint8Array(16).fill(0xff);
+    expect(uuid58DecodeBytes(uuid58EncodeBytes(allOnes))).toEqual(allOnes);
+    for (let i = 0; i < 16; i++) {
+      const single = new Uint8Array(16);
+      single[i] = 0x80;
+      expect(uuid58DecodeBytes(uuid58EncodeBytes(single))).toEqual(single);
+    }
+  });
+
   it("throws Uuid58DecodeError for invalid input", () => {
     expect(() => uuid58DecodeBytes("invalid")).toThrow(Uuid58DecodeError);
   });

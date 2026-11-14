@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { UUID58_ALPHABET, UUID58_LENGTH } from "./alphabet.ts";
+import { UUID58_ALPHABET } from "./alphabet.ts";
 
 describe("UUID58_ALPHABET", () => {
   it("has exactly 58 characters", () => {
@@ -65,12 +65,5 @@ describe("UUID58_ALPHABET", () => {
       const current = UUID58_ALPHABET.charCodeAt(i);
       expect(prev < current).toBe(true);
     }
-  });
-});
-
-describe("UUID58_LENGTH", () => {
-  it("equals the length of UUID58_ALPHABET as BigInt", () => {
-    expect(UUID58_LENGTH).toBe(BigInt(UUID58_ALPHABET.length));
-    expect(UUID58_LENGTH).toBe(58n);
   });
 });

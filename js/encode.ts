@@ -1,12 +1,38 @@
 import type { Uuid58ErrorKind } from "./errors.ts";
-import { encodeUint128, previewInput } from "./internal.ts";
+import { encodeWords, previewInput } from "./internal.ts";
 
-// Every character is checked explicitly: BigInt() would silently trim
-// surrounding whitespace. Without the `m` flag, `$` matches only at the very
-// end of the string, so a trailing newline is rejected.
-const HEX32_REGEX = /^[0-9a-f]{32}$/i;
-const HYPHENATED_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Lookup table from ASCII char code to hex digit value (-1 = not a hex digit).
+const HEX_VALUE = new Int8Array(128).fill(-1);
+for (let i = 0; i < 16; i++) {
+  HEX_VALUE["0123456789abcdef".charCodeAt(i)] = i;
+  HEX_VALUE["0123456789ABCDEF".charCodeAt(i)] = i;
+}
+
+/** Reused output of {@link parseUuidString}; overwritten on every call. */
+const words = new Uint32Array(4);
+
+/**
+ * Appends the hex digits of `uuid` in `[start, end)` to `acc`, or returns a
+ * negative number if any of them is not a hex digit. A negative `acc` stays
+ * negative (at most `16^n - 1` is added to `acc * 16^n`), so chained calls
+ * carry the failure through.
+ */
+function parseHex(
+  uuid: string,
+  start: number,
+  end: number,
+  acc: number,
+): number {
+  for (let i = start; i < end; i++) {
+    const code = uuid.charCodeAt(i);
+    const digit = code < 128 ? HEX_VALUE[code]! : -1;
+    if (digit < 0) {
+      return -1;
+    }
+    acc = acc * 16 + digit;
+  }
+  return acc;
+}
 
 /**
  * Error thrown when an invalid UUID string or byte array is provided for
@@ -31,38 +57,53 @@ export class Uuid58EncodeError extends Error {
 /**
  * @internal
  * Parses a UUID string in one of the two forms of the specification
- * (Section 5.1) into an unsigned 128-bit integer.
+ * (Section 5.1) into an unsigned 128-bit integer, as four 32-bit words (most
+ * significant first). The returned array is reused across calls.
+ *
+ * Every character is checked explicitly, so surrounding whitespace, a
+ * trailing newline, or non-ASCII digits are rejected.
  */
-export function parseUuidString(uuid: string): bigint | Uuid58EncodeError {
-  let hex: string;
+export function parseUuidString(uuid: string): Uint32Array | Uuid58EncodeError {
+  let w0: number;
+  let w1: number;
+  let w2: number;
+  let w3: number;
+  let hyphensValid = true;
   if (uuid.length === 32) {
-    if (!HEX32_REGEX.test(uuid)) {
-      return new Uuid58EncodeError(
-        `Invalid UUID: ${previewInput(uuid)} must be 32 hexadecimal digits`,
-        "invalid_character",
-      );
-    }
-    hex = uuid;
+    w0 = parseHex(uuid, 0, 8, 0);
+    w1 = parseHex(uuid, 8, 16, 0);
+    w2 = parseHex(uuid, 16, 24, 0);
+    w3 = parseHex(uuid, 24, 32, 0);
   } else if (uuid.length === 36) {
-    if (!HYPHENATED_REGEX.test(uuid)) {
-      return new Uuid58EncodeError(
-        `Invalid UUID: ${previewInput(uuid)} must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`,
-        "invalid_character",
-      );
-    }
-    hex =
-      uuid.slice(0, 8) +
-      uuid.slice(9, 13) +
-      uuid.slice(14, 18) +
-      uuid.slice(19, 23) +
-      uuid.slice(24);
+    w0 = parseHex(uuid, 0, 8, 0);
+    w1 = parseHex(uuid, 14, 18, parseHex(uuid, 9, 13, 0));
+    w2 = parseHex(uuid, 24, 28, parseHex(uuid, 19, 23, 0));
+    w3 = parseHex(uuid, 28, 36, 0);
+    hyphensValid =
+      uuid.charCodeAt(8) === 45 &&
+      uuid.charCodeAt(13) === 45 &&
+      uuid.charCodeAt(18) === 45 &&
+      uuid.charCodeAt(23) === 45;
   } else {
     return new Uuid58EncodeError(
       `Invalid UUID length: expected 32 or 36 characters, got ${uuid.length} in ${previewInput(uuid)}`,
       "invalid_length",
     );
   }
-  return BigInt("0x" + hex);
+
+  if (!hyphensValid || w0 < 0 || w1 < 0 || w2 < 0 || w3 < 0) {
+    return new Uuid58EncodeError(
+      uuid.length === 32
+        ? `Invalid UUID: ${previewInput(uuid)} must be 32 hexadecimal digits`
+        : `Invalid UUID: ${previewInput(uuid)} must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`,
+      "invalid_character",
+    );
+  }
+  words[0] = w0;
+  words[1] = w1;
+  words[2] = w2;
+  words[3] = w3;
+  return words;
 }
 
 /**
@@ -91,8 +132,8 @@ export function parseUuidString(uuid: string): bigint | Uuid58EncodeError {
  * ```
  */
 export function uuid58EncodeSafe(uuid: string): string | Uuid58EncodeError {
-  const num = parseUuidString(uuid);
-  return typeof num === "bigint" ? encodeUint128(num) : num;
+  const parsed = parseUuidString(uuid);
+  return parsed instanceof Uuid58EncodeError ? parsed : encodeWords(parsed);
 }
 
 /**
