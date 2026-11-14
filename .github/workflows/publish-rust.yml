@@ -1,0 +1,76 @@
+name: Publish Rust
+
+# Release the Rust crate by pushing a rust/v… tag:
+#   1. Bump "version" in rust/Cargo.toml (and rust/Cargo.lock) and merge it into main.
+#   2. git tag rust/v1.2.3 <commit on main> && git push origin rust/v1.2.3
+on:
+  push:
+    tags:
+      - "rust/v*"
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write # OIDC for crates.io trusted publishing
+    defaults:
+      run:
+        working-directory: rust
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup default stable
+
+      - name: Verify tag matches rust/Cargo.toml and is on main
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 --locked \
+            | jq -r '.packages[] | select(.name == "uuid58") | .version')
+          if [ "$GITHUB_REF_NAME" != "rust/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match rust/Cargo.toml version rust/v$VERSION"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      # No dependency cache in the release job, to rule out cache poisoning.
+      - name: Run tests
+        run: cargo test --locked --all-features
+
+      - name: Authenticate with crates.io
+        id: auth
+        uses: rust-lang/crates-io-auth-action@v1.0.6
+
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish --locked
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes

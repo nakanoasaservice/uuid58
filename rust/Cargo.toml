@@ -1,0 +1,37 @@
+[package]
+name = "uuid58"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Encode UUIDs as fixed-length, order-preserving 22-character Base58 strings"
+license = "MIT"
+repository = "https://github.com/nakanoasaservice/uuid58"
+homepage = "https://github.com/nakanoasaservice/uuid58"
+documentation = "https://docs.rs/uuid58"
+readme = "README.md"
+keywords = ["uuid", "base58", "encoding", "no_std", "id"]
+categories = ["encoding", "no-std", "no-std::no-alloc"]
+include = ["/src/**", "/README.md", "/LICENSE", "/Cargo.toml"]
+
+[features]
+default = ["std"]
+# `String`-returning APIs.
+alloc = []
+std = ["alloc", "uuid?/std"]
+# Conversions between `uuid::Uuid` and uuid58.
+uuid = ["dep:uuid"]
+
+[dependencies]
+uuid = { version = "1", default-features = false, optional = true }
+
+[dev-dependencies]
+serde_json = "1"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints.rust]
+missing_docs = "warn"
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(docsrs)"] }

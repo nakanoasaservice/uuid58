@@ -15,6 +15,9 @@ jobs:
     outputs:
       spec: ${{ steps.filter.outputs.spec }}
       js: ${{ steps.filter.outputs.js }}
+      go: ${{ steps.filter.outputs.go }}
+      python: ${{ steps.filter.outputs.python }}
+      rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
     steps:
       - uses: actions/checkout@v7.0.1
@@ -38,6 +41,21 @@ jobs:
             echo "js=true" >> "$GITHUB_OUTPUT"
           else
             echo "js=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^go/'; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^python/'; then
+            echo "python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^rust/'; then
+            echo "rust=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "rust=false" >> "$GITHUB_OUTPUT"
           fi
           if [ "$all" = true ] || echo "$files" | grep -q '^java/'; then
             echo "java=true" >> "$GITHUB_OUTPUT"
@@ -88,6 +106,142 @@ jobs:
       - name: Dry-run JSR publish
         run: vp exec jsr publish --dry-run
 
+  go:
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The minimum version in go/go.mod, and the latest release.
+        go-version: ["1.26", "stable"]
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: false
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l . | tee /dev/stderr)"
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Run fuzz tests briefly
+        run: |
+          go test -run='^$' -fuzz='^FuzzBytesRoundTrip$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzDecode$' -fuzztime=10s .
+          go test -run='^$' -fuzz='^FuzzEncode$' -fuzztime=10s .
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          working-directory: python
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Lint and format check
+        run: |
+          uv run ruff check
+          uv run ruff format --check
+
+      - name: Type check
+        run: uv run mypy
+
+      - name: Run tests (including spec/vectors.json conformance)
+        run: uv run pytest
+
+      - name: Build
+        run: uv build
+
+  rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    env:
+      CARGO_TERM_COLOR: always
+      RUSTFLAGS: -D warnings
+      RUSTDOCFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      # rustup is preinstalled on the runner; no third-party action needed.
+      - name: Install Rust (stable and MSRV)
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update \
+            --component rustfmt,clippy --target thumbv7em-none-eabi
+          rustup toolchain install 1.85 --profile minimal --no-self-update
+          rustup default stable
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: |
+          cargo clippy --locked --all-targets --all-features -- -D warnings
+          cargo clippy --locked --all-targets --no-default-features -- -D warnings
+
+      - name: Test (default features)
+        run: cargo test --locked
+
+      - name: Test (all features)
+        run: cargo test --locked --all-features
+
+      - name: Test (no default features)
+        run: cargo test --locked --no-default-features
+
+      - name: Build for a no_std target
+        run: |
+          cargo build --locked --target thumbv7em-none-eabi --no-default-features
+          cargo build --locked --target thumbv7em-none-eabi --no-default-features --features alloc,uuid
+
+      - name: Docs
+        run: |
+          cargo doc --locked --no-deps --all-features
+          cargo doc --locked --no-deps --no-default-features
+
+      - name: MSRV (Rust 1.85)
+        run: |
+          cargo +1.85 test --locked --all-features
+          cargo +1.85 check --locked --no-default-features
+
+      - name: Dry-run crates.io publish
+        run: cargo publish --locked --dry-run
+
   java:
     needs: changes
     if: needs.changes.outputs.java == 'true'
@@ -135,7 +289,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, java, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
