@@ -14,6 +14,9 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
         - 'astral-sh/setup-uv@v10.3.3'
         - 'pypa/gh-action-pypi-publish@v1.14.3'
+    '.github/workflows/publish-rust.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'rust-lang/crates-io-auth-action@v1.0.6'
     '.github/workflows/publish.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
@@ -61,6 +64,11 @@ dependencies:
         repo_id: 178055147
         uses:
             - 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405'
+    'rust-lang/crates-io-auth-action@v1.0.6':
+        ref: 'v1.0.6'
+        commit: 'sha1-3268eb413133e2960fa4ae0e963ca76380c54cd9'
+        owner_id: 5430905
+        repo_id: 1008931044
     'voidzero-dev/setup-vp@v1.22.0':
         ref: 'v1.22.0'
         commit: 'sha1-cab1ab9eaff52d4857875f4f2c016e36af8f2c76'
