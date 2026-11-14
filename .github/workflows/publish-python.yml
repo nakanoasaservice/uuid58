@@ -1,0 +1,95 @@
+name: Publish Python
+
+# Release the Python package by pushing a python/v… tag:
+#   1. Bump "version" in python/pyproject.toml (and __version__ in
+#      python/src/uuid58/__init__.py) and merge it into main.
+#   2. git tag python/v1.2.3 <commit on main> && git push origin python/v1.2.3
+on:
+  push:
+    tags:
+      - "python/v*"
+
+permissions: {}
+
+jobs:
+  # Builds and tests without any publishing credentials.
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          working-directory: python
+          # No dependency cache in the release job, to rule out cache poisoning.
+          enable-cache: false
+
+      - name: Verify tag matches python/pyproject.toml and is on main
+        run: |
+          VERSION=$(uv version --short)
+          MODULE_VERSION=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/uuid58/__init__.py)
+          if [ "$GITHUB_REF_NAME" != "python/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match python/pyproject.toml version python/v$VERSION"
+            exit 1
+          fi
+          if [ "$MODULE_VERSION" != "$VERSION" ]; then
+            echo "::error::uuid58.__version__ ($MODULE_VERSION) does not match python/pyproject.toml ($VERSION)"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: uv run --locked pytest
+
+      - name: Build
+        run: uv build
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: dist
+          path: python/dist/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    # The OIDC token lives only in this job, which runs no project code.
+    permissions:
+      id-token: write # PyPI trusted publishing (also signs attestations)
+    steps:
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.14.3
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes

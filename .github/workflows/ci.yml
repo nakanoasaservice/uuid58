@@ -15,6 +15,7 @@ jobs:
     outputs:
       spec: ${{ steps.filter.outputs.spec }}
       js: ${{ steps.filter.outputs.js }}
+      python: ${{ steps.filter.outputs.python }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -37,6 +38,11 @@ jobs:
             echo "js=true" >> "$GITHUB_OUTPUT"
           else
             echo "js=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$all" = true ] || echo "$files" | grep -q '^python/'; then
+            echo "python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=false" >> "$GITHUB_OUTPUT"
           fi
 
   spec:
@@ -82,6 +88,46 @@ jobs:
       - name: Dry-run JSR publish
         run: vp exec jsr publish --dry-run
 
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          working-directory: python
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Lint and format check
+        run: |
+          uv run ruff check
+          uv run ruff format --check
+
+      - name: Type check
+        run: uv run mypy
+
+      - name: Run tests (including spec/vectors.json conformance)
+        run: uv run pytest
+
+      - name: Build
+        run: uv build
+
   # Fails when .github/workflows/actions.lock is out of sync with the
   # workflows or a locked pin no longer verifies upstream.
   actions-lock:
@@ -102,7 +148,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, actions-lock]
+    needs: [changes, spec, js, python, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
