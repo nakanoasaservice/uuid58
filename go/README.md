@@ -110,6 +110,64 @@ is more lenient about hyphens; this package follows the specification.)
 See [pkg.go.dev](https://pkg.go.dev/github.com/nakanoasaservice/uuid58/go)
 for full documentation.
 
+## Command-line tool
+
+`cmd/uuid58` is a small CLI built on this package: a single static binary
+with no dependencies beyond the standard library.
+
+```bash
+go install github.com/nakanoasaservice/uuid58/go/cmd/uuid58@latest
+```
+
+```console
+$ uuid58 encode f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf
+XDY9dmBbcMBXqcRvYw8xJ2
+$ uuid58 decode XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf
+$ uuid58 validate XDY9dmBbcMBXqcRvYw8xJ0
+uuid58 validate: "XDY9dmBbcMBXqcRvYw8xJ0": invalid_character
+$ uuid58 gen -n 2 -uuid
+H3c9vqTCe6HUJLf5J4B85a	81ef5ed7-e2d8-4fba-8eef-28d5b73aaa65
+D4DRZqo3FLg8r4Dzz8vrfQ	61a08d30-4a07-4352-9519-0287e58ac62f
+$ psql -Atc 'select id from users' | uuid58 encode
+```
+
+| Command                  | Description                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| `encode [uuid ...]`      | UUID → uuid58 (same accepted forms as `Encode`)                                       |
+| `decode [uuid58 ...]`    | uuid58 → lowercase hyphenated UUID                                                    |
+| `validate [uuid58 ...]`  | No output; exit status 0 only if every input is valid (alias `check`)                 |
+| `gen [-n count] [-uuid]` | New random version 4 UUIDs as uuid58; `-uuid` adds the UUID after a tab (alias `new`) |
+| `--version`, `--help`    | Print the version or usage                                                            |
+
+- With no arguments, `encode`, `decode`, and `validate` read one value per
+  line from standard input. Only the line terminator (`\n` or `\r\n`) is
+  removed; other whitespace is part of the value and makes it invalid, as in
+  the specification.
+- Every input is processed. Each invalid one is reported on standard error
+  with its error kind (`invalid_length`, `invalid_character`, `overflow`).
+- Exit status: 0 on success, 1 if any input was invalid, 2 on a usage error.
+
+### Binary releases and Homebrew (not set up yet)
+
+`go install` works as soon as a `go/vX.Y.Z` tag exists, and reports that
+version in `uuid58 --version`. Prebuilt binaries and a Homebrew formula are
+not published yet. A maintainer setting them up would need to:
+
+1. Pick a tag scheme for the CLI. Reusing `go/vX.Y.Z` keeps the CLI and the
+   library in lockstep. GoReleaser understands prefixed tags only through its
+   `monorepo` setting, which is a GoReleaser Pro feature; with the free
+   edition, build with `GORELEASER_CURRENT_TAG` set to a plain `vX.Y.Z`, or
+   use a small `go build` matrix in a workflow instead.
+2. Build with `CGO_ENABLED=0` for darwin/linux/windows on amd64 and arm64,
+   and stamp the version with `-ldflags "-s -w -X main.version=X.Y.Z"`.
+3. Create a tap repository (for example `nakanoasaservice/homebrew-tap`) and a
+   token that can push to it, stored as a repository secret. GoReleaser's
+   `homebrew_casks` section can write the cask; or write a formula that runs
+   `go build ./cmd/uuid58` from the source tarball, which Homebrew prefers
+   for open-source tools and which needs no binary hosting.
+4. Add the release workflow, triggered on the release tag.
+
 ## Development
 
 Go is managed with [mise](https://mise.jdx.dev/) (`mise.toml`):
