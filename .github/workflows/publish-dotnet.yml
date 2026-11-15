@@ -1,0 +1,121 @@
+name: Publish .NET
+
+# Release the NuGet package by pushing a dotnet/v… tag:
+#   1. Bump <Version> in dotnet/src/Uuid58/Uuid58.csproj and merge it into main.
+#   2. git tag dotnet/v1.2.3 <commit on main> && git push origin dotnet/v1.2.3
+#
+# Uses NuGet trusted publishing (no long-lived API key). Setup on nuget.org:
+# add a Trusted Publishing policy for this repository, workflow
+# publish-dotnet.yml, environment production, and add a NUGET_USER secret
+# to the production environment holding the nuget.org
+# profile name that owns the policy.
+on:
+  push:
+    tags:
+      - "dotnet/v*"
+
+permissions: {}
+
+jobs:
+  # Builds and tests without any publishing credentials.
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: dotnet
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Verify tag matches dotnet/src/Uuid58/Uuid58.csproj and is on main
+        run: |
+          VERSION=$(dotnet msbuild src/Uuid58/Uuid58.csproj -getProperty:Version)
+          if [ "$GITHUB_REF_NAME" != "dotnet/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match Uuid58.csproj version dotnet/v$VERSION"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      # No dependency cache in the release job, to rule out cache poisoning.
+      - name: Run tests
+        run: dotnet test -c Release
+
+      - name: Pack
+        run: dotnet pack src/Uuid58 -c Release -o dist
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: dist
+          path: |
+            dotnet/dist/*.nupkg
+            dotnet/dist/*.snupkg
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    # The OIDC token lives only in this job, which runs no project code.
+    permissions:
+      id-token: write # NuGet trusted publishing
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+    steps:
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: dist
+          path: dist/
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Authenticate with nuget.org
+        id: login
+        uses: NuGet/login@v1.2.0
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # Pushing the .nupkg also pushes the .snupkg next to it.
+      - name: Publish to nuget.org
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push "dist/*.nupkg" \
+            --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes
