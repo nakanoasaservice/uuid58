@@ -1,0 +1,48 @@
+name: CI (.NET)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  dotnet:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The runtimes the tests run on (both LTS). The library itself
+        # targets netstandard2.0.
+        framework: ["net8.0", "net10.0"]
+    defaults:
+      run:
+        working-directory: dotnet
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      # The .NET 10 SDK builds everything; the .NET 8 runtime runs the net8.0 tests.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Check formatting
+        run: dotnet format --verify-no-changes
+
+      - name: Build
+        run: dotnet build -c Release -p:TestTargetFramework=${{ matrix.framework }}
+
+      - name: Run tests (includes spec/vectors.json)
+        run: dotnet test -c Release --no-build -p:TestTargetFramework=${{ matrix.framework }}
+
+      - name: Pack
+        run: dotnet pack src/Uuid58 -c Release -o artifacts
