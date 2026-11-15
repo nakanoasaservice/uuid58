@@ -21,6 +21,7 @@ jobs:
       python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
+      postgres: ${{ steps.filter.outputs.postgres }}
       site: ${{ steps.filter.outputs.site }}
     permissions:
       pull-requests: read
@@ -52,6 +53,7 @@ jobs:
           set_output python '^(python/|\.github/workflows/ci-python\.yml$)'
           set_output rust   '^(rust/|\.github/workflows/ci-rust\.yml$)'
           set_output java   '^(java/|\.github/workflows/ci-java\.yml$)'
+          set_output postgres '^(postgres/|\.github/workflows/ci-postgres\.yml$)'
           # The site builds against js/ and reads spec/, so check it when those change too.
           set_output site   '^((site|js)/|\.github/workflows/ci-site\.yml$)'
 
@@ -85,6 +87,11 @@ jobs:
     if: needs.changes.outputs.java == 'true'
     uses: ./.github/workflows/ci-java.yml
 
+  postgres:
+    needs: changes
+    if: needs.changes.outputs.postgres == 'true'
+    uses: ./.github/workflows/ci-postgres.yml
+
   site:
     needs: changes
     if: needs.changes.outputs.site == 'true'
@@ -96,7 +103,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, site, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, postgres, site, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:

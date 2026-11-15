@@ -1,0 +1,50 @@
+name: CI (PostgreSQL)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest supported version, and the latest release.
+        postgres: ["14", "18"]
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    defaults:
+      run:
+        working-directory: postgres
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      # psql comes preinstalled on the runner.
+      - name: Test in a UTF8 database (spec/vectors.json conformance)
+        run: psql -v ON_ERROR_STOP=1 -f test.sql
+
+      - name: Test in a SQL_ASCII database (input that is not valid UTF-8)
+        env:
+          PGCLIENTENCODING: SQL_ASCII
+        run: |
+          createdb -E SQL_ASCII -T template0 --lc-collate=C --lc-ctype=C uuid58_ascii
+          psql -d uuid58_ascii -v ON_ERROR_STOP=1 -f test.sql

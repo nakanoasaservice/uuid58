@@ -14,6 +14,8 @@ workflows:
     '.github/workflows/ci-js.yml':
         - 'actions/checkout@v7.0.1'
         - 'voidzero-dev/setup-vp@v1.22.0'
+    '.github/workflows/ci-postgres.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/ci-python.yml':
         - 'actions/checkout@v7.0.1'
         - 'astral-sh/setup-uv@v10.3.3'

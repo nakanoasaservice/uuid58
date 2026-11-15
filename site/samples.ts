@@ -156,4 +156,17 @@ try uuid58Decode("${encoded}")
     docs: "https://github.com/nakanoasaservice/uuid58-swift#readme",
     registries: [],
   },
+  {
+    id: "postgres",
+    label: "PostgreSQL",
+    language: "sql",
+    install: `curl -fsSL https://raw.githubusercontent.com/nakanoasaservice/uuid58/main/postgres/uuid58.sql | psql`,
+    code: ({ encoded, decoded }) => `SELECT uuid58_encode('${decoded}'::uuid);
+-- ${encoded}
+
+SELECT uuid58_decode('${encoded}');
+-- ${decoded}`,
+    docs: `${repo}/tree/main/postgres#readme`,
+    registries: [],
+  },
 ];
