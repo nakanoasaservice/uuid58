@@ -1,0 +1,86 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  # Picks the languages to analyze. A PR analyzes only the languages whose
+  # files it changes; pushes to main and the weekly run analyze all of them,
+  # so every PR has a full analysis of main to compare against.
+  # Changes to this file analyze everything.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      languages: ${{ steps.filter.outputs.languages }}
+    permissions:
+      pull-requests: read
+    steps:
+      # Uses the API instead of actions/checkout, like ci.yml.
+      - id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          all=true
+          files=""
+          if [ -n "$PR" ]; then
+            files=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
+            echo "$files"
+            if ! echo "$files" | grep -qE '^\.github/workflows/codeql\.yml$'; then
+              all=false
+            fi
+          fi
+          langs=()
+          # add <language> <build-mode> <regex>: analyze when any changed file matches.
+          add() {
+            if [ "$all" = true ] || echo "$files" | grep -qE "$3"; then
+              langs+=("{\"language\":\"$1\",\"build-mode\":\"$2\"}")
+            fi
+          }
+          add actions               none      '^\.github/'
+          add csharp                none      '^dotnet/'
+          add go                    autobuild '^go/'
+          add java-kotlin           none      '^java/'
+          add javascript-typescript none      '^(js|site)/'
+          add python                none      '^(python/|spec/.*\.py$)'
+          add ruby                  none      '^ruby/'
+          add rust                  none      '^rust/'
+          echo "languages=[$(IFS=,; echo "${langs[*]}")]" | tee -a "$GITHUB_OUTPUT"
+
+  analyze:
+    needs: changes
+    if: needs.changes.outputs.languages != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.changes.outputs.languages) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4.39.3
+        with:
+          category: "/language:${{ matrix.language }}"
