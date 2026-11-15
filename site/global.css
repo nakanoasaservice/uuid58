@@ -102,7 +102,7 @@ input {
 }
 
 /* Sections */
-main > section {
+main > section:not(.hero) {
   padding-top: 56px;
 }
 h1,
