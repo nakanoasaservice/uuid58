@@ -1,10 +1,19 @@
 // Code samples for each uuid58 implementation, filled in with the values
 // currently shown in the playground.
 
+/**
+ * The pair the page starts with. highlight.ts also fills it into the code
+ * samples at build time, and app.tsx replaces it with the playground values.
+ */
+export const sample = {
+  encoded: "XDY9dmBbcMBXqcRvYw8xJ2",
+  decoded: "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+};
+
 export type Sample = {
   id: string;
   label: string;
-  /** Language name for the code block's class (no highlighting library). */
+  /** Shiki language for the code sample, highlighted at build time. */
   language: string;
   install: string;
   code: (values: { encoded: string; decoded: string }) => string;
