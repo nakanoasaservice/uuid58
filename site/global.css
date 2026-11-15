@@ -320,6 +320,8 @@ input[aria-invalid="true"] {
 }
 .sample-panel {
   display: grid;
+  /* minmax(0, …) lets long commands scroll inside their box on phones. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 .sample-note {
@@ -350,6 +352,42 @@ input[aria-invalid="true"] {
   flex-wrap: wrap;
   gap: 16px;
   margin: 4px 0 0;
+  font-size: 14px;
+}
+
+/* Command line */
+.cli h3 {
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+.cli h3:first-child {
+  margin-top: 20px;
+}
+.cli > .sample-note {
+  margin-top: 10px;
+}
+.commands {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.commands th,
+.commands td {
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.commands th {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.commands td:first-child {
+  white-space: nowrap;
+}
+.commands code {
   font-size: 14px;
 }
 
@@ -396,5 +434,21 @@ footer.container {
   }
   .features {
     grid-template-columns: 1fr;
+  }
+  .commands thead {
+    display: none;
+  }
+  .commands tr {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .commands td {
+    display: block;
+    padding: 2px 0;
+    border: 0;
+  }
+  .commands td:first-child {
+    white-space: normal;
   }
 }
