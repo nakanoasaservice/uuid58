@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Nix
-        uses: cachix/install-nix-action@v31.11.3
+        uses: cachix/install-nix-action@v31.11.5
 
       # Builds the CLI and runs its tests (flake.nix checks).
       - name: Run nix flake check
