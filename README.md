@@ -31,6 +31,11 @@ implementation must pass. The current version of the spec is 1.0.0.
 | Java/Kotlin           | [`java/`](java/)                                                 | [`io.github.nakanoasaservice:uuid58`](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58) on Maven Central |
 | Swift                 | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                                                                                                           |
 | PostgreSQL            | [`postgres/`](postgres/)                                         | SQL file, no extension needed                                                                                                   |
+| C#/.NET               | [`dotnet/`](dotnet/)                                             | `Uuid58` on NuGet (not yet released)                                                                                            |
+| PHP                   | [`php/`](php/)                                                   | `nakanoasaservice/uuid58` on Packagist (not yet released)                                                                       |
+| Ruby                  | [`ruby/`](ruby/)                                                 | `uuid58` gem on RubyGems (not yet released)                                                                                     |
+| Dart/Flutter          | [`dart/`](dart/)                                                 | `uuid58` on pub.dev (not yet released)                                                                                          |
+| CLI                   | [`go/cmd/uuid58/`](go/cmd/uuid58/)                               | `go install github.com/nakanoasaservice/uuid58/go/cmd/uuid58@latest`                                                            |
 
 Swift has its own repository because Swift Package Manager expects
 `Package.swift` at the root of a repository.
