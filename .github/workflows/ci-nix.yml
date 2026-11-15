@@ -1,0 +1,26 @@
+name: CI (Nix)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  nix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31.11.3
+
+      # Builds the CLI and runs its tests (flake.nix checks).
+      - name: Run nix flake check
+        run: nix flake check -L
+
+      - name: Run the CLI
+        run: nix run . -- encode f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf
