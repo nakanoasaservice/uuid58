@@ -1,0 +1,5 @@
+# Replaces .gitignore for `dart pub publish`, so repeat its entries.
+.dart_tool/
+pubspec.lock
+build/
+mise.toml
