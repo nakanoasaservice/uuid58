@@ -1,0 +1,20 @@
+name: uuid58
+description: >-
+  Encode UUIDs as fixed-length, order-preserving 22-character Base58 strings,
+  and back. Pure Dart; works on the VM, Flutter, and the web.
+version: 0.1.0
+repository: https://github.com/nakanoasaservice/uuid58/tree/main/dart
+homepage: https://github.com/nakanoasaservice/uuid58
+issue_tracker: https://github.com/nakanoasaservice/uuid58/issues
+topics:
+  - uuid
+  - base58
+  - encoding
+  - id
+
+environment:
+  sdk: ^3.6.0
+
+dev_dependencies:
+  lints: ">=5.0.0 <7.0.0"
+  test: ^1.25.0

@@ -1,0 +1,4 @@
+# Libraries do not commit pubspec.lock (https://dart.dev/go/lockfile).
+.dart_tool/
+pubspec.lock
+build/
