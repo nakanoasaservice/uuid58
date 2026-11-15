@@ -238,19 +238,4 @@ SELECT uuid58_decode('${encoded}');
     docs: `${repo}/tree/main/postgres#readme`,
     registries: [],
   },
-  {
-    id: "cli",
-    label: "CLI",
-    language: "shell",
-    install:
-      "go install github.com/nakanoasaservice/uuid58/go/cmd/uuid58@latest",
-    code: ({ encoded, decoded }) => `$ uuid58 encode ${decoded}
-${encoded}
-
-$ uuid58 decode ${encoded}
-${decoded}`,
-    docs: `${repo}/tree/main/go#command-line-tool`,
-    registries: [],
-    note: unreleased,
-  },
 ];

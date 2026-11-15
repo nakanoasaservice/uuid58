@@ -8,6 +8,13 @@ import {
 } from "@nakanoaas/uuid58";
 import spec from "../spec/SPEC.md?raw";
 import "./global.css";
+import {
+  cliDocs,
+  cliReleases,
+  commands,
+  installMethods,
+  usageExample,
+} from "./cli";
 import { samples } from "./samples";
 
 const REPO = "https://github.com/nakanoasaservice/uuid58";
@@ -241,6 +248,115 @@ function Samples(props: { values: () => Pair }) {
   );
 }
 
+function CommandLine(props: { values: () => Pair }) {
+  const [selected, setSelected] = createSignal(installMethods[0]!.id);
+  const method = () =>
+    installMethods.find((m) => m.id === selected()) ?? installMethods[0]!;
+  const usage = () => usageExample(props.values());
+
+  return (
+    <div class="cli">
+      <h3>Install</h3>
+      <div class="tabs" role="tablist" aria-label="Install method">
+        <For each={installMethods}>
+          {(m) => (
+            <button
+              type="button"
+              role="tab"
+              id={`install-tab-${m.id}`}
+              aria-selected={selected() === m.id}
+              aria-controls="install-panel"
+              tabIndex={selected() === m.id ? 0 : -1}
+              onClick={() => setSelected(m.id)}
+              onKeyDown={(event) => {
+                const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+                if (!step) return;
+                const index = installMethods.findIndex(
+                  (x) => x.id === selected(),
+                );
+                const next =
+                  installMethods[
+                    (index + step + installMethods.length) %
+                      installMethods.length
+                  ]!;
+                setSelected(next.id);
+                document.getElementById(`install-tab-${next.id}`)?.focus();
+              }}
+            >
+              {m.label}
+            </button>
+          )}
+        </For>
+      </div>
+      <div
+        id="install-panel"
+        class="sample-panel"
+        role="tabpanel"
+        aria-labelledby={`install-tab-${method().id}`}
+      >
+        <div class="code-block">
+          <pre>
+            <code class="language-shell">{method().command}</code>
+          </pre>
+          <CopyButton
+            text={() => method().command}
+            label="Copy install command"
+          />
+        </div>
+        <p class="sample-note">{method().note}</p>
+      </div>
+      <p class="sample-note">
+        Prebuilt binaries for macOS, Linux, and Windows are on{" "}
+        <a href={cliReleases}>GitHub Releases</a>. The CLI ships with the next
+        Go release; until then, only the Nix flake installs it.
+      </p>
+
+      <h3>Usage</h3>
+      <p>
+        Each command takes values as arguments, or reads one per line from
+        standard input when there are none, so it fits in a pipeline. Every
+        input is processed, and each invalid one is reported on standard error
+        with its error kind.
+      </p>
+      <div class="code-block">
+        <pre>
+          <code class="language-shell">{usage()}</code>
+        </pre>
+        <CopyButton text={usage} label="Copy usage example" />
+      </div>
+
+      <table class="commands">
+        <thead>
+          <tr>
+            <th scope="col">Command</th>
+            <th scope="col">What it does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <For each={commands}>
+            {(command) => (
+              <tr>
+                <td>
+                  <code>uuid58 {command.usage}</code>
+                </td>
+                <td>{command.description}</td>
+              </tr>
+            )}
+          </For>
+        </tbody>
+      </table>
+      <p class="sample-note">
+        Exit status: 0 on success, 1 if any input was invalid, 2 on a usage
+        error.
+      </p>
+      <p class="links">
+        <a href={cliDocs}>CLI documentation</a>
+        <a href={cliReleases}>GitHub Releases</a>
+      </p>
+    </div>
+  );
+}
+
 function App() {
   const initial = newPair();
   const [conversion, setConversion] = createSignal<ConversionState>({
@@ -259,6 +375,7 @@ function App() {
           <nav aria-label="Main">
             <a href="#playground">Playground</a>
             <a href="#install">Install</a>
+            <a href="#cli">CLI</a>
             <a href={`${REPO}/blob/main/spec/SPEC.md`}>Spec</a>
             <a href={REPO}>GitHub</a>
           </nav>
@@ -325,6 +442,16 @@ function App() {
             .
           </p>
           <Samples values={() => conversion().valid} />
+        </section>
+
+        <section id="cli" class="container">
+          <h2>Command line</h2>
+          <p>
+            <code>uuid58</code> is a small command-line tool built on the Go
+            implementation: a single static binary with no dependencies. The
+            example uses the values from the playground.
+          </p>
+          <CommandLine values={() => conversion().valid} />
         </section>
       </main>
 
