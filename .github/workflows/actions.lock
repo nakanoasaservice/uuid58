@@ -3,12 +3,28 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
-    '.github/workflows/ci.yml':
+    '.github/workflows/ci-actions-lock.yml':
+        - 'actions/checkout@v7.0.1'
+    '.github/workflows/ci-go.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-go@v7.0.0'
+    '.github/workflows/ci-java.yml':
+        - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.1.0'
-        - 'astral-sh/setup-uv@v10.3.3'
+    '.github/workflows/ci-js.yml':
+        - 'actions/checkout@v7.0.1'
         - 'voidzero-dev/setup-vp@v1.22.0'
+    '.github/workflows/ci-python.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'astral-sh/setup-uv@v10.3.3'
+    '.github/workflows/ci-rust.yml':
+        - 'actions/checkout@v7.0.1'
+    '.github/workflows/ci-site.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'voidzero-dev/setup-vp@v1.22.0'
+    '.github/workflows/ci-spec.yml':
+        - 'actions/checkout@v7.0.1'
+    '.github/workflows/ci.yml': []
     '.github/workflows/pages.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/deploy-pages@v5.0.1'

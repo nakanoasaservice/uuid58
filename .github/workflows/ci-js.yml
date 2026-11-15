@@ -1,0 +1,38 @@
+name: CI (JavaScript)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  js:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
+        with:
+          working-directory: js
+          node-version: "24"
+          cache: true
+
+      - name: Run fmt, lint and type check
+        run: vp check
+
+      - name: Run tests
+        run: vp test run
+
+      - name: Build (also generates jsr.json)
+        run: vp pack
+
+      - name: Dry-run JSR publish
+        run: vp exec jsr publish --dry-run

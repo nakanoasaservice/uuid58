@@ -1,0 +1,32 @@
+name: CI (Site)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
+        with:
+          working-directory: site
+          node-version: "24"
+          cache: true
+
+      - name: Run fmt, lint and type check
+        run: vp check
+
+      - name: Build
+        run: vp build
