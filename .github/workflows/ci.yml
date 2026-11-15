@@ -8,8 +8,10 @@ permissions:
   contents: read
 
 jobs:
-  # Decides which language jobs to run from the files the PR changes.
-  # Changes under spec/ or to this workflow run every job.
+  # Decides which jobs to run from the files the PR changes. Each job lives
+  # in its own ci-<name>.yml, so a change to one of those (for example a
+  # Dependabot bump of setup-java) runs only that job. Changes under spec/
+  # or to this file run every job.
   changes:
     runs-on: ubuntu-latest
     outputs:
@@ -21,351 +23,82 @@ jobs:
       java: ${{ steps.filter.outputs.java }}
       postgres: ${{ steps.filter.outputs.postgres }}
       site: ${{ steps.filter.outputs.site }}
+    permissions:
+      pull-requests: read
     steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
+      # Uses the API instead of actions/checkout so that this file pins no
+      # actions and Dependabot bumps never touch it (which would run everything).
       - id: filter
         env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
         run: |
-          files=$(git diff --name-only "$(git merge-base "$BASE" "$HEAD")" "$HEAD")
+          files=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
           echo "$files"
           all=false
           if echo "$files" | grep -qE '^(spec/|\.github/workflows/ci\.yml$)'; then
             all=true
           fi
-          echo "spec=$all" >> "$GITHUB_OUTPUT"
-          if [ "$all" = true ] || echo "$files" | grep -q '^js/'; then
-            echo "js=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "js=false" >> "$GITHUB_OUTPUT"
-          fi
-          if [ "$all" = true ] || echo "$files" | grep -q '^go/'; then
-            echo "go=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "go=false" >> "$GITHUB_OUTPUT"
-          fi
-          if [ "$all" = true ] || echo "$files" | grep -q '^python/'; then
-            echo "python=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "python=false" >> "$GITHUB_OUTPUT"
-          fi
-          if [ "$all" = true ] || echo "$files" | grep -q '^rust/'; then
-            echo "rust=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "rust=false" >> "$GITHUB_OUTPUT"
-          fi
-          if [ "$all" = true ] || echo "$files" | grep -q '^java/'; then
-            echo "java=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "java=false" >> "$GITHUB_OUTPUT"
-          fi
-          if [ "$all" = true ] || echo "$files" | grep -q '^postgres/'; then
-            echo "postgres=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "postgres=false" >> "$GITHUB_OUTPUT"
-          fi
+          # set <job> <regex>: run <job> when any changed file matches.
+          set_output() {
+            if [ "$all" = true ] || echo "$files" | grep -qE "$2"; then
+              echo "$1=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$1=false" >> "$GITHUB_OUTPUT"
+            fi
+          }
+          set_output spec   '^\.github/workflows/ci-spec\.yml$'
+          set_output js     '^(js/|\.github/workflows/ci-js\.yml$)'
+          set_output go     '^(go/|\.github/workflows/ci-go\.yml$)'
+          set_output python '^(python/|\.github/workflows/ci-python\.yml$)'
+          set_output rust   '^(rust/|\.github/workflows/ci-rust\.yml$)'
+          set_output java   '^(java/|\.github/workflows/ci-java\.yml$)'
+          set_output postgres '^(postgres/|\.github/workflows/ci-postgres\.yml$)'
           # The site builds against js/ and reads spec/, so check it when those change too.
-          if [ "$all" = true ] || echo "$files" | grep -qE '^(site|js)/'; then
-            echo "site=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "site=false" >> "$GITHUB_OUTPUT"
-          fi
+          set_output site   '^((site|js)/|\.github/workflows/ci-site\.yml$)'
 
   spec:
     needs: changes
     if: needs.changes.outputs.spec == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Check that spec/vectors.json is up to date
-        run: python3 spec/generate_vectors.py --check
+    uses: ./.github/workflows/ci-spec.yml
 
   js:
     needs: changes
     if: needs.changes.outputs.js == 'true'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: js
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Setup Vite+
-        uses: voidzero-dev/setup-vp@v1.22.0
-        with:
-          working-directory: js
-          node-version: "24"
-          cache: true
-
-      - name: Run fmt, lint and type check
-        run: vp check
-
-      - name: Run tests
-        run: vp test run
-
-      - name: Build (also generates jsr.json)
-        run: vp pack
-
-      - name: Dry-run JSR publish
-        run: vp exec jsr publish --dry-run
+    uses: ./.github/workflows/ci-js.yml
 
   go:
     needs: changes
     if: needs.changes.outputs.go == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # The minimum version in go/go.mod, and the latest release.
-        go-version: ["1.26", "stable"]
-    defaults:
-      run:
-        working-directory: go
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Setup Go
-        uses: actions/setup-go@v7.0.0
-        with:
-          go-version: ${{ matrix.go-version }}
-          cache: false
-
-      - name: Check formatting
-        run: test -z "$(gofmt -l . | tee /dev/stderr)"
-
-      - name: Run go vet
-        run: go vet ./...
-
-      - name: Run tests
-        run: go test -race ./...
-
-      - name: Run fuzz tests briefly
-        run: |
-          go test -run='^$' -fuzz='^FuzzBytesRoundTrip$' -fuzztime=10s .
-          go test -run='^$' -fuzz='^FuzzDecode$' -fuzztime=10s .
-          go test -run='^$' -fuzz='^FuzzEncode$' -fuzztime=10s .
+    uses: ./.github/workflows/ci-go.yml
 
   python:
     needs: changes
     if: needs.changes.outputs.python == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
-    defaults:
-      run:
-        working-directory: python
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v10.3.3
-        with:
-          working-directory: python
-          python-version: ${{ matrix.python-version }}
-          enable-cache: true
-
-      - name: Install dependencies
-        run: uv sync --locked
-
-      - name: Lint and format check
-        run: |
-          uv run ruff check
-          uv run ruff format --check
-
-      - name: Type check
-        run: uv run mypy
-
-      - name: Run tests (including spec/vectors.json conformance)
-        run: uv run pytest
-
-      - name: Build
-        run: uv build
+    uses: ./.github/workflows/ci-python.yml
 
   rust:
     needs: changes
     if: needs.changes.outputs.rust == 'true'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: rust
-    env:
-      CARGO_TERM_COLOR: always
-      RUSTFLAGS: -D warnings
-      RUSTDOCFLAGS: -D warnings
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      # rustup is preinstalled on the runner; no third-party action needed.
-      - name: Install Rust (stable and MSRV)
-        run: |
-          rustup toolchain install stable --profile minimal --no-self-update \
-            --component rustfmt,clippy --target thumbv7em-none-eabi
-          rustup toolchain install 1.85 --profile minimal --no-self-update
-          rustup default stable
-
-      - name: Check formatting
-        run: cargo fmt --check
-
-      - name: Clippy
-        run: |
-          cargo clippy --locked --all-targets --all-features -- -D warnings
-          cargo clippy --locked --all-targets --no-default-features -- -D warnings
-
-      - name: Test (default features)
-        run: cargo test --locked
-
-      - name: Test (all features)
-        run: cargo test --locked --all-features
-
-      - name: Test (no default features)
-        run: cargo test --locked --no-default-features
-
-      - name: Build for a no_std target
-        run: |
-          cargo build --locked --target thumbv7em-none-eabi --no-default-features
-          cargo build --locked --target thumbv7em-none-eabi --no-default-features --features alloc,uuid
-
-      - name: Docs
-        run: |
-          cargo doc --locked --no-deps --all-features
-          cargo doc --locked --no-deps --no-default-features
-
-      - name: MSRV (Rust 1.85)
-        run: |
-          cargo +1.85 test --locked --all-features
-          cargo +1.85 check --locked --no-default-features
-
-      - name: Dry-run crates.io publish
-        run: cargo publish --locked --dry-run
+    uses: ./.github/workflows/ci-rust.yml
 
   java:
     needs: changes
     if: needs.changes.outputs.java == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # 8: the bytecode target and oldest supported runtime.
-        # 25: the JDK used for releases.
-        java: ["8", "17", "21", "25"]
-    defaults:
-      run:
-        working-directory: java
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: actions/setup-java@v6.1.0
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.java }}
-          cache: maven
-
-      - name: Build and test (includes spec/vectors.json, sources and javadoc jars)
-        run: ./mvnw -B verify
+    uses: ./.github/workflows/ci-java.yml
 
   postgres:
     needs: changes
     if: needs.changes.outputs.postgres == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # The oldest supported version, and the latest release.
-        postgres: ["14", "18"]
-    services:
-      postgres:
-        image: postgres:${{ matrix.postgres }}
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 2s
-          --health-timeout 5s
-          --health-retries 30
-    defaults:
-      run:
-        working-directory: postgres
-    env:
-      PGHOST: localhost
-      PGUSER: postgres
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      # psql comes preinstalled on the runner.
-      - name: Test in a UTF8 database (spec/vectors.json conformance)
-        run: psql -v ON_ERROR_STOP=1 -f test.sql
-
-      - name: Test in a SQL_ASCII database (input that is not valid UTF-8)
-        env:
-          PGCLIENTENCODING: SQL_ASCII
-        run: |
-          createdb -E SQL_ASCII -T template0 --lc-collate=C --lc-ctype=C uuid58_ascii
-          psql -d uuid58_ascii -v ON_ERROR_STOP=1 -f test.sql
+    uses: ./.github/workflows/ci-postgres.yml
 
   site:
     needs: changes
     if: needs.changes.outputs.site == 'true'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: site
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
+    uses: ./.github/workflows/ci-site.yml
 
-      - name: Setup Vite+
-        uses: voidzero-dev/setup-vp@v1.22.0
-        with:
-          working-directory: site
-          node-version: "24"
-          cache: true
-
-      - name: Run fmt, lint and type check
-        run: vp check
-
-      - name: Build
-        run: vp build
-
-  # Fails when .github/workflows/actions.lock is out of sync with the
-  # workflows or a locked pin no longer verifies upstream.
   actions-lock:
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install gh-actions-lock
-        run: gh extension install github/gh-actions-lock --pin v0.4.1
-
-      - name: Verify Actions lockfile
-        run: gh actions-lock --verify
+    uses: ./.github/workflows/ci-actions-lock.yml
 
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
