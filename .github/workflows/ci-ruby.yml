@@ -1,0 +1,38 @@
+name: CI (Ruby)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  ruby:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The minimum version in ruby/uuid58.gemspec, and the latest release.
+        ruby-version: ["3.2", "ruby"]
+    defaults:
+      run:
+        working-directory: ruby
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.338.0
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          working-directory: ruby
+          # Runs `bundle install` with the committed Gemfile.lock (frozen).
+          bundler-cache: true
+
+      - name: Run tests (including spec/vectors.json conformance)
+        run: bundle exec rake test
+
+      - name: Build
+        run: bundle exec rake build
