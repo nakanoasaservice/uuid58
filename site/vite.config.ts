@@ -6,7 +6,7 @@ import { highlight } from "./highlight";
 // Use the library source in this repository, so the site always matches main.
 const alias = {
   "@nakanoaas/uuid58": fileURLToPath(
-    new URL("../js/index.ts", import.meta.url),
+    new URL("../js/src/index.ts", import.meta.url),
   ),
 };
 

@@ -2,8 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 
 import { isUuid58, UUID58_REGEX } from "./check.ts";
 import { UUID58_ALPHABET } from "./alphabet.ts";
-import { uuid58Encode } from "./encode.ts";
-import { uuid58DecodeSafe } from "./decode.ts";
+import { uuid58DecodeSafe, uuid58Encode } from "./string.ts";
 
 const validUuids = [
   "00000000-0000-0000-0000-000000000000", // All zeros
