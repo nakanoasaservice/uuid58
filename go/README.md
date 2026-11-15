@@ -148,25 +148,24 @@ $ psql -Atc 'select id from users' | uuid58 encode
   with its error kind (`invalid_length`, `invalid_character`, `overflow`).
 - Exit status: 0 on success, 1 if any input was invalid, 2 on a usage error.
 
-### Binary releases and Homebrew (not set up yet)
+### Homebrew, Nix, and prebuilt binaries
 
-`go install` works as soon as a `go/vX.Y.Z` tag exists, and reports that
-version in `uuid58 --version`. Prebuilt binaries and a Homebrew formula are
-not published yet. A maintainer setting them up would need to:
+```bash
+brew install nakanoasaservice/tap/uuid58
+```
 
-1. Pick a tag scheme for the CLI. Reusing `go/vX.Y.Z` keeps the CLI and the
-   library in lockstep. GoReleaser understands prefixed tags only through its
-   `monorepo` setting, which is a GoReleaser Pro feature; with the free
-   edition, build with `GORELEASER_CURRENT_TAG` set to a plain `vX.Y.Z`, or
-   use a small `go build` matrix in a workflow instead.
-2. Build with `CGO_ENABLED=0` for darwin/linux/windows on amd64 and arm64,
-   and stamp the version with `-ldflags "-s -w -X main.version=X.Y.Z"`.
-3. Create a tap repository (for example `nakanoasaservice/homebrew-tap`) and a
-   token that can push to it, stored as a repository secret. GoReleaser's
-   `homebrew_casks` section can write the cask; or write a formula that runs
-   `go build ./cmd/uuid58` from the source tarball, which Homebrew prefers
-   for open-source tools and which needs no binary hosting.
-4. Add the release workflow, triggered on the release tag.
+```bash
+nix run github:nakanoasaservice/uuid58 -- encode f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf
+nix profile install github:nakanoasaservice/uuid58
+```
+
+Prebuilt binaries for macOS, Linux, and Windows (amd64 and arm64) are
+attached to each `go/vX.Y.Z` [GitHub Release](https://github.com/nakanoasaservice/uuid58/releases).
+
+The Homebrew formula installs those binaries and is updated by the release
+workflow. The Nix flake (`flake.nix` at the repository root) builds from
+source at whatever commit you point it at, so its `--version` is the commit
+rather than a release number.
 
 ## Development
 
@@ -187,7 +186,12 @@ The conformance tests read `../spec/vectors.json`.
 This module lives in the `go/` subdirectory of the repository, so by Go's
 convention its versions are tags of the form `go/vX.Y.Z` (for example
 `go/v0.1.0`). Pushing such a tag is the whole release; the Go module proxy
-picks it up on first request. There is no publish workflow.
+picks it up on first request. The same tag also releases the CLI:
+[`publish-go.yml`](../.github/workflows/publish-go.yml) builds the binaries,
+attaches them to a GitHub Release, and updates `Formula/uuid58.rb` in
+[nakanoasaservice/homebrew-tap](https://github.com/nakanoasaservice/homebrew-tap).
+That last step needs a `HOMEBREW_TAP_TOKEN` secret: a fine-grained token with
+Contents read and write access to the tap repository only.
 
 Versions stay below 1.0.0 until the specification reaches 1.0.0.
 

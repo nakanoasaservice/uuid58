@@ -1,0 +1,175 @@
+name: Publish Go
+
+# Release the Go module and the uuid58 CLI by pushing a go/v… tag:
+#   git tag go/v1.2.3 <commit on main> && git push origin go/v1.2.3
+# The Go module proxy picks the tag up on its own. This workflow attaches
+# CLI binaries to a GitHub Release and updates the Homebrew formula in
+# nakanoasaservice/homebrew-tap, which needs the HOMEBREW_TAP_TOKEN secret
+# (a fine-grained token with Contents: read and write on that repository only).
+on:
+  push:
+    tags:
+      - "go/v*"
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: go
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag is a version and is on main
+        id: verify
+        run: |
+          if ! [[ "$GITHUB_REF_NAME" =~ ^go/v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME is not of the form go/vX.Y.Z"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+          echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: stable
+          # No dependency cache in the release job, to rule out cache poisoning.
+          cache: false
+
+      - name: Run tests
+        run: go test ./...
+
+      - name: Build binaries
+        env:
+          VERSION: ${{ steps.verify.outputs.version }}
+        run: |
+          mkdir -p ../dist
+          for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
+            os=${target%/*} arch=${target#*/}
+            name="uuid58_${VERSION}_${os}_${arch}"
+            exe=uuid58; [ "$os" = windows ] && exe=uuid58.exe
+            mkdir -p "build/$name"
+            CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -trimpath \
+              -ldflags "-s -w -X main.version=$VERSION" \
+              -o "build/$name/$exe" ./cmd/uuid58
+            cp LICENSE README.md "build/$name/"
+            if [ "$os" = windows ]; then
+              (cd "build/$name" && zip -q "../../../dist/$name.zip" ./*)
+            else
+              tar -C "build/$name" -czf "../dist/$name.tar.gz" .
+            fi
+          done
+          cd ../dist && sha256sum -- * > "uuid58_${VERSION}_checksums.txt"
+          cat "uuid58_${VERSION}_checksums.txt"
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes
+
+  homebrew:
+    needs: [build, release]
+    runs-on: ubuntu-latest
+    environment: production
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      - name: Update the formula in nakanoasaservice/homebrew-tap
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          VERSION: ${{ needs.build.outputs.version }}
+          TAP: nakanoasaservice/homebrew-tap
+        run: |
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/go/v$VERSION"
+          sum() { awk -v f="uuid58_${VERSION}_$1.tar.gz" '$2 == f { print $1 }' "dist/uuid58_${VERSION}_checksums.txt"; }
+          cat > uuid58.rb <<EOF
+          class Uuid58 < Formula
+            desc "Convert UUIDs to and from uuid58, a 22-character Base58 encoding"
+            homepage "https://github.com/$GITHUB_REPOSITORY"
+            version "$VERSION"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "$base/uuid58_${VERSION}_darwin_arm64.tar.gz"
+                sha256 "$(sum darwin_arm64)"
+              end
+              on_intel do
+                url "$base/uuid58_${VERSION}_darwin_amd64.tar.gz"
+                sha256 "$(sum darwin_amd64)"
+              end
+            end
+
+            on_linux do
+              on_arm do
+                url "$base/uuid58_${VERSION}_linux_arm64.tar.gz"
+                sha256 "$(sum linux_arm64)"
+              end
+              on_intel do
+                url "$base/uuid58_${VERSION}_linux_amd64.tar.gz"
+                sha256 "$(sum linux_amd64)"
+              end
+            end
+
+            def install
+              bin.install "uuid58"
+            end
+
+            test do
+              assert_equal "uuid58 #{version}", shell_output("#{bin}/uuid58 --version").strip
+              assert_equal "XDY9dmBbcMBXqcRvYw8xJ2",
+                           shell_output("#{bin}/uuid58 encode f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf").strip
+            end
+          end
+          EOF
+          if grep -q 'sha256 ""' uuid58.rb; then
+            echo "::error::A checksum is missing"; exit 1
+          fi
+          cat uuid58.rb
+
+          path=Formula/uuid58.rb
+          sha=$(gh api "repos/$TAP/contents/$path" --jq .sha 2>/dev/null || true)
+          gh api -X PUT "repos/$TAP/contents/$path" \
+            -f message="uuid58 $VERSION" \
+            -f content="$(base64 -w0 uuid58.rb)" \
+            ${sha:+-f sha="$sha"} \
+            --jq .commit.html_url

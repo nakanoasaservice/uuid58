@@ -35,7 +35,7 @@ implementation must pass. The current version of the spec is 1.0.0.
 | PHP                   | [`php/`](php/)                                                   | `nakanoasaservice/uuid58` on Packagist (not yet released)                                                                       |
 | Ruby                  | [`ruby/`](ruby/)                                                 | `uuid58` gem on RubyGems (not yet released)                                                                                     |
 | Dart/Flutter          | [`dart/`](dart/)                                                 | `uuid58` on pub.dev (not yet released)                                                                                          |
-| CLI                   | [`go/cmd/uuid58/`](go/cmd/uuid58/)                               | `go install github.com/nakanoasaservice/uuid58/go/cmd/uuid58@latest`                                                            |
+| CLI                   | [`go/cmd/uuid58/`](go/cmd/uuid58/)                               | `brew install nakanoasaservice/tap/uuid58`, `nix run github:nakanoasaservice/uuid58`, or `go install`                           |
 
 Swift has its own repository because Swift Package Manager expects
 `Package.swift` at the root of a repository.
