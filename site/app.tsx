@@ -13,12 +13,13 @@ import {
   installMethods,
   usageExample,
 } from "./cli";
-import { samples } from "./samples";
+import highlighted from "virtual:highlighted";
+import { sample as samplePair, samples } from "./samples";
 
 const REPO = "https://github.com/nakanoasaservice/uuid58";
 const SPEC_VERSION = /\*\*Version:\*\*\s*(\S+)/.exec(spec)?.[1] ?? "";
-const SAMPLE_UUID = "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf";
-const SAMPLE_UUID58 = "XDY9dmBbcMBXqcRvYw8xJ2";
+const SAMPLE_UUID = samplePair.decoded;
+const SAMPLE_UUID58 = samplePair.encoded;
 
 type Field = "encoded" | "decoded";
 type Pair = { encoded: string; decoded: string };
@@ -27,6 +28,20 @@ type ConversionState = Pair & {
   /** The last pair that converted successfully, for the code samples. */
   valid: Pair;
 };
+
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+/** Puts `values` into code highlighted with the sample pair. */
+function fill(html: string, values: Pair): string {
+  return html
+    .replaceAll(SAMPLE_UUID58, escapeHtml(values.encoded))
+    .replaceAll(SAMPLE_UUID, escapeHtml(values.decoded));
+}
 
 function newPair(): Pair {
   const encoded = uuid58();
@@ -220,9 +235,10 @@ function Samples(props: { values: () => Pair }) {
         </Show>
         <div class="code-block">
           <pre>
-            <code class={`language-${sample().language}`}>
-              {sample().install}
-            </code>
+            <code
+              class="language-shellscript"
+              innerHTML={highlighted.samples[sample().id]!.install}
+            />
           </pre>
           <CopyButton
             text={() => sample().install}
@@ -231,7 +247,13 @@ function Samples(props: { values: () => Pair }) {
         </div>
         <div class="code-block">
           <pre>
-            <code class={`language-${sample().language}`}>{code()}</code>
+            <code
+              class={`language-${sample().language}`}
+              innerHTML={fill(
+                highlighted.samples[sample().id]!.code,
+                props.values(),
+              )}
+            />
           </pre>
           <CopyButton text={code} label="Copy code sample" />
         </div>
@@ -294,7 +316,10 @@ function CommandLine(props: { values: () => Pair }) {
       >
         <div class="code-block">
           <pre>
-            <code class="language-shell">{method().command}</code>
+            <code
+              class="language-shellscript"
+              innerHTML={highlighted.install[method().id]!}
+            />
           </pre>
           <CopyButton
             text={() => method().command}
@@ -318,7 +343,10 @@ function CommandLine(props: { values: () => Pair }) {
       </p>
       <div class="code-block">
         <pre>
-          <code class="language-shell">{usage()}</code>
+          <code
+            class="language-shellsession"
+            innerHTML={fill(highlighted.usage, props.values())}
+          />
         </pre>
         <CopyButton text={usage} label="Copy usage example" />
       </div>

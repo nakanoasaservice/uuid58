@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig, runnerImport, type Plugin } from "vite-plus";
 import solid from "vite-plugin-solid";
+import { highlight } from "./highlight";
 
 // Use the library source in this repository, so the site always matches main.
 const alias = {
@@ -23,7 +24,7 @@ function prerender(): Plugin {
         {
           configFile: false,
           logLevel: "warn",
-          plugins: [solid({ ssr: true })],
+          plugins: [solid({ ssr: true }), highlight()],
           resolve: { alias },
         },
       );
@@ -38,7 +39,7 @@ function prerender(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [solid({ ssr: true }), prerender()],
+  plugins: [solid({ ssr: true }), highlight(), prerender()],
   base: "/uuid58/",
   resolve: { alias },
   lint: {

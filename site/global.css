@@ -452,3 +452,13 @@ footer.container {
     white-space: normal;
   }
 }
+
+/* Syntax highlighting: highlight.ts emits both themes as CSS variables. */
+.code-block code span {
+  color: var(--shiki-light);
+}
+@media (prefers-color-scheme: dark) {
+  .code-block code span {
+    color: var(--shiki-dark);
+  }
+}

@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "shiki": "^4.6.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
     "vite-plugin-solid": "^2.11.14",
     "vite-plus": "^1.6.0"
