@@ -11,7 +11,12 @@ export type Sample = {
   docs: string;
   /** Where the package is published. */
   registries: { label: string; href: string }[];
+  /** Shown above the install command, such as before the first release. */
+  note?: string;
 };
+
+const unreleased =
+  "Not released yet. The install command works once the first version is published.";
 
 const repo = "https://github.com/nakanoasaservice/uuid58";
 
@@ -157,6 +162,70 @@ try uuid58Decode("${encoded}")
     registries: [],
   },
   {
+    id: "csharp",
+    label: "C#",
+    language: "csharp",
+    install: "dotnet add package Uuid58",
+    code: ({ encoded, decoded }) => `using NakanoAsAService.Uuid58;
+
+Uuid58.EncodeUuidString("${decoded}");
+// "${encoded}"
+
+Uuid58.Decode("${encoded}");
+// "${decoded}"`,
+    docs: `${repo}/tree/main/dotnet#readme`,
+    registries: [],
+    note: unreleased,
+  },
+  {
+    id: "php",
+    label: "PHP",
+    language: "php",
+    install: "composer require nakanoasaservice/uuid58",
+    code: ({ encoded, decoded }) => `use NakanoAsAService\\Uuid58\\Uuid58;
+
+Uuid58::encode('${decoded}');
+// '${encoded}'
+
+Uuid58::decode('${encoded}');
+// '${decoded}'`,
+    docs: `${repo}/tree/main/php#readme`,
+    registries: [],
+    note: unreleased,
+  },
+  {
+    id: "ruby",
+    label: "Ruby",
+    language: "ruby",
+    install: "bundle add uuid58",
+    code: ({ encoded, decoded }) => `require "uuid58"
+
+Uuid58.encode("${decoded}")
+# => "${encoded}"
+
+Uuid58.decode("${encoded}")
+# => "${decoded}"`,
+    docs: `${repo}/tree/main/ruby#readme`,
+    registries: [],
+    note: unreleased,
+  },
+  {
+    id: "dart",
+    label: "Dart",
+    language: "dart",
+    install: "dart pub add uuid58",
+    code: ({ encoded, decoded }) => `import 'package:uuid58/uuid58.dart';
+
+uuid58Encode('${decoded}');
+// '${encoded}'
+
+uuid58Decode('${encoded}');
+// '${decoded}'`,
+    docs: `${repo}/tree/main/dart#readme`,
+    registries: [],
+    note: unreleased,
+  },
+  {
     id: "postgres",
     label: "PostgreSQL",
     language: "sql",
@@ -168,5 +237,20 @@ SELECT uuid58_decode('${encoded}');
 -- ${decoded}`,
     docs: `${repo}/tree/main/postgres#readme`,
     registries: [],
+  },
+  {
+    id: "cli",
+    label: "CLI",
+    language: "shell",
+    install:
+      "go install github.com/nakanoasaservice/uuid58/go/cmd/uuid58@latest",
+    code: ({ encoded, decoded }) => `$ uuid58 encode ${decoded}
+${encoded}
+
+$ uuid58 decode ${encoded}
+${decoded}`,
+    docs: `${repo}/tree/main/go#command-line-tool`,
+    registries: [],
+    note: unreleased,
   },
 ];

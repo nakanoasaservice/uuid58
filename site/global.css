@@ -102,7 +102,7 @@ input {
 }
 
 /* Sections */
-main > section {
+main > section:not(.hero) {
   padding-top: 56px;
 }
 h1,
@@ -321,6 +321,11 @@ input[aria-invalid="true"] {
 .sample-panel {
   display: grid;
   gap: 10px;
+}
+.sample-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
 }
 .code-block {
   position: relative;

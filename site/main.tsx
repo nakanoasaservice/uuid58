@@ -210,6 +210,9 @@ function Samples(props: { values: () => Pair }) {
         role="tabpanel"
         aria-labelledby={`tab-${sample().id}`}
       >
+        <Show when={sample().note}>
+          {(note) => <p class="sample-note">{note()}</p>}
+        </Show>
         <div class="code-block">
           <pre>
             <code class={`language-${sample().language}`}>
