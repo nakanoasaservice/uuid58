@@ -1,0 +1,40 @@
+{
+    "name": "nakanoasaservice/uuid58",
+    "description": "Encode UUIDs as 22-character Base58 strings, and back. Order-preserving, strict, no extensions required.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["uuid", "base58", "uuid58", "short-uuid", "encoding"],
+    "homepage": "https://github.com/nakanoasaservice/uuid58",
+    "support": {
+        "issues": "https://github.com/nakanoasaservice/uuid58/issues",
+        "source": "https://github.com/nakanoasaservice/uuid58"
+    },
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5 || ^11.5 || ^12.5 || ^13.0",
+        "ramsey/uuid": "^4.7"
+    },
+    "suggest": {
+        "ramsey/uuid": "For RamseyUuid58::encode() and RamseyUuid58::decode()"
+    },
+    "autoload": {
+        "psr-4": {
+            "NakanoAsAService\\Uuid58\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NakanoAsAService\\Uuid58\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
