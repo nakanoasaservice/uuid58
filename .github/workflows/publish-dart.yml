@@ -1,0 +1,90 @@
+name: Publish Dart
+
+# Release the Dart package by pushing a dart/v… tag:
+#   1. Bump "version" in dart/pubspec.yaml, add a "## <version>" section to
+#      dart/CHANGELOG.md, and merge it into main.
+#   2. git tag dart/v1.2.3 <commit on main> && git push origin dart/v1.2.3
+#
+# pub.dev publishes through automated publishing (OIDC), configured on the
+# package's admin page with the tag pattern "dart/v{{version}}" and the
+# "production" environment required.
+on:
+  push:
+    tags:
+      - "dart/v*"
+
+permissions: {}
+
+jobs:
+  # Checks the tag and runs the tests without any publishing credentials.
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: dart
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1.8.2
+        with:
+          sdk: stable
+
+      - name: Verify tag matches dart/pubspec.yaml and is on main
+        run: |
+          VERSION=$(sed -n 's/^version: *//p' pubspec.yaml)
+          if [ "$GITHUB_REF_NAME" != "dart/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match dart/pubspec.yaml version dart/v$VERSION"
+            exit 1
+          fi
+          if ! grep -qx "## $VERSION" CHANGELOG.md; then
+            echo "::error::dart/CHANGELOG.md has no \"## $VERSION\" section"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      # No dependency cache in the release job, to rule out cache poisoning.
+      - name: Run tests
+        run: |
+          dart pub get
+          dart test
+          dart test -p node
+
+  # The official pub.dev publishing workflow: validates, builds the archive
+  # without network access, and publishes it with an OIDC token in a job
+  # that requires the "production" environment.
+  publish:
+    needs: verify
+    permissions:
+      contents: read
+      id-token: write # OIDC for pub.dev automated publishing
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1.8.2
+    with:
+      environment: production
+      working-directory: dart
+      sdk: stable
+      use-flutter: false
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes

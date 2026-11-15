@@ -22,6 +22,10 @@ jobs:
       rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
       postgres: ${{ steps.filter.outputs.postgres }}
+      dotnet: ${{ steps.filter.outputs.dotnet }}
+      php: ${{ steps.filter.outputs.php }}
+      ruby: ${{ steps.filter.outputs.ruby }}
+      dart: ${{ steps.filter.outputs.dart }}
       site: ${{ steps.filter.outputs.site }}
     permissions:
       pull-requests: read
@@ -54,6 +58,10 @@ jobs:
           set_output rust   '^(rust/|\.github/workflows/ci-rust\.yml$)'
           set_output java   '^(java/|\.github/workflows/ci-java\.yml$)'
           set_output postgres '^(postgres/|\.github/workflows/ci-postgres\.yml$)'
+          set_output dotnet   '^(dotnet/|\.github/workflows/ci-dotnet\.yml$)'
+          set_output php      '^(php/|\.github/workflows/ci-php\.yml$)'
+          set_output ruby     '^(ruby/|\.github/workflows/ci-ruby\.yml$)'
+          set_output dart     '^(dart/|\.github/workflows/ci-dart\.yml$)'
           # The site builds against js/ and reads spec/, so check it when those change too.
           set_output site   '^((site|js)/|\.github/workflows/ci-site\.yml$)'
 
@@ -92,6 +100,26 @@ jobs:
     if: needs.changes.outputs.postgres == 'true'
     uses: ./.github/workflows/ci-postgres.yml
 
+  dotnet:
+    needs: changes
+    if: needs.changes.outputs.dotnet == 'true'
+    uses: ./.github/workflows/ci-dotnet.yml
+
+  php:
+    needs: changes
+    if: needs.changes.outputs.php == 'true'
+    uses: ./.github/workflows/ci-php.yml
+
+  ruby:
+    needs: changes
+    if: needs.changes.outputs.ruby == 'true'
+    uses: ./.github/workflows/ci-ruby.yml
+
+  dart:
+    needs: changes
+    if: needs.changes.outputs.dart == 'true'
+    uses: ./.github/workflows/ci-dart.yml
+
   site:
     needs: changes
     if: needs.changes.outputs.site == 'true'
@@ -103,7 +131,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, postgres, site, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, postgres, dotnet, php, ruby, dart, site, actions-lock]
     if: always()
     runs-on: ubuntu-latest
     steps:
