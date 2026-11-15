@@ -1,4 +1,4 @@
-import { encodeWords } from "./internal.ts";
+import { encodeWords } from "./base58.ts";
 
 // Reused across calls to avoid allocating a typed array per ID. It is
 // overwritten with fresh random values on every call.

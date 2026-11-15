@@ -2,15 +2,17 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vite-plus/test";
 
-import { UUID58_ALPHABET } from "./alphabet.ts";
-import { isUuid58 } from "./check.ts";
 import {
+  isUuid58,
+  UUID58_ALPHABET,
+  Uuid58DecodeError,
   uuid58DecodeBytesSafe,
+  uuid58DecodeSafe,
+  Uuid58EncodeError,
   uuid58EncodeBytes,
   uuid58EncodeBytesSafe,
-} from "./bytes.ts";
-import { Uuid58DecodeError, uuid58DecodeSafe } from "./decode.ts";
-import { Uuid58EncodeError, uuid58EncodeSafe } from "./encode.ts";
+  uuid58EncodeSafe,
+} from "./index.ts";
 
 // Conformance tests against the language-neutral test vectors in spec/.
 // See spec/SPEC.md, Section 8.
@@ -50,7 +52,7 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 const vectors = JSON.parse(
-  readFileSync(new URL("../spec/vectors.json", import.meta.url), "utf8"),
+  readFileSync(new URL("../../spec/vectors.json", import.meta.url), "utf8"),
 ) as Vectors;
 
 describe(`spec vectors (spec ${vectors.spec_version})`, () => {

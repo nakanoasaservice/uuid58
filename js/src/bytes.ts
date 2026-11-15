@@ -1,6 +1,5 @@
-import { decodeWords, Uuid58DecodeError } from "./decode.ts";
-import { Uuid58EncodeError } from "./encode.ts";
-import { encodeWords } from "./internal.ts";
+import { decodeWords, encodeWords } from "./base58.ts";
+import { Uuid58DecodeError, Uuid58EncodeError } from "./errors.ts";
 
 /** Reused input for {@link encodeWords}; overwritten on every call. */
 const words = new Uint32Array(4);

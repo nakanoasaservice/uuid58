@@ -14,7 +14,7 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { TestContext } from "vite-plus/test";
 
-import type * as Uuid58 from "../index.ts";
+import type * as Uuid58 from "../src/index.ts";
 
 export type Impl = typeof Uuid58;
 type Bench = TestContext["bench"];
