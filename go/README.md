@@ -23,6 +23,9 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 [Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
 [Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
+> **Status:** the library is 0.x, so its API may still change. The encoding
+> itself follows spec 1.1.0, and the format does not change within spec 1.x.
+
 ## Install
 
 ```bash
@@ -208,8 +211,6 @@ attaches them to a GitHub Release, and updates `Formula/uuid58.rb` in
 [nakanoasaservice/homebrew-tap](https://github.com/nakanoasaservice/homebrew-tap).
 That last step needs a `HOMEBREW_TAP_TOKEN` secret: a fine-grained token with
 Contents read and write access to the tap repository only.
-
-Versions stay below 1.0.0 until the specification reaches 1.0.0.
 
 ## License
 
