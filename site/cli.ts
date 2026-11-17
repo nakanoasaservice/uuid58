@@ -25,7 +25,7 @@ export const installMethods: InstallMethod[] = [
     id: "nix",
     label: "Nix",
     command: "nix profile install github:nakanoasaservice/uuid58",
-    note: "Builds from source. To try it without installing, run nix run github:nakanoasaservice/uuid58 -- gen.",
+    note: "Builds from source.",
   },
   {
     id: "go",
@@ -35,6 +35,9 @@ export const installMethods: InstallMethod[] = [
     note: "Needs Go 1.26 or later. Installs into $(go env GOPATH)/bin.",
   },
 ];
+
+/** Runs the CLI once without installing it. Arguments go after --. */
+export const tryCommand = "nix run github:nakanoasaservice/uuid58 -- gen";
 
 export function usageExample({
   encoded,

@@ -11,6 +11,7 @@ import {
   cliReleases,
   commands,
   installMethods,
+  tryCommand,
   usageExample,
 } from "./cli";
 import highlighted from "virtual:highlighted";
@@ -333,6 +334,19 @@ function CommandLine(props: { values: () => Pair }) {
         <a href={cliReleases}>GitHub Releases</a>. The CLI ships with the next
         Go release; until then, only the Nix flake installs it.
       </p>
+
+      <h3>Try without installing</h3>
+      <p>
+        With Nix, <code>nix run</code> builds the CLI and runs it on the spot,
+        leaving nothing installed. Put the command and its arguments after{" "}
+        <code>--</code>.
+      </p>
+      <div class="code-block">
+        <pre>
+          <code class="language-shellscript" innerHTML={highlighted.try} />
+        </pre>
+        <CopyButton text={() => tryCommand} label="Copy nix run command" />
+      </div>
 
       <h3>Usage</h3>
       <p>

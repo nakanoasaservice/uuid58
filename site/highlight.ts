@@ -4,7 +4,7 @@
 // sample pair filled in; app.tsx swaps in the playground values with fill().
 import { createHighlighter } from "shiki";
 import type { Plugin } from "vite-plus";
-import { installMethods, usageExample } from "./cli";
+import { installMethods, tryCommand, usageExample } from "./cli";
 import { sample, samples } from "./samples";
 
 const id = "virtual:highlighted";
@@ -69,6 +69,7 @@ export function highlight(): Plugin {
         install: Object.fromEntries(
           installMethods.map((m) => [m.id, toHtml(m.command, "shellscript")]),
         ),
+        try: toHtml(tryCommand, "shellscript"),
         usage: withValues(usageExample(sample), "shellsession"),
       };
       highlighter.dispose();
