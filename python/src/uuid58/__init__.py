@@ -34,7 +34,7 @@ __all__ = [
     "uuid58",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 ALPHABET: Final = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 """The Bitcoin Base58 alphabet, in ascending ASCII order (SPEC.md Section 2)."""
