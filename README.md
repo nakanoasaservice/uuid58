@@ -1,46 +1,113 @@
 # uuid58
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-uuid58 encodes a UUID as a fixed 22-character Base58 string, using the Bitcoin
-alphabet. The result is shorter than the usual 36-character form, safe to use
-in URLs, and free of look-alike characters (`0`, `O`, `I`, `l`).
+**Shorten UUIDs to 22-character Base58 strings, and back.** uuid58 is a
+stable, well-tested encoding with one spec and libraries for JavaScript, Go,
+Python, Rust, Java, Kotlin, Swift, C#, PHP, Ruby, Dart, and PostgreSQL.
 
 ```text
 f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-Encoded strings sort in the same order as the UUIDs they encode.
+**[Try the converter in your browser →](https://nakanoasaservice.github.io/uuid58/)**
 
-[Try it on the website](https://nakanoasaservice.github.io/uuid58/).
+## Why uuid58
 
-## Specification
+- **Short and fixed-length.** Always 22 characters instead of 36. Validate
+  with one length check, and store in a fixed-width column such as `CHAR(22)`.
+- **URL-safe, no look-alikes.** Uses the Bitcoin Base58 alphabet: nothing to
+  escape in URLs, and no `0`, `O`, `I`, or `l` to misread.
+- **Sortable.** Strings sort in the same order as the UUIDs they encode, so
+  UUIDv7 IDs stay time-ordered.
+- **Still a UUID.** Conversion is lossless both ways. Keep UUID columns in
+  your database, and show uuid58 in URLs, APIs, and logs.
+- **Same output everywhere.** A string made in Go decodes to the same UUID in
+  Python, Rust, or PostgreSQL.
 
-[`spec/SPEC.md`](spec/SPEC.md) defines the format, and
-[`spec/vectors.json`](spec/vectors.json) holds test vectors that every
-implementation must pass. The current version of the spec is 1.0.0.
+## Stable and well tested
 
-## Implementations
+- **[Spec 1.0.0](spec/SPEC.md)** defines the alphabet, the padding, every
+  accepted input, and every error kind. The format will not change within
+  1.x.
+- **[Shared test vectors](spec/vectors.json)**: over 200 cases, 120 of them
+  invalid inputs. Every implementation runs them in CI.
 
-| Language              | Directory                                                        | Package                                                                                                                         |
-| --------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| JavaScript/TypeScript | [`js/`](js/)                                                     | [`@nakanoaas/uuid58`](https://www.npmjs.com/package/@nakanoaas/uuid58) on npm and [JSR](https://jsr.io/@nakanoaas/uuid58)       |
-| Go                    | [`go/`](go/)                                                     | [`github.com/nakanoasaservice/uuid58/go`](https://pkg.go.dev/github.com/nakanoasaservice/uuid58/go)                             |
-| Python                | [`python/`](python/)                                             | [`uuid58`](https://pypi.org/project/uuid58/) on PyPI                                                                            |
-| Rust                  | [`rust/`](rust/)                                                 | [`uuid58`](https://crates.io/crates/uuid58) on crates.io                                                                        |
-| Java/Kotlin           | [`java/`](java/)                                                 | [`io.github.nakanoasaservice:uuid58`](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58) on Maven Central |
-| Swift                 | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                                                                                                           |
-| PostgreSQL            | [`postgres/`](postgres/)                                         | SQL file, no extension needed                                                                                                   |
-| C#/.NET               | [`dotnet/`](dotnet/)                                             | `Uuid58` on NuGet (not yet released)                                                                                            |
-| PHP                   | [`php/`](php/)                                                   | `nakanoasaservice/uuid58` on Packagist (not yet released)                                                                       |
-| Ruby                  | [`ruby/`](ruby/)                                                 | `uuid58` gem on RubyGems (not yet released)                                                                                     |
-| Dart/Flutter          | [`dart/`](dart/)                                                 | `uuid58` on pub.dev (not yet released)                                                                                          |
-| CLI                   | [`go/cmd/uuid58/`](go/cmd/uuid58/)                               | `brew install nakanoasaservice/tap/uuid58`, `nix run github:nakanoasaservice/uuid58`, or `go install`                           |
+## Install
 
-Swift has its own repository because Swift Package Manager expects
-`Package.swift` at the root of a repository.
-The JavaScript package follows the spec from 2.0; 1.x accepts hyphens
-anywhere in its input, which the spec does not allow.
+| Language                                                  | Install                                        | Package                                                                                         |
+| --------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [JavaScript / TypeScript](js/)                            | `npm i @nakanoaas/uuid58`                      | [npm](https://www.npmjs.com/package/@nakanoaas/uuid58), [JSR](https://jsr.io/@nakanoaas/uuid58) |
+| [Go](go/)                                                 | `go get github.com/nakanoasaservice/uuid58/go` | [pkg.go.dev](https://pkg.go.dev/github.com/nakanoasaservice/uuid58/go)                          |
+| [Python](python/)                                         | `pip install uuid58`                           | [PyPI](https://pypi.org/project/uuid58/)                                                        |
+| [Rust](rust/)                                             | `cargo add uuid58`                             | [crates.io](https://crates.io/crates/uuid58)                                                    |
+| [Java / Kotlin](java/)                                    | `io.github.nakanoasaservice:uuid58`            | [Maven Central](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58)        |
+| [Swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                          | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift)                                |
+| [PostgreSQL](postgres/)                                   | One SQL file, no extension                     | [`uuid58.sql`](postgres/uuid58.sql)                                                             |
+| [C# / .NET](dotnet/)                                      | `dotnet add package Uuid58`                    | NuGet (not yet released)                                                                        |
+| [PHP](php/)                                               | `composer require nakanoasaservice/uuid58`     | Packagist (not yet released)                                                                    |
+| [Ruby](ruby/)                                             | `bundle add uuid58`                            | RubyGems (not yet released)                                                                     |
+| [Dart / Flutter](dart/)                                   | `dart pub add uuid58`                          | pub.dev (not yet released)                                                                      |
+| [CLI](go/cmd/uuid58/)                                     | `brew install nakanoasaservice/tap/uuid58`     | Homebrew, `nix run github:nakanoasaservice/uuid58`, or `go install`                             |
+
+Each language links to its README with usage and API details. Swift has its
+own repository because Swift Package Manager expects `Package.swift` at the
+root of a repository. The JavaScript package follows the spec from 2.0; 1.x
+accepts hyphens anywhere in its input, which the spec does not allow.
+
+## How uuid58 compares
+
+| Option             | Length | Still a UUID? | Notes                                                                                    |
+| ------------------ | ------ | ------------- | ---------------------------------------------------------------------------------------- |
+| **uuid58**         | 22     | Yes           | Bitcoin Base58, fixed length, sortable, one spec across languages.                       |
+| Standard UUID      | 36     | Yes           | Long, and the hyphens stop a double-click from selecting the whole ID.                   |
+| short-uuid (npm)   | 22     | Yes           | Flickr Base58 by default: a different alphabet order, so its strings differ from uuid58. |
+| shortuuid (Python) | 22     | Yes           | A 57-character alphabet; its strings differ from uuid58.                                 |
+| slugid             | 22     | Yes           | URL-safe Base64, so IDs can contain `-` and `_`.                                         |
+| ULID               | 26     | No            | Its own format (Crockford Base32), 128-bit compatible with UUID but written differently. |
+| Nano ID            | 21     | No            | Random IDs, not UUIDs. Nothing to convert back to.                                       |
+
+Pick uuid58 when you already use UUIDs (or want to), need them short in URLs
+and APIs, and want every service and language to agree on the string.
+
+## FAQ
+
+<details>
+<summary>Will the format change?</summary>
+
+No. Spec 1.0.0 fixes the alphabet, the padding, and the accepted inputs. Any
+change that would alter an encoded string needs a new major version of the
+spec, and every implementation is tested against the same versioned vectors.
+
+</details>
+
+<details>
+<summary>Does it work with UUIDv7?</summary>
+
+Yes. uuid58 encodes any 128-bit UUID, and strings sort in the same order as
+the UUIDs, so UUIDv7 IDs stay time-ordered when sorted as strings.
+
+</details>
+
+<details>
+<summary>Can I use uuid58 for Firestore document IDs?</summary>
+
+Yes. uuid58 strings meet Firestore's document ID rules. Use random (v4)
+UUIDs: Firestore advises against sequential IDs, which can cause write
+hotspots. If you later move to a relational database, decode each ID into a
+UUID column; references between records carry over as they are.
+
+</details>
+
+<details>
+<summary>I found a 22-character ID like <code>XDY9dmBbcMBXqcRvYw8xJ2</code>. Is it uuid58?</summary>
+
+If it uses only Base58 characters (no `0`, `O`, `I`, `l`) and decodes in the
+[converter](https://nakanoasaservice.github.io/uuid58/), it is likely a
+uuid58-encoded UUID.
+
+</details>
 
 ## Website
 
@@ -58,4 +125,4 @@ uuid58-swift.
 
 ## License
 
-MIT License - see the [LICENSE](LICENSE) file for details
+MIT License. See [LICENSE](LICENSE).
