@@ -16,7 +16,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   no `0`, `O`, `I`, or `l`.
 - **Sortable**: sorting uuid58 strings by byte gives the same order as
   sorting the UUIDs, so UUIDv7 IDs stay time-ordered.
-- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+- **Stable spec, well tested**: implements uuid58 spec 1.1.0 and passes its
   200+ shared test vectors, so the output matches every other language.
 - **`#![no_std]`**, no allocator required, no required dependencies.
 - **Strict parsing**: rejects malformed UUIDs, non-ASCII input, and values
@@ -139,7 +139,7 @@ supports your toolchain.
 
 ## Compatibility
 
-This crate implements [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and
+This crate implements [uuid58 spec 1.1.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and
 passes the shared [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json), so it
 produces exactly the same strings as the other implementations.
 

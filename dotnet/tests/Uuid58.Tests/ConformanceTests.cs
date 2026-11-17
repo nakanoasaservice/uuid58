@@ -64,7 +64,7 @@ public class ConformanceTests
     private static byte[] UuidBytes(string uuid) => HexToBytes(uuid.Replace("-", ""));
 
     [Fact]
-    public void SpecVersion() => Assert.Equal("1.0.0", Vectors.GetProperty("spec_version").GetString());
+    public void SpecVersion() => Assert.Equal("1.1.0", Vectors.GetProperty("spec_version").GetString());
 
     [Fact]
     public void AlphabetMatches() => Assert.Equal(Uuid58.Alphabet, Vectors.GetProperty("alphabet").GetString());

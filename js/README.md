@@ -16,7 +16,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   no `0`, `O`, `I`, or `l` to misread.
 - **Sortable**: sorting uuid58 strings with the default string comparison
   sorts the UUIDs they encode, so UUIDv7 IDs stay time-ordered.
-- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+- **Stable spec, well tested**: implements uuid58 spec 1.1.0 and passes its
   200+ shared test vectors, so the output matches every other language.
 - **Fast**: encodes in about 0.5 µs and decodes in about 0.3 µs on Node.js,
   roughly 10× faster than short-uuid and 3× faster than bs58, with full

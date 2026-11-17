@@ -150,10 +150,19 @@ def test_error_hierarchy() -> None:
     assert not issubclass(uuid58.ValueOverflowError, OverflowError)
 
 
-def test_error_message_is_bounded() -> None:
-    with pytest.raises(uuid58.InvalidLengthError) as info:
+def test_error_message_excludes_input() -> None:
+    """SPEC.md Section 7: error messages leave the untrusted input out."""
+    with pytest.raises(uuid58.InvalidLengthError) as length_info:
         uuid58.decode("a" * 10_000 + "\n")
-    assert len(str(info.value)) < 200
+    assert "aa" not in str(length_info.value)
+    with pytest.raises(uuid58.InvalidCharacterError) as info:
+        uuid58.decode("1111111111111111111\nab")
+    assert str(info.value) == "Invalid uuid58 character at position 19"
+    with pytest.raises(uuid58.InvalidCharacterError) as info:
+        uuid58.encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfa\n")
+    assert str(info.value) == (
+        "Invalid UUID: expected a hexadecimal digit at position 35"
+    )
 
 
 # --- Generation and properties ----------------------------------------------

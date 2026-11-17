@@ -104,7 +104,7 @@ final class ConformanceTest extends TestCase
     public function testMetadata(): void
     {
         $vectors = self::vectors();
-        self::assertSame('1.0.0', $vectors['spec_version']);
+        self::assertSame('1.1.0', $vectors['spec_version']);
         self::assertSame(Uuid58::ALPHABET, $vectors['alphabet']);
 
         $max = '';

@@ -85,19 +85,24 @@ describe("uuid58EncodeSafe / uuid58DecodeSafe", () => {
     }
   });
 
-  it("truncates and escapes untrusted input in error messages", () => {
+  it("keeps the input out of error messages (spec Section 7)", () => {
     const huge = "x".repeat(1_000_000);
-    const encodeError = uuid58EncodeSafe(huge);
-    const decodeError = uuid58DecodeSafe(huge);
-    for (const error of [encodeError, decodeError]) {
+    for (const error of [uuid58EncodeSafe(huge), uuid58DecodeSafe(huge)]) {
       expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message.length).toBeLessThan(300);
-      expect((error as Error).message).toContain("1000000 characters");
+      expect((error as Error).message).not.toContain("xx");
+      expect((error as Error).message).toContain("1000000");
     }
 
     const forged = uuid58DecodeSafe("1111111111111111111\nab");
     expect(forged).toBeInstanceOf(Uuid58DecodeError);
-    expect((forged as Error).message).not.toContain("\n");
+    expect((forged as Error).message).toBe(
+      "Invalid Base58 character at index 19",
+    );
+
+    const encodeError = uuid58EncodeSafe(
+      "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfa\n",
+    );
+    expect((encodeError as Error).message).not.toContain("f4b247fd");
   });
 });
 

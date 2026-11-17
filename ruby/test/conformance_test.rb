@@ -26,7 +26,7 @@ class ConformanceTest < Minitest::Test
   end
 
   def test_metadata
-    assert_equal "1.0.0", VECTORS["spec_version"]
+    assert_equal "1.1.0", VECTORS["spec_version"]
     assert_equal Uuid58::ALPHABET, VECTORS["alphabet"]
     assert_equal Uuid58::MAX_UUID58, VECTORS["roundtrip"].map { |c| c["uuid58"] }.max
   end

@@ -14,7 +14,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   no look-alike characters (`0`, `O`, `I`, `l`).
 - **Sortable**: sorting uuid58 strings by code unit sorts the UUIDs
   numerically, so UUIDv7 IDs stay time-ordered.
-- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+- **Stable spec, well tested**: implements uuid58 spec 1.1.0 and passes its
   200+ shared test vectors, so the output matches every other language.
 - **Works on every Dart platform**: the VM, Flutter (iOS, Android, desktop),
   and the web (dart2js and dart2wasm). The arithmetic uses 32-bit words, so it

@@ -5,7 +5,7 @@ namespace NakanoAsAService.Uuid58
 {
     /// <summary>
     /// Encodes UUIDs as fixed-length, order-preserving 22-character Base58
-    /// strings, as defined by the uuid58 specification 1.0.0.
+    /// strings, as defined by the uuid58 specification 1.1.0.
     /// </summary>
     /// <remarks>
     /// Byte arrays are always 16 bytes in big-endian (RFC 9562) order.

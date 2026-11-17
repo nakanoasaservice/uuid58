@@ -7,7 +7,7 @@ Example: `f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf` ⇄ `XDY9dmBbcMBXqcRvYw8xJ2`
 Key facts:
 
 - Conversion is lossless both ways: keep UUIDs in your database and show uuid58 in URLs, APIs, and logs.
-- The format is fixed by spec 1.0.0 and does not change within spec 1.x.
+- The format is fixed by spec 1.1.0 and does not change within spec 1.x.
 - Not interchangeable with short-uuid (npm, Flickr Base58 by default), shortuuid (Python, 57-character alphabet), or slugid (URL-safe Base64), even though those are also 22 characters.
 - The JavaScript package encodes in about 0.5 µs and decodes in about 0.3 µs on Node.js, several times faster than short-uuid and bs58.
 

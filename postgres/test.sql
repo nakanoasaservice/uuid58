@@ -57,7 +57,7 @@ DECLARE
   kind text;
   hex text;
 BEGIN
-  IF v->>'spec_version' <> '1.0.0' THEN
+  IF v->>'spec_version' <> '1.1.0' THEN
     RAISE EXCEPTION 'unexpected spec_version %', v->>'spec_version';
   END IF;
 

@@ -28,7 +28,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 
 ## Stable and well tested
 
-- **[Spec 1.0.0](spec/SPEC.md)** defines the alphabet, the padding, every
+- **[Spec 1.1.0](spec/SPEC.md)** defines the alphabet, the padding, every
   accepted input, and every error kind. The format will not change within
   1.x.
 - **[Shared test vectors](spec/vectors.json)**: over 200 cases, 120 of them
@@ -76,7 +76,7 @@ and APIs, and want every service and language to agree on the string.
 <details>
 <summary>Will the format change?</summary>
 
-No. Spec 1.0.0 fixes the alphabet, the padding, and the accepted inputs. Any
+No. Spec 1.1.0 fixes the alphabet, the padding, and the accepted inputs. Any
 change that would alter an encoded string needs a new major version of the
 spec, and every implementation is tested against the same versioned vectors.
 

@@ -8,7 +8,7 @@
  * @module
  */
 import { UUID58_ALPHABET } from "./alphabet.ts";
-import { previewInput, Uuid58DecodeError } from "./errors.ts";
+import { Uuid58DecodeError } from "./errors.ts";
 
 /** 2^32. Multiplying by it shifts a value left by one 32-bit word. */
 const WORD = 4294967296;
@@ -128,9 +128,8 @@ function invalidCharacterError(uuid58: string): Uuid58DecodeError {
   while (digitAt(uuid58, i) >= 0) {
     i++;
   }
-  const char = String.fromCodePoint(uuid58.codePointAt(i)!);
   return new Uuid58DecodeError(
-    `Invalid Base58 character ${JSON.stringify(char)} found in input: ${previewInput(uuid58)}`,
+    `Invalid Base58 character at index ${i}`,
     "invalid_character",
   );
 }
@@ -149,7 +148,7 @@ function invalidCharacterError(uuid58: string): Uuid58DecodeError {
 export function decodeWords(uuid58: string): Uint32Array | Uuid58DecodeError {
   if (uuid58.length !== 22) {
     return new Uuid58DecodeError(
-      `Expected Base58 string of length 22, but received string of length ${uuid58.length}: ${previewInput(uuid58)}`,
+      `Expected Base58 string of length 22, but received string of length ${uuid58.length}`,
       "invalid_length",
     );
   }
@@ -181,7 +180,7 @@ export function decodeWords(uuid58: string): Uint32Array | Uuid58DecodeError {
 
   if (w0 >= WORD) {
     return new Uuid58DecodeError(
-      `Decoded value exceeds 128 bits of UUID: ${previewInput(uuid58)}`,
+      "Decoded value exceeds 128 bits of UUID",
       "overflow",
     );
   }

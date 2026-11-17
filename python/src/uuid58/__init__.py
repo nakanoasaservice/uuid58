@@ -50,7 +50,6 @@ _MAX_UINT128: Final = (1 << 128) - 1
 _DIGIT_VALUES: Final = {c: i for i, c in enumerate(ALPHABET)}
 _HEX_DIGITS: Final = frozenset("0123456789abcdefABCDEF")
 _HYPHEN_POSITIONS: Final = (8, 13, 18, 23)
-_MAX_PREVIEW_LENGTH: Final = 40
 
 
 class ErrorKind(str, enum.Enum):
@@ -102,14 +101,6 @@ class ValueOverflowError(Uuid58Error):
     kind = ErrorKind.OVERFLOW
 
 
-def _preview(value: object) -> str:
-    """Formats untrusted input for an error message: truncated and repr()'d,
-    so huge or multi-line inputs cannot bloat or forge log lines."""
-    if isinstance(value, (str, bytes, bytearray)) and len(value) > _MAX_PREVIEW_LENGTH:
-        return f"{value[:_MAX_PREVIEW_LENGTH]!r}... (length {len(value)})"
-    return repr(value)
-
-
 # --- encoding ---------------------------------------------------------------
 
 
@@ -132,22 +123,21 @@ def _parse_uuid_string(s: str) -> int:
         for pos in _HYPHEN_POSITIONS:
             if s[pos] != "-":
                 raise InvalidCharacterError(
-                    f"Invalid UUID: expected '-' at position {pos} in {_preview(s)}"
+                    f"Invalid UUID: expected '-' at position {pos}"
                 )
         hex_digits = s[0:8] + s[9:13] + s[14:18] + s[19:23] + s[24:36]
     elif length == 32:
         hex_digits = s
     else:
         raise InvalidLengthError(
-            f"Invalid UUID length: expected 32 or 36 characters, got {length} "
-            f"in {_preview(s)}"
+            f"Invalid UUID length: expected 32 or 36 characters, got {length}"
         )
     # Membership in an explicit ASCII set: no Unicode digits, signs,
     # underscores or whitespace can slip through to int().
-    for c in hex_digits:
-        if c not in _HEX_DIGITS:
+    for pos, c in enumerate(s):
+        if c not in _HEX_DIGITS and not (length == 36 and pos in _HYPHEN_POSITIONS):
             raise InvalidCharacterError(
-                f"Invalid UUID: {c!r} is not a hexadecimal digit in {_preview(s)}"
+                f"Invalid UUID: expected a hexadecimal digit at position {pos}"
             )
     return int(hex_digits, 16)
 
@@ -187,9 +177,7 @@ def encode(value: UUIDLike) -> str:
         n = int.from_bytes(value, "big")
     elif isinstance(value, int) and not isinstance(value, bool):
         if not 0 <= value <= _MAX_UINT128:
-            raise ValueOverflowError(
-                f"Integer out of range for a 128-bit UUID: {_preview(value)}"
-            )
+            raise ValueOverflowError("Integer out of range for a 128-bit UUID")
         n = int(value)
     else:
         raise TypeError(
@@ -209,18 +197,16 @@ def _decode_uint128(s: str) -> int:
     if len(s) != _ENCODED_LENGTH:
         raise InvalidLengthError(
             f"Invalid uuid58 length: expected {_ENCODED_LENGTH} characters, "
-            f"got {len(s)} in {_preview(s)}"
+            f"got {len(s)}"
         )
     value = 0
-    for c in s:
+    for i, c in enumerate(s):
         digit = _DIGIT_VALUES.get(c)
         if digit is None:
-            raise InvalidCharacterError(
-                f"Invalid uuid58 character {c!r} in {_preview(s)}"
-            )
+            raise InvalidCharacterError(f"Invalid uuid58 character at position {i}")
         value = value * 58 + digit
     if value > _MAX_UINT128:
-        raise ValueOverflowError(f"uuid58 value exceeds 128 bits: {_preview(s)}")
+        raise ValueOverflowError("uuid58 value exceeds 128 bits")
     return value
 
 

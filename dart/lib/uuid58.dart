@@ -72,15 +72,12 @@ class Uuid58Exception implements FormatException {
   @override
   final int? offset;
 
+  /// Describes the error without the rejected input, which is untrusted and
+  /// may end up in logs (specification, Section 7). Read [source] for it.
   @override
   String toString() {
-    final src = source;
-    final shown = src is String
-        ? (src.length > 40 ? '${src.substring(0, 40)}...' : src)
-        : src;
     final at = offset == null ? '' : ' at offset $offset';
-    return 'Uuid58Exception(${kind.code}): $message$at'
-        '${src == null ? '' : ' in "$shown"'}';
+    return 'Uuid58Exception(${kind.code}): $message$at';
   }
 }
 
