@@ -1,5 +1,8 @@
-// Package uuid58 implements uuid58, a 22-character Base58 text encoding for
-// 128-bit UUIDs.
+// Package uuid58 shortens UUIDs to 22-character Base58 strings, and back.
+// The strings are URL-safe, have no look-alike characters, and sort in the
+// same order as the UUIDs they encode. It implements the stable uuid58
+// specification and passes its shared test vectors, so the output matches the
+// libraries for other languages.
 //
 // A UUID is read as an unsigned 128-bit big-endian integer and written in
 // base 58 with the Bitcoin alphabet, left-padded with '1' (the zero digit) to
