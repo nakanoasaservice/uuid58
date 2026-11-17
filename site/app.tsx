@@ -201,8 +201,6 @@ function Playground(props: {
 
 function Samples(props: { values: () => Pair }) {
   const [selected, setSelected] = createSignal(samples[0]!.id);
-  const sample = () => samples.find((s) => s.id === selected()) ?? samples[0]!;
-  const code = () => sample().code(props.values());
 
   return (
     <div class="samples">
@@ -214,7 +212,7 @@ function Samples(props: { values: () => Pair }) {
               role="tab"
               id={`tab-${s.id}`}
               aria-selected={selected() === s.id}
-              aria-controls="sample-panel"
+              aria-controls={`sample-panel-${s.id}`}
               tabIndex={selected() === s.id ? 0 : -1}
               onClick={() => setSelected(s.id)}
               onKeyDown={(event) => {
@@ -232,54 +230,63 @@ function Samples(props: { values: () => Pair }) {
           )}
         </For>
       </div>
-      <div
-        id="sample-panel"
-        class="sample-panel"
-        role="tabpanel"
-        aria-labelledby={`tab-${sample().id}`}
-      >
-        <Show when={sample().note}>
-          {(note) => <p class="sample-note">{note()}</p>}
-        </Show>
-        <div class="code-block">
-          <pre>
-            <code
-              class="language-shellscript"
-              innerHTML={highlighted.samples[sample().id]!.install}
-            />
-          </pre>
-          <CopyButton
-            text={() => sample().install}
-            label="Copy install command"
-          />
-        </div>
-        <div class="code-block">
-          <pre>
-            <code
-              class={`language-${sample().language}`}
-              innerHTML={fill(
-                highlighted.samples[sample().id]!.code,
-                props.values(),
-              )}
-            />
-          </pre>
-          <CopyButton text={code} label="Copy code sample" />
-        </div>
-        <p class="links">
-          <a href={sample().docs}>{sample().label} documentation</a>
-          <For each={sample().registries}>
-            {(registry) => <a href={registry.href}>{registry.label}</a>}
-          </For>
-        </p>
-      </div>
+      {/* Every panel is rendered, with all but the selected one hidden, so the
+          prerendered page carries the install command and code for every
+          language, not just the first. */}
+      <For each={samples}>
+        {(sample) => (
+          <div
+            id={`sample-panel-${sample.id}`}
+            class="sample-panel"
+            role="tabpanel"
+            aria-labelledby={`tab-${sample.id}`}
+            hidden={selected() !== sample.id}
+          >
+            <Show when={sample.note}>
+              {(note) => <p class="sample-note">{note()}</p>}
+            </Show>
+            <div class="code-block">
+              <pre>
+                <code
+                  class="language-shellscript"
+                  innerHTML={highlighted.samples[sample.id]!.install}
+                />
+              </pre>
+              <CopyButton
+                text={() => sample.install}
+                label={`Copy ${sample.label} install command`}
+              />
+            </div>
+            <div class="code-block">
+              <pre>
+                <code
+                  class={`language-${sample.language}`}
+                  innerHTML={fill(
+                    highlighted.samples[sample.id]!.code,
+                    props.values(),
+                  )}
+                />
+              </pre>
+              <CopyButton
+                text={() => sample.code(props.values())}
+                label={`Copy ${sample.label} code sample`}
+              />
+            </div>
+            <p class="links">
+              <a href={sample.docs}>{sample.label} documentation</a>
+              <For each={sample.registries}>
+                {(registry) => <a href={registry.href}>{registry.label}</a>}
+              </For>
+            </p>
+          </div>
+        )}
+      </For>
     </div>
   );
 }
 
 function CommandLine(props: { values: () => Pair }) {
   const [selected, setSelected] = createSignal(installMethods[0]!.id);
-  const method = () =>
-    installMethods.find((m) => m.id === selected()) ?? installMethods[0]!;
   const usage = () => usageExample(props.values());
 
   return (
@@ -293,7 +300,7 @@ function CommandLine(props: { values: () => Pair }) {
               role="tab"
               id={`install-tab-${m.id}`}
               aria-selected={selected() === m.id}
-              aria-controls="install-panel"
+              aria-controls={`install-panel-${m.id}`}
               tabIndex={selected() === m.id ? 0 : -1}
               onClick={() => setSelected(m.id)}
               onKeyDown={(event) => {
@@ -316,26 +323,31 @@ function CommandLine(props: { values: () => Pair }) {
           )}
         </For>
       </div>
-      <div
-        id="install-panel"
-        class="sample-panel"
-        role="tabpanel"
-        aria-labelledby={`install-tab-${method().id}`}
-      >
-        <div class="code-block">
-          <pre>
-            <code
-              class="language-shellscript"
-              innerHTML={highlighted.install[method().id]!}
-            />
-          </pre>
-          <CopyButton
-            text={() => method().command}
-            label="Copy install command"
-          />
-        </div>
-        <p class="sample-note">{method().note}</p>
-      </div>
+      <For each={installMethods}>
+        {(method) => (
+          <div
+            id={`install-panel-${method.id}`}
+            class="sample-panel"
+            role="tabpanel"
+            aria-labelledby={`install-tab-${method.id}`}
+            hidden={selected() !== method.id}
+          >
+            <div class="code-block">
+              <pre>
+                <code
+                  class="language-shellscript"
+                  innerHTML={highlighted.install[method.id]!}
+                />
+              </pre>
+              <CopyButton
+                text={() => method.command}
+                label={`Copy ${method.label} install command`}
+              />
+            </div>
+            <p class="sample-note">{method.note}</p>
+          </div>
+        )}
+      </For>
       <p class="sample-note">
         Prebuilt binaries for macOS, Linux, and Windows are on{" "}
         <a href={cliReleases}>GitHub Releases</a>. The CLI ships with the next
@@ -437,7 +449,7 @@ export function App() {
 
       <main>
         <section class="hero container">
-          <h1>UUIDs in 22 characters.</h1>
+          <h1>UUIDs in 22 Base58 characters.</h1>
           <p class="lead">
             uuid58 encodes a UUID as a fixed-length Base58 string. Shorter than
             the usual 36-character form, safe in URLs, and free of look-alike

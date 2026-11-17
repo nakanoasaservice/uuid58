@@ -341,6 +341,11 @@ input[aria-invalid="true"] {
   background: var(--accent-soft);
   border-color: transparent;
 }
+/* Inactive tab panels stay in the HTML (for no-JS readers and crawlers) but
+   are hidden; display: grid below would otherwise override [hidden]. */
+.sample-panel[hidden] {
+  display: none;
+}
 .sample-panel {
   display: grid;
   /* minmax(0, …) lets long commands scroll inside their box on phones. */
