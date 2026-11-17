@@ -1,26 +1,40 @@
 # uuid58 for PHP
 
-PHP implementation of [uuid58](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md):
-a 22-character Base58 text encoding for 128-bit UUIDs.
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-php.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-php.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in PHP. Works with
+ramsey/uuid (Laravel, Symfony) and `BINARY(16)` columns, with no extensions
+required.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet (no `0`,
-  `O`, `I`, `l`).
-- Order-preserving: sorting uuid58 strings byte-wise (`strcmp`, binary
-  collation) sorts the UUIDs numerically (useful with UUIDv7).
-- Strict: implements the [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
-  and passes its [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json).
-- No dependencies and no extensions: 128-bit arithmetic is done with 16-bit
-  limbs, so GMP and BCMath are not needed. PHP 8.1 or later.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: sorting uuid58 strings byte-wise (`strcmp`, binary collation)
+  sorts the UUIDs numerically, so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements
+  [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+  and passes its 200+ shared
+  [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+  so output matches every other language.
+- **No dependencies and no extensions**: 128-bit arithmetic is done with
+  16-bit limbs, so GMP and BCMath are not needed. PHP 8.1 or later.
+
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Install
 
 ```bash
 composer require nakanoasaservice/uuid58
 ```
+
+The package is not released on Packagist yet; this command works once the
+first version is published.
 
 ## Usage
 
@@ -70,7 +84,8 @@ way: `Uuid58::encodeBytes($uuid->getBytes())`, and for Symfony UID
 
 Invalid input throws `Uuid58Exception` (a subclass of
 `InvalidArgumentException`). Its `kind` property is an `ErrorKind` enum
-whose value is the spec error kind (SPEC.md Section 7):
+whose value is the spec error kind
+([SPEC.md Section 7](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#7-errors)):
 
 | `ErrorKind`        | Value                 | Thrown when                                                         |
 | ------------------ | --------------------- | ------------------------------------------------------------------- |
@@ -108,8 +123,8 @@ All methods are static on `NakanoAsAService\Uuid58\Uuid58`.
 
 ### Accepted UUID strings
 
-`encode` accepts exactly two textual forms, in any letter case (SPEC.md
-Section 5.1):
+`encode` accepts exactly two textual forms, in any letter case
+([SPEC.md Section 5.1](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#51-accepted-forms)):
 
 - hyphenated, 36 characters: `f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf`
 - plain, 32 hex digits: `f4b247fd1f8745d4aa061c6fc0a8dfaf`
@@ -117,6 +132,16 @@ Section 5.1):
 Everything else is rejected, including braces, the `urn:uuid:` prefix,
 misplaced hyphens and surrounding whitespace. To encode those, parse them
 with `Ramsey\Uuid\Uuid::fromString()` first and use `RamseyUuid58::encode()`.
+
+## Compatibility
+
+This package implements
+[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json)
+in CI. A string encoded here decodes to the same UUID with every other
+[uuid58 implementation](https://github.com/nakanoasaservice/uuid58#install),
+and the reverse.
 
 ## Development
 
@@ -131,4 +156,5 @@ checkout of the repository.
 
 ## License
 
-MIT
+MIT. See
+[LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

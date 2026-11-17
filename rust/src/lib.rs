@@ -1,4 +1,5 @@
-//! Encode UUIDs as fixed-length, order-preserving 22-character Base58 strings.
+//! Shorten UUIDs to 22-character Base58 strings, and back: URL-safe, with no
+//! look-alike characters, and in the same sort order as the UUIDs.
 //!
 //! uuid58 writes a 128-bit UUID as an unsigned integer in base 58 using the
 //! Bitcoin Base58 alphabet, always padded to exactly 22 characters. This crate

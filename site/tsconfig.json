@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "@nakanoaas/uuid58": ["../js/index.ts"]
+      "@nakanoaas/uuid58": ["../js/src/index.ts"]
     }
   },
   "include": ["*.tsx", "*.ts"]

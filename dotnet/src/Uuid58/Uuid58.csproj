@@ -15,11 +15,11 @@
     <PackageId>Uuid58</PackageId>
     <Version>0.1.0</Version>
     <Authors>Nakano as a Service</Authors>
-    <Description>Encode UUIDs (Guid) as fixed-length, order-preserving 22-character Base58 strings. Implements the uuid58 specification.</Description>
-    <PackageTags>uuid;guid;base58;encoding;short-id</PackageTags>
+    <Description>Shorten UUIDs (Guid) to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec.</Description>
+    <PackageTags>uuid;guid;base58;uuid58;encoding;short-id</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/nakanoasaservice/uuid58/tree/main/dotnet</PackageProjectUrl>
+    <PackageProjectUrl>https://nakanoasaservice.github.io/uuid58/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nakanoasaservice/uuid58</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>

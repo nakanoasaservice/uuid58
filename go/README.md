@@ -1,20 +1,27 @@
 # uuid58 for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/nakanoasaservice/uuid58/go.svg)](https://pkg.go.dev/github.com/nakanoasaservice/uuid58/go)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-go.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-go.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
 
-Go implementation of [uuid58](../spec/SPEC.md): a 22-character Base58 text
-encoding for 128-bit UUIDs.
+Shorten UUIDs to 22-character Base58 strings, and back, in Go. Works with
+`[16]byte` and `github.com/google/uuid`, and ships with a command-line tool.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet (no `0`,
-  `O`, `I`, `l`).
-- Sorts in the same order as the UUIDs it encodes (byte-wise comparison).
-- Standard library only. Requires Go 1.26 or later.
-- Passes every applicable case in the shared
-  [test vectors](../spec/vectors.json).
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: strings sort in the same order as the UUIDs they encode
+  (byte-wise comparison), so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+  200+ shared test vectors, so the output matches every other language.
+- **Standard library only.** Requires Go 1.26 or later.
+
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Install
 
@@ -167,6 +174,14 @@ workflow. The Nix flake (`flake.nix` at the repository root) builds from
 source at whatever commit you point it at, so its `--version` is the commit
 rather than a release number.
 
+## Compatibility
+
+This package implements
+[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and passes every applicable
+case in the shared [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json). A string
+it produces decodes to the same UUID in every other implementation, and the
+other way around.
+
 ## Development
 
 Go is managed with [mise](https://mise.jdx.dev/) (`mise.toml`):
@@ -179,7 +194,8 @@ go test ./...
 go test -fuzz=FuzzDecode -fuzztime=30s
 ```
 
-The conformance tests read `../spec/vectors.json`.
+The conformance tests read [`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json)
+at the repository root.
 
 ## Releases
 
@@ -187,7 +203,7 @@ This module lives in the `go/` subdirectory of the repository, so by Go's
 convention its versions are tags of the form `go/vX.Y.Z` (for example
 `go/v0.1.0`). Pushing such a tag is the whole release; the Go module proxy
 picks it up on first request. The same tag also releases the CLI:
-[`publish-go.yml`](../.github/workflows/publish-go.yml) builds the binaries,
+[`publish-go.yml`](https://github.com/nakanoasaservice/uuid58/blob/main/.github/workflows/publish-go.yml) builds the binaries,
 attaches them to a GitHub Release, and updates `Formula/uuid58.rb` in
 [nakanoasaservice/homebrew-tap](https://github.com/nakanoasaservice/homebrew-tap).
 That last step needs a `HOMEBREW_TAP_TOKEN` secret: a fine-grained token with
@@ -197,4 +213,4 @@ Versions stay below 1.0.0 until the specification reaches 1.0.0.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

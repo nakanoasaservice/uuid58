@@ -1,18 +1,30 @@
-# uuid58 (Python)
+# uuid58 for Python
 
-Encode UUIDs as 22-character Base58 strings, and back.
+[![PyPI](https://img.shields.io/pypi/v/uuid58.svg)](https://pypi.org/project/uuid58/)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-python.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-python.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in Python. Works with
+`uuid.UUID` from the standard library, as well as strings, bytes, and ints.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet (no `0`,
-  `O`, `I`, `l`).
-- Order-preserving: sorting uuid58 strings by code point sorts the UUIDs
-  numerically (useful with UUIDv7).
-- Strict: implements the [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
-  and passes its [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json).
-- No dependencies, fully typed (`py.typed`), CPython 3.10+.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: sorting uuid58 strings by code point sorts the UUIDs
+  numerically, so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements
+  [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+  and passes its 200+ shared
+  [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+  so output matches every other language.
+- **No dependencies**, fully typed (`py.typed`), CPython 3.10+.
+
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Install
 
@@ -51,7 +63,8 @@ uuid58.uuid58()  # a random UUIDv4, encoded, e.g. 'Tj5D5H2Bc1LcPjwNNhH4xS'
 ### Errors
 
 All invalid-input errors subclass `uuid58.Uuid58Error`, which subclasses
-`ValueError`. Each carries the spec error kind (SPEC.md Section 7) in `kind`,
+`ValueError`. Each carries the spec error kind
+([SPEC.md Section 7](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#7-errors)) in `kind`,
 an `ErrorKind` that compares equal to its spec name:
 
 | Exception               | `kind`                | Raised when                                                      |
@@ -88,8 +101,8 @@ Passing an unsupported type (for example `bool`, `float` or `None`) raises
 
 ### Accepted UUID strings
 
-`encode` accepts exactly two textual forms, in any letter case (SPEC.md
-Section 5.1):
+`encode` accepts exactly two textual forms, in any letter case
+([SPEC.md Section 5.1](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#51-accepted-forms)):
 
 - hyphenated, 36 characters: `f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf`
 - plain, 32 hex digits: `f4b247fd1f8745d4aa061c6fc0a8dfaf`
@@ -101,6 +114,16 @@ the resulting object.
 
 `bytes` passed to `encode` are the 16 raw bytes of the UUID, never the ASCII
 text of a UUID string.
+
+## Compatibility
+
+This package implements
+[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json)
+in CI. A string encoded here decodes to the same UUID with every other
+[uuid58 implementation](https://github.com/nakanoasaservice/uuid58#install),
+and the reverse.
 
 ## Development
 
@@ -118,4 +141,5 @@ checkout of the repository.
 
 ## License
 
-MIT
+MIT. See
+[LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

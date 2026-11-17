@@ -1,32 +1,38 @@
-# uuid58 (Dart)
+# uuid58 for Dart and Flutter
 
-Encode UUIDs as 22-character Base58 strings, and back. Pure Dart, for
-Flutter, server, and web apps.
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-dart.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-dart.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in Dart. Pure Dart,
+for Flutter, server, and web apps.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet (no `0`,
-  `O`, `I`, `l`).
-- Order-preserving: sorting uuid58 strings by code unit sorts the UUIDs
-  numerically (useful with UUIDv7).
-- Strict: implements the
-  [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
-  and passes its
-  [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json).
-- Works on every Dart platform: the VM, Flutter (iOS, Android, desktop), and
-  the web (dart2js and dart2wasm). The arithmetic uses 32-bit words, so it
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no look-alike characters (`0`, `O`, `I`, `l`).
+- **Sortable**: sorting uuid58 strings by code unit sorts the UUIDs
+  numerically, so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+  200+ shared test vectors, so the output matches every other language.
+- **Works on every Dart platform**: the VM, Flutter (iOS, Android, desktop),
+  and the web (dart2js and dart2wasm). The arithmetic uses 32-bit words, so it
   never needs 64-bit integers, which JavaScript does not have.
-- No dependencies. Requires Dart 3.6 or later.
+- **No dependencies.** Requires Dart 3.6 or later.
 
-## Install
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
+
+## Installation
 
 ```bash
 dart pub add uuid58
 ```
 
-or `flutter pub add uuid58`.
+or `flutter pub add uuid58`. The package is not on pub.dev yet; the commands
+work once the first version is published.
 
 ## Usage
 
@@ -108,6 +114,16 @@ misplaced hyphens and surrounding whitespace.
 Length is measured in UTF-16 code units, like `String.length`. Any non-ASCII
 character, including a lone surrogate, is rejected.
 
+## Compatibility
+
+This package implements
+[uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+1.0.0 and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+so its output is identical to the
+[other implementations](https://github.com/nakanoasaservice/uuid58#install)
+(JavaScript, Go, Python, Rust, PostgreSQL, and more).
+
 ## Development
 
 The Dart SDK is pinned via `mise.toml`.
@@ -128,4 +144,4 @@ them.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/nakanoasaservice/uuid58/blob/main/dart/LICENSE)

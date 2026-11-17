@@ -1,37 +1,47 @@
 # uuid58 for .NET
 
-[![NuGet](https://img.shields.io/nuget/v/Uuid58.svg)](https://www.nuget.org/packages/Uuid58)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-dotnet.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-dotnet.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
 
-uuid58 encodes a UUID as a fixed 22-character Base58 string, using the Bitcoin
-alphabet. The result is shorter than the usual 36-character form, safe to use
-in URLs, and free of look-alike characters (`0`, `O`, `I`, `l`). Encoded
-strings sort in the same order as the UUIDs they encode.
+Shorten UUIDs to 22-character Base58 strings, and back, in C# and .NET.
+Works with `Guid` in the standard RFC 9562 byte order, on .NET Standard 2.0
+and later.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-This is the C# / .NET implementation of the
-[uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md).
-It passes every case in the shared
-[test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
-so it produces exactly the same strings as the other implementations.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no look-alike characters (`0`, `O`, `I`, `l`).
+- **Sortable**: comparing uuid58 strings with `string.CompareOrdinal` gives
+  the same order as comparing the UUIDs as unsigned 128-bit integers, so
+  UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+  200+ shared test vectors, so the output matches every other language.
+- **Correct `Guid` byte order**: converts `Guid` in RFC 9562 byte order, not
+  the mixed-endian order of `Guid.ToByteArray()`, so `Guid` values agree with
+  every other language.
+- **No dependencies.** Targets .NET Standard 2.0, so it runs on .NET 5 and
+  later, .NET Core 2.0 and later, .NET Framework 4.6.1 and later, Unity, and
+  Xamarin.
+- **Strict parsing**: rejects malformed UUIDs, non-ASCII input, and values
+  above 128 bits, with an exception that tells you which kind of error it was.
 
-- No dependencies. Targets .NET Standard 2.0, so it runs on .NET 5 and later,
-  .NET Core 2.0 and later, .NET Framework 4.6.1 and later, Unity, and Xamarin.
-- Converts `Guid` in RFC 9562 byte order, not the mixed-endian order of
-  `Guid.ToByteArray()`, so `Guid` values agree with every other language.
-- Strict parsing: rejects malformed UUIDs, non-ASCII input, and values above
-  128 bits, with an exception that tells you which kind of error it was.
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
-> **Status:** 0.x. The API may change before 1.0.
+> **Status:** the library is 0.x, so its API may still change. The encoding
+> itself follows spec 1.0.0, and the format does not change within spec 1.x.
 
 ## Installation
 
 ```bash
 dotnet add package Uuid58
 ```
+
+The package is not on NuGet yet; the command works once the first version is
+published.
 
 ## Usage
 
@@ -136,6 +146,16 @@ as unsigned integers. Culture-sensitive comparison, the default for
 binary collation (for example `Latin1_General_BIN2` in SQL Server). Note that
 SQL Server sorts `uniqueidentifier` columns in its own byte order, which
 differs from this one.
+
+## Compatibility
+
+This package implements
+[uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+1.0.0 and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+so its output is identical to the
+[other implementations](https://github.com/nakanoasaservice/uuid58#install)
+(JavaScript, Go, Python, Rust, PostgreSQL, and more).
 
 ## Development
 

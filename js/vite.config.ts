@@ -16,21 +16,10 @@ function generateJsrJson(): void {
     name: pkg.name,
     version: pkg.version,
     license: pkg.license,
-    exports: "./index.ts",
+    exports: "./src/index.ts",
     publish: {
-      include: [
-        "alphabet.ts",
-        "bytes.ts",
-        "check.ts",
-        "decode.ts",
-        "encode.ts",
-        "errors.ts",
-        "generate.ts",
-        "index.ts",
-        "internal.ts",
-        "LICENSE",
-        "README.md",
-      ],
+      include: ["src/**/*.ts", "LICENSE", "README.md"],
+      exclude: ["src/**/*.test.ts"],
     },
   };
 
@@ -39,7 +28,7 @@ function generateJsrJson(): void {
 
 export default defineConfig({
   pack: {
-    entry: ["./index.ts"],
+    entry: ["./src/index.ts"],
     outDir: "./dist",
     format: ["esm", "cjs"],
     platform: "neutral",
@@ -50,7 +39,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["**/*.test.ts"],
+    include: ["src/**/*.test.ts"],
     benchmark: {
       include: ["bench/**/*.bench.ts"],
     },

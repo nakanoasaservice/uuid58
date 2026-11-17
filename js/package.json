@@ -1,7 +1,20 @@
 {
   "name": "@nakanoaas/uuid58",
   "version": "2.0.1",
-  "description": "A tiny, zero-dependency library for generating and converting UUIDs to Base58-encoded strings.",
+  "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. Tiny and zero-dependency.",
+  "keywords": [
+    "base58",
+    "encoding",
+    "short-id",
+    "short-uuid",
+    "shorten-uuid",
+    "sortable",
+    "url-safe",
+    "uuid",
+    "uuid58",
+    "uuidv7"
+  ],
+  "homepage": "https://nakanoasaservice.github.io/uuid58/",
   "bugs": {
     "url": "https://github.com/nakanoasaservice/uuid58/issues"
   },
@@ -36,13 +49,16 @@
     "build": "vp pack",
     "check": "vp check",
     "test": "vp test run",
-    "bench": "vp pack && vp test bench --run --reporter=default",
+    "bench": "vp pack && vp test bench --run --reporter=default bench/uuid58",
+    "bench:compare": "vp pack && vp test bench --run --reporter=default bench/compare",
     "bench:baseline": "sh bench/save-baseline.sh",
     "jsr:dry-run": "vp pack && jsr publish --dry-run"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "bs58": "6.0.0",
     "jsr": "^0.14.3",
+    "short-uuid": "6.0.3",
     "typescript": "^7.0.2",
     "vite-plus": "^1.6.0"
   },

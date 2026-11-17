@@ -139,6 +139,10 @@ p {
   color: var(--muted);
   font-size: 18px;
 }
+/* The hero has two lead paragraphs; keep them together. */
+.lead:has(+ .lead) {
+  margin-bottom: 12px;
+}
 .compare {
   display: inline-grid;
   gap: 10px;
@@ -231,16 +235,36 @@ button:hover,
 .field + .field {
   margin-top: 20px;
 }
+.field-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
 .field label {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
+  flex: 1;
+  align-items: baseline;
+  gap: 8px;
   font-weight: 600;
 }
 .field label span {
   color: var(--muted);
   font-size: 13px;
   font-weight: 400;
+}
+/* Copy as a quiet text link above the input, so the input keeps the full width. */
+.copy-link {
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+}
+.copy-link:hover {
+  background: none;
+  text-decoration: underline;
 }
 .input-row {
   display: flex;
@@ -254,7 +278,10 @@ button:hover,
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 16px;
+  /* Shrinks on narrow screens so a 36-character UUID fits without scrolling.
+     96px is the page gutter, playground padding, border, and input padding;
+     22 is 36 monospace characters at 0.6em, with a little room to spare. */
+  font-size: min(16px, (100vw - 96px) / 22);
 }
 input[aria-invalid="true"] {
   border-color: var(--danger);
@@ -317,6 +344,11 @@ input[aria-invalid="true"] {
   color: var(--accent);
   background: var(--accent-soft);
   border-color: transparent;
+}
+/* Inactive tab panels stay in the HTML (for no-JS readers and crawlers) but
+   are hidden; display: grid below would otherwise override [hidden]. */
+.sample-panel[hidden] {
+  display: none;
 }
 .sample-panel {
   display: grid;
@@ -405,7 +437,7 @@ footer.container {
     gap: 14px;
     font-size: 14px;
   }
-  .topbar nav a[href="#install"] {
+  .topbar nav a[href$="#install"] {
     display: none;
   }
   .hero {
@@ -451,6 +483,107 @@ footer.container {
   .commands td:first-child {
     white-space: normal;
   }
+}
+
+/* Comparison and FAQ */
+.table-scroll {
+  overflow-x: auto;
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.compare-table th,
+.compare-table td {
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.compare-table thead th {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.compare-table tbody th {
+  white-space: nowrap;
+}
+.compare-table tr.self {
+  background: var(--accent-soft);
+}
+.faq details {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.faq details p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+/* Spec page: rendered from spec/SPEC.md by spec-page.ts */
+.prose {
+  padding-top: 40px;
+}
+.prose h1 {
+  font-size: clamp(30px, 6vw, 40px);
+  margin: 0 0 16px;
+}
+.prose h2 {
+  margin: 48px 0 16px;
+}
+.prose h3 {
+  margin: 32px 0 10px;
+}
+.prose h2,
+.prose h3 {
+  scroll-margin-top: 72px;
+}
+.prose ul,
+.prose ol {
+  padding-left: 24px;
+}
+.prose li {
+  margin: 4px 0;
+}
+.prose :not(pre) > code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-soft);
+  font-size: 0.9em;
+}
+.prose .code-block {
+  margin: 0 0 16px;
+}
+.prose .code-block pre {
+  padding-right: 16px;
+}
+.prose table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.prose th,
+.prose td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.prose th {
+  color: var(--muted);
+  font-size: 13px;
+}
+.prose blockquote {
+  margin: 0 0 16px;
+  padding: 0 16px;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
 }
 
 /* Syntax highlighting: highlight.ts emits both themes as CSS variables. */
