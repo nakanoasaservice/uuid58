@@ -27,7 +27,7 @@ String str(Map<String, Object?> c, String key) => c[key] as String;
 
 void main() {
   test('metadata', () {
-    expect(vectors['spec_version'], '1.0.0');
+    expect(vectors['spec_version'], '1.1.0');
     expect(vectors['alphabet'], uuid58Alphabet);
   });
 
