@@ -3,16 +3,16 @@
   "version": "2.0.1",
   "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. Tiny and zero-dependency.",
   "keywords": [
-    "uuid",
     "base58",
-    "uuid58",
-    "short-uuid",
+    "encoding",
     "short-id",
+    "short-uuid",
     "shorten-uuid",
-    "uuidv7",
     "sortable",
     "url-safe",
-    "encoding"
+    "uuid",
+    "uuid58",
+    "uuidv7"
   ],
   "homepage": "https://nakanoasaservice.github.io/uuid58/",
   "bugs": {
@@ -49,13 +49,16 @@
     "build": "vp pack",
     "check": "vp check",
     "test": "vp test run",
-    "bench": "vp pack && vp test bench --run --reporter=default",
+    "bench": "vp pack && vp test bench --run --reporter=default bench/uuid58",
+    "bench:compare": "vp pack && vp test bench --run --reporter=default bench/compare",
     "bench:baseline": "sh bench/save-baseline.sh",
     "jsr:dry-run": "vp pack && jsr publish --dry-run"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "bs58": "6.0.0",
     "jsr": "^0.14.3",
+    "short-uuid": "6.0.3",
     "typescript": "^7.0.2",
     "vite-plus": "^1.6.0"
   },
