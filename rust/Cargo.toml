@@ -6,10 +6,10 @@ rust-version = "1.85"
 description = "Encode UUIDs as fixed-length, order-preserving 22-character Base58 strings"
 license = "MIT"
 repository = "https://github.com/nakanoasaservice/uuid58"
-homepage = "https://github.com/nakanoasaservice/uuid58"
+homepage = "https://nakanoasaservice.github.io/uuid58/"
 documentation = "https://docs.rs/uuid58"
 readme = "README.md"
-keywords = ["uuid", "base58", "encoding", "no_std", "id"]
+keywords = ["uuid", "base58", "uuid58", "short-id", "encoding"]
 categories = ["encoding", "no-std", "no-std::no-alloc"]
 include = ["/src/**", "/README.md", "/LICENSE", "/Cargo.toml"]
 

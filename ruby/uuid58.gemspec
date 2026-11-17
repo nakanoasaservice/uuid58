@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Encode UUIDs as 22-character, order-preserving Base58 strings."
   spec.description = "Converts UUIDs to and from 22-character Bitcoin Base58 strings. " \
                      "Implements the uuid58 specification and passes its test vectors."
-  spec.homepage = "https://github.com/nakanoasaservice/uuid58"
+  spec.homepage = "https://nakanoasaservice.github.io/uuid58/"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 

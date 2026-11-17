@@ -4,13 +4,14 @@ description: >-
   and back. Pure Dart; works on the VM, Flutter, and the web.
 version: 0.1.0
 repository: https://github.com/nakanoasaservice/uuid58/tree/main/dart
-homepage: https://github.com/nakanoasaservice/uuid58
+homepage: https://nakanoasaservice.github.io/uuid58/
 issue_tracker: https://github.com/nakanoasaservice/uuid58/issues
 topics:
   - uuid
   - base58
   - encoding
   - id
+  - short-id
 
 environment:
   sdk: ^3.6.0

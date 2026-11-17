@@ -11,7 +11,7 @@
 
   <name>uuid58</name>
   <description>Encode UUIDs as fixed 22-character Base58 strings (Bitcoin alphabet), and decode them back.</description>
-  <url>https://github.com/nakanoasaservice/uuid58</url>
+  <url>https://nakanoasaservice.github.io/uuid58/</url>
 
   <licenses>
     <license>

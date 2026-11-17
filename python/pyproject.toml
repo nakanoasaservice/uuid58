@@ -26,7 +26,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/nakanoasaservice/uuid58/tree/main/python"
+Homepage = "https://nakanoasaservice.github.io/uuid58/"
+Documentation = "https://github.com/nakanoasaservice/uuid58/tree/main/python#readme"
 Repository = "https://github.com/nakanoasaservice/uuid58"
 Specification = "https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md"
 Issues = "https://github.com/nakanoasaservice/uuid58/issues"
