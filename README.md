@@ -67,6 +67,8 @@ accepts hyphens anywhere in its input, which the spec does not allow.
 | slugid             | 22     | Yes           | URL-safe Base64, so IDs can contain `-` and `_`.                                         |
 | ULID               | 26     | No            | Its own format (Crockford Base32), 128-bit compatible with UUID but written differently. |
 | Nano ID            | 21     | No            | Random IDs, not UUIDs. Nothing to convert back to.                                       |
+| Firestore auto-ID  | 20     | No            | Random alphanumeric IDs from the Firestore SDKs. Not sortable, nothing to convert back.  |
+| Sqids              | Varies | No            | Encodes integers such as database row IDs, not UUIDs. Length grows with the number.      |
 
 Pick uuid58 when you already use UUIDs (or want to), need them short in URLs
 and APIs, and want every service and language to agree on the string.
