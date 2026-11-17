@@ -1,16 +1,18 @@
 {
   "name": "@nakanoaas/uuid58",
   "version": "2.0.1",
-  "description": "A tiny, zero-dependency library that encodes UUIDs as fixed 22-character, order-preserving Base58 strings, and back.",
+  "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. Tiny and zero-dependency.",
   "keywords": [
     "uuid",
     "base58",
     "uuid58",
     "short-uuid",
     "short-id",
+    "shorten-uuid",
     "uuidv7",
-    "encoding",
-    "id"
+    "sortable",
+    "url-safe",
+    "encoding"
   ],
   "homepage": "https://nakanoasaservice.github.io/uuid58/",
   "bugs": {

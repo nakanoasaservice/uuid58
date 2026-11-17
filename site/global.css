@@ -139,6 +139,10 @@ p {
   color: var(--muted);
   font-size: 18px;
 }
+/* The hero has two lead paragraphs; keep them together. */
+.lead:has(+ .lead) {
+  margin-bottom: 12px;
+}
 .compare {
   display: inline-grid;
   gap: 10px;

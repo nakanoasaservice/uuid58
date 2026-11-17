@@ -15,7 +15,7 @@
     <PackageId>Uuid58</PackageId>
     <Version>0.1.0</Version>
     <Authors>Nakano as a Service</Authors>
-    <Description>Encode UUIDs (Guid) as fixed-length, order-preserving 22-character Base58 strings. Implements the uuid58 specification.</Description>
+    <Description>Shorten UUIDs (Guid) to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec.</Description>
     <PackageTags>uuid;guid;base58;uuid58;encoding;short-id</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

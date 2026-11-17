@@ -1,7 +1,7 @@
 [project]
 name = "uuid58"
 version = "0.1.0"
-description = "Encode UUIDs as 22-character, order-preserving Base58 strings (uuid58)"
+description = "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

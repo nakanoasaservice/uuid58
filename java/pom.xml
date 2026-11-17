@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>uuid58</name>
-  <description>Encode UUIDs as fixed 22-character Base58 strings (Bitcoin alphabet), and decode them back.</description>
+  <description>Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec.</description>
   <url>https://nakanoasaservice.github.io/uuid58/</url>
 
   <licenses>

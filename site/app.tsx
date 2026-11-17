@@ -57,19 +57,27 @@ const fields: { key: Field; label: string; hint: string }[] = [
 const features = [
   {
     title: "Fixed 22 characters",
-    body: "Always exactly 22 characters, padded with leading 1s. Easy to validate, store in a fixed-width column, and spot in logs.",
+    body: "Always exactly 22 characters, padded with leading 1s. Validate with one length check and store in a fixed-width column such as CHAR(22).",
   },
   {
-    title: "URL-safe and unambiguous",
-    body: "Uses the Bitcoin Base58 alphabet: no symbols to escape, and no 0, O, I, or l to confuse when reading aloud or typing.",
+    title: "URL-safe, no look-alikes",
+    body: "Uses the Bitcoin Base58 alphabet: nothing to escape in URLs, and no 0, O, I, or l to confuse when reading or typing.",
   },
   {
-    title: "Keeps sort order",
-    body: "Encoded strings sort in the same order as the UUIDs they encode, so time-ordered UUIDs such as v7 stay time-ordered.",
+    title: "Sortable",
+    body: "Encoded strings sort in the same order as the UUIDs they encode, so UUIDv7 IDs stay time-ordered as strings.",
   },
   {
-    title: "One spec, many languages",
-    body: "A written specification and shared test vectors make every implementation produce the same output for the same UUID.",
+    title: "Same output in every language",
+    body: "A string made in Go decodes to the same UUID in Python, Rust, or PostgreSQL.",
+  },
+  {
+    title: "Stable, strict, well tested",
+    body: "Spec 1.0.0 defines every accepted input and every error, and the format will not change within 1.x. Over 200 shared test vectors, 120 of them invalid inputs, run in CI for every implementation.",
+  },
+  {
+    title: "Convert at the boundary",
+    body: "Keep UUID columns in your database and show uuid58 in URLs, APIs, and logs. Conversion is lossless both ways, so you can change where each form lives at any time.",
   },
 ];
 
@@ -191,8 +199,10 @@ function Playground(props: {
           Generate new
         </button>
         <p>
-          Random v4 UUIDs from <code>crypto.getRandomValues()</code>. Edit
-          either field to convert it.
+          Paste a UUID (with or without hyphens) or a uuid58 string to convert
+          it. Generate makes a random v4 UUID with{" "}
+          <code>crypto.getRandomValues()</code>. Everything runs in your
+          browser; nothing is sent anywhere.
         </p>
       </div>
     </div>
@@ -438,7 +448,7 @@ export function App() {
             uuid58
           </a>
           <nav aria-label="Main">
-            <a href="#playground">Playground</a>
+            <a href="#playground">Converter</a>
             <a href="#install">Install</a>
             <a href="#cli">CLI</a>
             <a href={`${REPO}/blob/main/spec/SPEC.md`}>Spec</a>
@@ -449,11 +459,17 @@ export function App() {
 
       <main>
         <section class="hero container">
-          <h1>UUIDs in 22 Base58 characters.</h1>
+          <h1>Shorten UUIDs to 22 characters.</h1>
           <p class="lead">
-            uuid58 encodes a UUID as a fixed-length Base58 string. Shorter than
-            the usual 36-character form, safe in URLs, and free of look-alike
-            characters.
+            uuid58 turns a 36-character UUID into a 22-character Base58 string,
+            and back. It is safe in URLs, sorts in the same order as the UUID,
+            and leaves out look-alike characters (0, O, I, l).
+          </p>
+          <p class="lead">
+            The format is fixed by a stable, versioned spec and checked by over
+            200 shared test vectors, so every implementation (JavaScript, Go,
+            Python, Rust, PostgreSQL, and more) produces the same string, today
+            and in future releases.
           </p>
           <div class="compare" aria-label="Example">
             <div>
@@ -476,7 +492,7 @@ export function App() {
         </section>
 
         <section id="playground" class="container">
-          <h2>Playground</h2>
+          <h2>UUID ⇄ Base58 converter</h2>
           <Playground conversion={conversion} setConversion={setConversion} />
         </section>
 
@@ -495,16 +511,16 @@ export function App() {
         </section>
 
         <section id="install" class="container">
-          <h2>Use it in your language</h2>
+          <h2>Libraries for every language</h2>
           <p>
-            The samples below use the values from the playground. Every
-            implementation follows{" "}
+            Each library encodes UUIDs as uuid58 strings and decodes them back.
+            All follow{" "}
             <a href={`${REPO}/blob/main/spec/SPEC.md`}>
               the uuid58 specification
             </a>{" "}
-            {SPEC_VERSION} and passes{" "}
+            {SPEC_VERSION} and pass{" "}
             <a href={`${REPO}/blob/main/spec/vectors.json`}>its test vectors</a>
-            .
+            . The samples below use the values from the converter.
           </p>
           <Samples values={() => conversion().valid} />
         </section>
@@ -514,7 +530,7 @@ export function App() {
           <p>
             <code>uuid58</code> is a small command-line tool built on the Go
             implementation: a single static binary with no dependencies. The
-            example uses the values from the playground.
+            example uses the values from the converter.
           </p>
           <CommandLine values={() => conversion().valid} />
         </section>

@@ -1,6 +1,6 @@
 {
     "name": "nakanoasaservice/uuid58",
-    "description": "Encode UUIDs as 22-character Base58 strings, and back. Order-preserving, strict, no extensions required.",
+    "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. No extensions required.",
     "type": "library",
     "license": "MIT",
     "keywords": ["uuid", "base58", "uuid58", "short-uuid", "encoding"],
