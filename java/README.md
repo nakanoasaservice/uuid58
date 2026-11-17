@@ -1,23 +1,33 @@
 # uuid58 for Java and Kotlin
 
-uuid58 encodes a UUID as a fixed 22-character Base58 string, using the Bitcoin
-alphabet. The result is shorter than the usual 36-character form, safe to use
-in URLs, and free of look-alike characters (`0`, `O`, `I`, `l`). Encoded
-strings sort in the same order as the UUIDs they encode.
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.nakanoasaservice/uuid58.svg)](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-java.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-java.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in Java and Kotlin.
+Works with `java.util.UUID`, strings, bytes, and `BigInteger`.
 
 ```text
 f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-This is the Java implementation of the
-[uuid58 specification](../spec/SPEC.md). It passes every case in
-[`spec/vectors.json`](../spec/vectors.json).
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no look-alike characters (`0`, `O`, `I`, `l`).
+- **Sortable**: comparing uuid58 strings with `String.compareTo` gives the
+  same order as comparing the UUIDs as unsigned 128-bit integers, so UUIDv7
+  IDs stay time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+  200+ shared test vectors, so the output matches every other language.
+- **No runtime dependencies.** Java 8 or later (also works on Android).
+  Kotlin uses the Java API directly. JPMS module name:
+  `io.github.nakanoasaservice.uuid58`.
 
-- No runtime dependencies.
-- Java 8 or later (also works on Android). Kotlin uses the Java API directly.
-- JPMS module name: `io.github.nakanoasaservice.uuid58`.
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
-> **Status:** 0.x. The API may change until the specification reaches 1.0.0.
+> **Status:** the library is 0.x, so its API may still change. The encoding
+> itself follows spec 1.0.0, and the format does not change within spec 1.x.
 
 ## Installation
 
@@ -146,7 +156,8 @@ Constants: `ALPHABET`, `LENGTH` (22), and `MAX`
 Everything else is rejected, including braces, `urn:uuid:`, whitespace, and
 hyphens in other positions. This is stricter than `UUID.fromString`, which
 accepts inputs such as `1-2-3-4-5`. (It is also stricter than the JavaScript
-package 1.x, which ignores misplaced hyphens; see SPEC.md Section 9.1.)
+package 1.x, which ignores misplaced hyphens; see
+[SPEC.md Section 9.1](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#91-javascript-nakanoaasuuid58-1x).)
 
 `decode` and `decodeToUuid` always produce the lowercase hyphenated form.
 
@@ -156,6 +167,16 @@ Comparing uuid58 strings with `String.compareTo` gives the same order as
 comparing the 128-bit values as unsigned integers. Note that
 `java.util.UUID.compareTo` compares the halves as signed longs, so it orders
 some UUIDs differently. In a database, use a binary (`C`) collation.
+
+## Compatibility
+
+This package implements
+[uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+1.0.0 and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+so its output is identical to the
+[other implementations](https://github.com/nakanoasaservice/uuid58#install)
+(JavaScript, Go, Python, Rust, PostgreSQL, and more).
 
 ## Development
 
@@ -176,10 +197,10 @@ whole repository.
 1. Bump `<version>` in `java/pom.xml` and merge it into main.
 2. `git tag java/v0.1.0 <commit on main> && git push origin java/v0.1.0`
 
-[`publish-java.yml`](../.github/workflows/publish-java.yml) then runs the
+[`publish-java.yml`](https://github.com/nakanoasaservice/uuid58/blob/main/.github/workflows/publish-java.yml) then runs the
 tests, signs the artifacts, publishes them to Maven Central, and creates a
 GitHub Release.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)

@@ -1,18 +1,29 @@
-# uuid58 (Ruby)
+# uuid58 for Ruby
 
-Encode UUIDs as 22-character Base58 strings, and back.
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-ruby.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-ruby.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in Ruby. Give Rails
+records with UUID primary keys short, URL-safe IDs in a few lines.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet (no `0`,
-  `O`, `I`, `l`).
-- Order-preserving: sorting uuid58 strings bytewise sorts the UUIDs
-  numerically (useful with UUIDv7).
-- Strict: implements the [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
-  and passes its [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json).
-- No dependencies, Ruby 3.2+.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: sorting uuid58 strings bytewise sorts the UUIDs numerically,
+  so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements
+  [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+  and passes its 200+ shared
+  [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
+  so output matches every other language.
+- **No dependencies**, Ruby 3.2+.
+
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Install
 
@@ -20,7 +31,8 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
 bundle add uuid58
 ```
 
-or `gem install uuid58`.
+or `gem install uuid58`. The gem is not released on RubyGems yet; these
+commands work once the first version is published.
 
 ## Usage
 
@@ -76,14 +88,15 @@ for those, or use `Uuid58.encode_bytes` / `Uuid58.encode_int` to choose
 explicitly.
 
 Every check works on bytes, so any byte `0x80` or above is rejected, whatever
-the string's encoding (SPEC.md Section 4.1). Strings in an encoding that is
+the string's encoding
+([SPEC.md Section 4.1](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#41-measuring-length)). Strings in an encoding that is
 not ASCII-compatible (UTF-16, UTF-32) are transcoded to UTF-8 first.
 
 ### Errors
 
 All invalid-input errors subclass `Uuid58::Error`, which subclasses
 `ArgumentError`. Each has a `kind` symbol naming the spec error kind
-(SPEC.md Section 7):
+([SPEC.md Section 7](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#7-errors)):
 
 | Exception                       | `kind`               | Raised when                                                          |
 | ------------------------------- | -------------------- | -------------------------------------------------------------------- |
@@ -124,14 +137,24 @@ change.
 
 ### Accepted UUID strings
 
-`encode` accepts exactly two textual forms, in any letter case (SPEC.md
-Section 5.1):
+`encode` accepts exactly two textual forms, in any letter case
+([SPEC.md Section 5.1](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md#51-accepted-forms)):
 
 - hyphenated, 36 characters: `f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf`
 - plain, 32 hex digits: `f4b247fd1f8745d4aa061c6fc0a8dfaf`
 
 Everything else is rejected: braces, the `urn:uuid:` prefix, misplaced
 hyphens, and surrounding whitespace or newlines.
+
+## Compatibility
+
+This gem implements
+[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+and passes every case in
+[`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json)
+in CI. A string encoded here decodes to the same UUID with every other
+[uuid58 implementation](https://github.com/nakanoasaservice/uuid58#install),
+and the reverse.
 
 ## Development
 
@@ -148,4 +171,5 @@ checkout of the repository.
 
 ## License
 
-MIT
+MIT. See
+[LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

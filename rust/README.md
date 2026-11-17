@@ -1,26 +1,30 @@
-# uuid58
+# uuid58 for Rust
 
 [![crates.io](https://img.shields.io/crates/v/uuid58.svg)](https://crates.io/crates/uuid58)
 [![docs.rs](https://img.shields.io/docsrs/uuid58)](https://docs.rs/uuid58)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-rust.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-rust.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
 
-Encode UUIDs as fixed-length, order-preserving 22-character Base58 strings.
+Shorten UUIDs to 22-character Base58 strings, and back, in Rust. Works with
+the `uuid` crate, and runs in `no_std` without an allocator.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-This is the Rust implementation of the
-[uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md).
-It passes the specification's shared
-[test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
-so it produces exactly the same strings as the other implementations.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: sorting uuid58 strings by byte gives the same order as
+  sorting the UUIDs, so UUIDv7 IDs stay time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+  200+ shared test vectors, so the output matches every other language.
+- **`#![no_std]`**, no allocator required, no required dependencies.
+- **Strict parsing**: rejects malformed UUIDs, non-ASCII input, and values
+  above 128 bits, with a typed error.
 
-- Always exactly 22 characters, using the Bitcoin Base58 alphabet
-- Sorting uuid58 strings by byte gives the same order as sorting the UUIDs
-- `#![no_std]`, no allocator required, no required dependencies
-- Strict parsing: rejects malformed UUIDs, non-ASCII input, and values above
-  128 bits, with a typed error
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Installation
 
@@ -129,9 +133,16 @@ uuid58 = { version = "0.1", default-features = false }
 
 ## Minimum supported Rust version
 
-Rust 1.85. Changes to the MSRV will be noted in the release notes. With the `uuid` feature, Cargo's MSRV-aware
-resolver picks a `uuid` release that supports your toolchain.
+Rust 1.85. Changes to the MSRV will be noted in the release notes. With the
+`uuid` feature, Cargo's MSRV-aware resolver picks a `uuid` release that
+supports your toolchain.
+
+## Compatibility
+
+This crate implements [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and
+passes the shared [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json), so it
+produces exactly the same strings as the other implementations.
 
 ## License
 
-MIT
+MIT, see [LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

@@ -1,22 +1,36 @@
 # uuid58 for PostgreSQL
 
-SQL functions that implement [uuid58](../spec/SPEC.md): a 22-character
-Base58 text encoding for 128-bit UUIDs.
+[![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-postgres.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-postgres.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
+
+Shorten UUIDs to 22-character Base58 strings, and back, in PostgreSQL. Plain
+SQL functions in one file, with no extension to install, so they work on
+managed databases such as Amazon RDS, Cloud SQL, Azure Database for
+PostgreSQL, Supabase, and Neon.
 
 ```text
-f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  <->  XDY9dmBbcMBXqcRvYw8xJ2
+f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ```
 
-- Plain SQL and PL/pgSQL functions in one file. No extension to install, so
-  they work on managed databases such as Amazon RDS, Cloud SQL, Azure
-  Database for PostgreSQL, Supabase, and Neon.
+- **Fixed 22 characters**, using the Bitcoin Base58 alphabet: URL-safe, with
+  no `0`, `O`, `I`, or `l`.
+- **Sortable**: strings sort in the same order as the UUIDs they encode when
+  compared byte by byte (see [Sorting](#sorting)), so UUIDv7 IDs stay
+  time-ordered.
+- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes every
+  applicable case of its 200+ shared test vectors, so the output matches
+  every other language.
+- **Keep your `uuid` keys**: expose short IDs in queries without changing the
+  primary key.
 - Requires PostgreSQL 14 or later.
-- Passes every applicable case in the shared
-  [test vectors](../spec/vectors.json).
+
+[Try it in your browser](https://nakanoasaservice.github.io/uuid58/) ·
+[Specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) ·
+[Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 ## Install
 
-Run [`uuid58.sql`](uuid58.sql) in your database. The functions are created in
+Run [`uuid58.sql`](https://github.com/nakanoasaservice/uuid58/blob/main/postgres/uuid58.sql) in your database. The functions are created in
 the first schema on your `search_path` (usually `public`):
 
 ```bash
@@ -118,9 +132,17 @@ decoding a UUID takes tens of microseconds, which is fine for converting IDs
 at the edge of a query. For bulk conversion of millions of rows, convert in
 your application with one of the other implementations instead.
 
+## Compatibility
+
+These functions implement [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+and pass every applicable case in the shared
+[test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json). A string produced in the
+database decodes to the same UUID in every other implementation, and the
+other way around.
+
 ## Development
 
-The conformance test loads `spec/vectors.json` and installs the functions in
+The conformance test loads [`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json) and installs the functions in
 a temporary schema inside a transaction that it rolls back. Run it from this
 directory against a UTF8 database and a `SQL_ASCII` one (where text can hold
 bytes that are not valid UTF-8):
@@ -140,4 +162,4 @@ characters are skipped too, and the test checks raw non-UTF-8 bytes instead.
 
 ## License
 
-MIT
+MIT, see [LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).

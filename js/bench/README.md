@@ -6,6 +6,7 @@ run interleaved in one process so both see the same CPU and GC conditions.
 | File               | Role                                                                          |
 | ------------------ | ----------------------------------------------------------------------------- |
 | `uuid58.bench.ts`  | One `test()` per public operation. Add new cases here.                        |
+| `compare.bench.ts` | uuid58 against short-uuid and bs58. Run with `pnpm bench:compare`.            |
 | `harness.ts`       | Loads `dist/` (current) and `.baseline/` (baseline); `compareWithBaseline()`. |
 | `fixtures.ts`      | Deterministic inputs (seeded PRNG), identical across runs and machines.       |
 | `save-baseline.sh` | Builds any git ref in a temporary worktree and saves it to `.baseline/`.      |
@@ -59,3 +60,13 @@ test("uuid58Encode (uppercase input)", async ({ bench }) => {
 Benchmarks can only call the public API, which exists in both builds. To try
 an idea before it is wired into the library, change the source and compare
 against `HEAD`. Git keeps the history of experiments that were rejected.
+
+## Comparing with other libraries
+
+```bash
+pnpm bench:compare
+```
+
+`compare.bench.ts` runs uuid58, short-uuid, and bs58 (with hex conversion)
+interleaved on the same inputs. It backs the Performance table in the
+package README; update that table when the numbers change noticeably.
