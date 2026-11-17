@@ -129,6 +129,20 @@ const alternatives = [
     uuid: "No",
     notes: "Random IDs, not UUIDs. Nothing to convert back to.",
   },
+  {
+    name: "Firestore auto-ID",
+    length: "20",
+    uuid: "No",
+    notes:
+      "Random alphanumeric IDs from the Firestore SDKs. Not sortable, nothing to convert back.",
+  },
+  {
+    name: "Sqids",
+    length: "Varies",
+    uuid: "No",
+    notes:
+      "Encodes integers such as database row IDs, not UUIDs. Length grows with the number.",
+  },
 ];
 
 const faqs = [
