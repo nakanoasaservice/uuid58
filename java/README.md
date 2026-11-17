@@ -35,7 +35,7 @@ Gradle (Kotlin DSL):
 
 ```kotlin
 dependencies {
-    implementation("io.github.nakanoasaservice:uuid58:0.1.0")
+    implementation("io.github.nakanoasaservice:uuid58:0.1.1")
 }
 ```
 
@@ -43,7 +43,7 @@ Gradle (Groovy DSL):
 
 ```groovy
 dependencies {
-    implementation 'io.github.nakanoasaservice:uuid58:0.1.0'
+    implementation 'io.github.nakanoasaservice:uuid58:0.1.1'
 }
 ```
 
@@ -53,7 +53,7 @@ Maven:
 <dependency>
   <groupId>io.github.nakanoasaservice</groupId>
   <artifactId>uuid58</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 

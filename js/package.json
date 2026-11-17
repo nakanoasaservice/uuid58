@@ -1,6 +1,6 @@
 {
   "name": "@nakanoaas/uuid58",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. Tiny and zero-dependency.",
   "keywords": [
     "base58",
