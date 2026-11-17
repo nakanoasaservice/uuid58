@@ -231,16 +231,36 @@ button:hover,
 .field + .field {
   margin-top: 20px;
 }
+.field-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
 .field label {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
+  flex: 1;
+  align-items: baseline;
+  gap: 8px;
   font-weight: 600;
 }
 .field label span {
   color: var(--muted);
   font-size: 13px;
   font-weight: 400;
+}
+/* Copy as a quiet text link above the input, so the input keeps the full width. */
+.copy-link {
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+}
+.copy-link:hover {
+  background: none;
+  text-decoration: underline;
 }
 .input-row {
   display: flex;
@@ -254,7 +274,10 @@ button:hover,
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 16px;
+  /* Shrinks on narrow screens so a 36-character UUID fits without scrolling.
+     96px is the page gutter, playground padding, border, and input padding;
+     22 is 36 monospace characters at 0.6em, with a little room to spare. */
+  font-size: min(16px, (100vw - 96px) / 22);
 }
 input[aria-invalid="true"] {
   border-color: var(--danger);

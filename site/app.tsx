@@ -74,7 +74,11 @@ const features = [
 ];
 
 /** A button that copies `text` and briefly shows the result. */
-function CopyButton(props: { text: () => string; label?: string }) {
+function CopyButton(props: {
+  text: () => string;
+  label?: string;
+  class?: string;
+}) {
   const [status, setStatus] = createSignal<string>();
   let timer: ReturnType<typeof setTimeout> | undefined;
   onCleanup(() => clearTimeout(timer));
@@ -93,7 +97,7 @@ function CopyButton(props: { text: () => string; label?: string }) {
   return (
     <button
       type="button"
-      class="copy"
+      class={props.class ?? "copy"}
       onClick={copy}
       aria-label={props.label ?? "Copy to clipboard"}
     >
@@ -138,10 +142,17 @@ function Playground(props: {
       <For each={fields}>
         {(field) => (
           <div class="field">
-            <label for={`${field.key}-input`}>
-              {field.label}
-              <span>{field.hint}</span>
-            </label>
+            <div class="field-head">
+              <label for={`${field.key}-input`}>
+                {field.label}
+                <span>{field.hint}</span>
+              </label>
+              <CopyButton
+                class="copy-link"
+                text={() => conversion()[field.key]}
+                label={`Copy ${field.label}`}
+              />
+            </div>
             <div class="input-row">
               <input
                 type="text"
@@ -159,10 +170,6 @@ function Playground(props: {
                     ? `${field.key}-error`
                     : undefined
                 }
-              />
-              <CopyButton
-                text={() => conversion()[field.key]}
-                label={`Copy ${field.label}`}
               />
             </div>
             <Show
