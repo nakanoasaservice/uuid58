@@ -16,6 +16,7 @@ Key facts:
 - [Website and online converter](https://nakanoasaservice.github.io/uuid58/): convert and generate in the browser, with code samples for every language
 - [Specification](https://nakanoasaservice.github.io/uuid58/spec/): alphabet, encoding, decoding, accepted inputs, validation, errors, and test vector format
 - [Test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json): shared conformance cases
+- [Sitemap](https://nakanoasaservice.github.io/uuid58/sitemap.xml): every page on the site
 - [Repository README](https://github.com/nakanoasaservice/uuid58#readme): install commands, comparison with other ID formats, and FAQ
 
 ## Libraries
