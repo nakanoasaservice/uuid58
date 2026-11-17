@@ -167,12 +167,17 @@ class Uuid58Test < Minitest::Test
   def test_helpers_are_private
     refute_respond_to Uuid58, :encode_uint128
     refute_respond_to Uuid58, :parse_uuid
-    refute_respond_to Uuid58, :preview
   end
 
-  def test_error_message_is_truncated
+  # SPEC.md Section 7: error messages leave the untrusted input out.
+  def test_error_message_excludes_input
     error = assert_raises(Uuid58::InvalidLengthError) { Uuid58.decode("a" * 10_000) }
-    assert_operator error.message.length, :<, 200
-    refute_includes error.message, "\n"
+    refute_includes error.message, "aa"
+
+    error = assert_raises(Uuid58::InvalidCharacterError) { Uuid58.decode("1111111111111111111\nab") }
+    assert_equal "Invalid uuid58 character at byte 19", error.message
+
+    error = assert_raises(Uuid58::InvalidCharacterError) { Uuid58.encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfa\n") }
+    assert_equal "Invalid UUID: expected a hexadecimal digit at byte 35", error.message
   end
 end

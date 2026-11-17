@@ -1,5 +1,5 @@
 -- uuid58 for PostgreSQL: https://github.com/nakanoasaservice/uuid58
--- Implements uuid58 specification 1.0.0. MIT License.
+-- Implements uuid58 specification 1.1.0. MIT License.
 --
 -- Plain SQL and PL/pgSQL functions; no extension needed. Requires
 -- PostgreSQL 14 or later. Run this file in the schema you want the functions
@@ -47,13 +47,13 @@ DECLARE
 BEGIN
   IF length(s) = 32 THEN
     IF (s COLLATE "C") !~ '^[0-9A-Fa-f]{32}$' THEN
-      RAISE EXCEPTION 'uuid58: invalid character in UUID string "%"', s
+      RAISE EXCEPTION 'uuid58: UUID string must be 32 hexadecimal digits'
         USING ERRCODE = 'invalid_text_representation';
     END IF;
     hex := s;
   ELSIF length(s) = 36 THEN
     IF (s COLLATE "C") !~ '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$' THEN
-      RAISE EXCEPTION 'uuid58: invalid character in UUID string "%"', s
+      RAISE EXCEPTION 'uuid58: UUID string must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
         USING ERRCODE = 'invalid_text_representation';
     END IF;
     hex := replace(s, '-', '');
@@ -94,13 +94,13 @@ BEGIN
   FOR i IN 1..22 LOOP
     d := strpos(alphabet, substr(s, i, 1) COLLATE "C") - 1;
     IF d < 0 THEN
-      RAISE EXCEPTION 'uuid58: invalid character "%" at position %', substr(s, i, 1), i
+      RAISE EXCEPTION 'uuid58: invalid character at position %', i
         USING ERRCODE = 'invalid_text_representation';
     END IF;
     n := n * 58 + d;
   END LOOP;
   IF n >= 340282366920938463463374607431768211456 THEN  -- 2^128
-    RAISE EXCEPTION 'uuid58: "%" exceeds 128 bits', s
+    RAISE EXCEPTION 'uuid58: value exceeds 128 bits'
       USING ERRCODE = 'numeric_value_out_of_range';
   END IF;
   FOR i IN REVERSE 15..0 LOOP

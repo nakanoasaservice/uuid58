@@ -66,8 +66,7 @@ module Uuid58
 
   HYPHEN = "-".ord
   HYPHEN_POSITIONS = [8, 13, 18, 23].freeze
-  MAX_PREVIEW_LENGTH = 40
-  private_constant :HYPHEN, :HYPHEN_POSITIONS, :MAX_PREVIEW_LENGTH
+  private_constant :HYPHEN, :HYPHEN_POSITIONS
 
   module_function
 
@@ -113,7 +112,7 @@ module Uuid58
   def encode_int(int)
     raise TypeError, "expected an Integer, not #{int.class}" unless int.is_a?(Integer)
     unless int.between?(0, MAX_INT)
-      raise OverflowError, "Integer out of range for a 128-bit UUID: #{preview(int)}"
+      raise OverflowError, "Integer out of range for a 128-bit UUID"
     end
 
     encode_uint128(int)
@@ -147,17 +146,17 @@ module Uuid58
     if str.bytesize != ENCODED_LENGTH
       raise InvalidLengthError,
             "Invalid uuid58 length: expected #{ENCODED_LENGTH} characters, " \
-            "got #{str.bytesize} bytes in #{preview(str)}"
+            "got #{str.bytesize} bytes"
     end
 
     value = 0
-    str.each_byte do |byte|
+    str.each_byte.with_index do |byte, pos|
       digit = DIGIT_VALUES[byte]
-      raise InvalidCharacterError, "Invalid uuid58 character in #{preview(str)}" if digit.nil?
+      raise InvalidCharacterError, "Invalid uuid58 character at byte #{pos}" if digit.nil?
 
       value = (value * 58) + digit
     end
-    raise OverflowError, "uuid58 value exceeds 128 bits: #{preview(str)}" if value > MAX_INT
+    raise OverflowError, "uuid58 value exceeds 128 bits" if value > MAX_INT
 
     value
   end
@@ -204,20 +203,21 @@ module Uuid58
     case bytes.size
     when 36
       HYPHEN_POSITIONS.each do |pos|
-        unless bytes[pos] == HYPHEN
-          raise InvalidCharacterError, "Invalid UUID: expected '-' at position #{pos} in #{preview(str)}"
-        end
+        raise InvalidCharacterError, "Invalid UUID: expected '-' at byte #{pos}" unless bytes[pos] == HYPHEN
       end
-      HYPHEN_POSITIONS.reverse_each { |pos| bytes.delete_at(pos) }
+      hyphens = HYPHEN_POSITIONS
     when 32
-      nil
+      hyphens = []
     else
       raise InvalidLengthError,
-            "Invalid UUID length: expected 32 or 36 characters, got #{bytes.size} bytes in #{preview(str)}"
+            "Invalid UUID length: expected 32 or 36 characters, got #{bytes.size} bytes"
     end
-    unless bytes.all? { |byte| HEX_DIGIT[byte] }
-      raise InvalidCharacterError, "Invalid UUID: not a hexadecimal digit in #{preview(str)}"
+    bytes.each_with_index do |byte, pos|
+      next if HEX_DIGIT[byte] || hyphens.include?(pos)
+
+      raise InvalidCharacterError, "Invalid UUID: expected a hexadecimal digit at byte #{pos}"
     end
+    hyphens.reverse_each { |pos| bytes.delete_at(pos) }
 
     bytes.pack("C*").to_i(16)
   end
@@ -233,16 +233,5 @@ module Uuid58
     raise InvalidCharacterError, "Invalid character: ill-formed #{str.encoding} string"
   end
 
-  # Formats untrusted input for an error message: truncated and inspected,
-  # so huge or multi-line inputs cannot bloat or forge log lines.
-  def preview(value)
-    return value.inspect unless value.is_a?(String)
-
-    text = value.b
-    return text.inspect if text.bytesize <= MAX_PREVIEW_LENGTH
-
-    "#{text.byteslice(0, MAX_PREVIEW_LENGTH).inspect}... (#{text.bytesize} bytes)"
-  end
-
-  private_class_method :encode_uint128, :parse_uuid, :ascii_compatible, :preview
+  private_class_method :encode_uint128, :parse_uuid, :ascii_compatible
 end

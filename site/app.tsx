@@ -74,7 +74,7 @@ const features = [
   },
   {
     title: "Stable, strict, well tested",
-    body: "Spec 1.0.0 defines every accepted input and every error, and the format will not change within 1.x. Over 200 shared test vectors, 120 of them invalid inputs, run in CI for every implementation.",
+    body: "Spec 1.1.0 defines every accepted input and every error, and the format will not change within 1.x. Over 200 shared test vectors, 120 of them invalid inputs, run in CI for every implementation.",
   },
   {
     title: "Convert at the boundary",
@@ -135,7 +135,7 @@ const faqs = [
   {
     question: "Will the format change?",
     answer:
-      "No. Spec 1.0.0 fixes the alphabet, the padding, and the accepted inputs. Any change that would alter an encoded string needs a new major version of the spec, and every implementation is tested against the same versioned test vectors.",
+      "No. Spec 1.1.0 fixes the alphabet, the padding, and the accepted inputs. Any change that would alter an encoded string needs a new major version of the spec, and every implementation is tested against the same versioned test vectors.",
   },
   {
     question: "Does it work with UUIDv7?",

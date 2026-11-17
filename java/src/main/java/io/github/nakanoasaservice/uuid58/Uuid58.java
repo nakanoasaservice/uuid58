@@ -140,7 +140,7 @@ public final class Uuid58 {
    */
   public static String encode(BigInteger value) {
     if (value.signum() < 0 || value.compareTo(MAX_VALUE) > 0) {
-      throw new Uuid58Exception(Kind.OVERFLOW, "Integer is outside 0..2^128 - 1: " + value);
+      throw new Uuid58Exception(Kind.OVERFLOW, "Integer is outside 0..2^128 - 1");
     }
     return encode(value.shiftRight(64).longValue(), value.longValue());
   }

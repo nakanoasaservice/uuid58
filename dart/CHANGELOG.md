@@ -1,3 +1,9 @@
+## Unreleased
+
+- Implements uuid58 specification 1.1.0: `Uuid58Exception.toString()` no
+  longer includes the rejected input, only its kind, message, and offset.
+  The input is still available as `source`.
+
 ## 0.1.0
 
 - Initial release, implementing uuid58 specification 1.0.0.

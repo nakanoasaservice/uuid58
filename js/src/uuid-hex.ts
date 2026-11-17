@@ -4,7 +4,7 @@
  *
  * @module
  */
-import { previewInput, Uuid58EncodeError } from "./errors.ts";
+import { Uuid58EncodeError } from "./errors.ts";
 
 // ---------------------------------------------------------------------------
 // Parsing: UUID string -> words
@@ -75,7 +75,7 @@ export function parseUuidString(uuid: string): Uint32Array | Uuid58EncodeError {
       uuid.charCodeAt(23) === 45;
   } else {
     return new Uuid58EncodeError(
-      `Invalid UUID length: expected 32 or 36 characters, got ${uuid.length} in ${previewInput(uuid)}`,
+      `Invalid UUID length: expected 32 or 36 characters, got ${uuid.length}`,
       "invalid_length",
     );
   }
@@ -83,8 +83,8 @@ export function parseUuidString(uuid: string): Uint32Array | Uuid58EncodeError {
   if (!hyphensValid || w0 < 0 || w1 < 0 || w2 < 0 || w3 < 0) {
     return new Uuid58EncodeError(
       uuid.length === 32
-        ? `Invalid UUID: ${previewInput(uuid)} must be 32 hexadecimal digits`
-        : `Invalid UUID: ${previewInput(uuid)} must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`,
+        ? "Invalid UUID: must be 32 hexadecimal digits"
+        : "Invalid UUID: must be in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
       "invalid_character",
     );
   }

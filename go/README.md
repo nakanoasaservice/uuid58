@@ -15,7 +15,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   no `0`, `O`, `I`, or `l`.
 - **Sortable**: strings sort in the same order as the UUIDs they encode
   (byte-wise comparison), so UUIDv7 IDs stay time-ordered.
-- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+- **Stable spec, well tested**: implements uuid58 spec 1.1.0 and passes its
   200+ shared test vectors, so the output matches every other language.
 - **Standard library only.** Requires Go 1.26 or later.
 
@@ -177,7 +177,7 @@ rather than a release number.
 ## Compatibility
 
 This package implements
-[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and passes every applicable
+[uuid58 spec 1.1.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md) and passes every applicable
 case in the shared [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json). A string
 it produces decodes to the same UUID in every other implementation, and the
 other way around.

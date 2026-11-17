@@ -106,6 +106,8 @@ void main() {
         expect(e.source, 'XDY9dmBbcMBXqcRvY0w8xJ');
         expect(e.offset, 17);
         expect(e.toString(), contains('invalid_character'));
+        expect(e.toString(), contains('offset 17'));
+        expect(e.toString(), isNot(contains('XDY9')));
       }
     });
 

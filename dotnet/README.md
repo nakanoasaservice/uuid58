@@ -16,7 +16,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 - **Sortable**: comparing uuid58 strings with `string.CompareOrdinal` gives
   the same order as comparing the UUIDs as unsigned 128-bit integers, so
   UUIDv7 IDs stay time-ordered.
-- **Stable spec, well tested**: implements uuid58 spec 1.0.0 and passes its
+- **Stable spec, well tested**: implements uuid58 spec 1.1.0 and passes its
   200+ shared test vectors, so the output matches every other language.
 - **Correct `Guid` byte order**: converts `Guid` in RFC 9562 byte order, not
   the mixed-endian order of `Guid.ToByteArray()`, so `Guid` values agree with
@@ -32,7 +32,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 [Other languages](https://github.com/nakanoasaservice/uuid58#install)
 
 > **Status:** the library is 0.x, so its API may still change. The encoding
-> itself follows spec 1.0.0, and the format does not change within spec 1.x.
+> itself follows spec 1.1.0, and the format does not change within spec 1.x.
 
 ## Installation
 

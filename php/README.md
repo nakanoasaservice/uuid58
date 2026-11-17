@@ -16,7 +16,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 - **Sortable**: sorting uuid58 strings byte-wise (`strcmp`, binary collation)
   sorts the UUIDs numerically, so UUIDv7 IDs stay time-ordered.
 - **Stable spec, well tested**: implements
-  [uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+  [uuid58 spec 1.1.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
   and passes its 200+ shared
   [test vectors](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
   so output matches every other language.
@@ -136,7 +136,7 @@ with `Ramsey\Uuid\Uuid::fromString()` first and use `RamseyUuid58::encode()`.
 ## Compatibility
 
 This package implements
-[uuid58 spec 1.0.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
+[uuid58 spec 1.1.0](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
 and passes every case in
 [`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json)
 in CI. A string encoded here decodes to the same UUID with every other
