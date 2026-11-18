@@ -1,4 +1,4 @@
-import { hydrate, render } from "solid-js/web";
+import { hydrate, render } from "@solidjs/web";
 import { App } from "./app";
 import "./global.css";
 
