@@ -57,28 +57,28 @@ const fields: { key: Field; label: string; hint: string }[] = [
 
 const features = [
   {
-    title: "Fixed 22 characters",
-    body: "Always exactly 22 characters, padded with leading 1s. Validate with one length check and store in a fixed-width column such as CHAR(22).",
+    title: "Two-way UUID ⇄ Base58 conversion",
+    body: "Convert UUIDs to 22-character Base58 strings and back without losing information. Keep UUIDs in your database; use uuid58 in URLs, APIs, and logs.",
   },
   {
-    title: "URL-safe, no look-alikes",
-    body: "Uses the Bitcoin Base58 alphabet: nothing to escape in URLs, and no 0, O, I, or l to confuse when reading or typing.",
+    title: "Easy to read, copy, and share",
+    body: "Always 22 characters, URL-safe, and free of look-alikes (0, O, I, l). No separators, so you can select the whole ID with a double-click.",
   },
   {
-    title: "Sortable",
-    body: "Encoded strings sort in the same order as the UUIDs they encode, so UUIDv7 IDs stay time-ordered as strings.",
+    title: "Preserves UUID sort order",
+    body: "uuid58 preserves UUID order when sorted by ASCII value, keeping UUIDv7 IDs time-ordered. Use binary or C collation for database sorting.",
   },
   {
-    title: "Same output in every language",
-    body: "A string made in Go decodes to the same UUID in Python, Rust, or PostgreSQL.",
+    title: "Multi-language support",
+    body: "Implementations across languages follow the same specification. Switch languages without converting or reissuing your existing uuid58 IDs.",
   },
   {
-    title: "Stable, strict, well tested",
-    body: "Spec 1.1.0 defines every accepted input and every error, and the format will not change within 1.x. Over 200 shared test vectors, 120 of them invalid inputs, run in CI for every implementation.",
+    title: "Well tested",
+    body: "Over 200 shared test vectors check valid conversions and error handling, including 120 invalid inputs. Implementations run these checks in CI.",
   },
   {
-    title: "Convert at the boundary",
-    body: "Keep UUID columns in your database and show uuid58 in URLs, APIs, and logs. Conversion is lossless both ways, so you can change where each form lives at any time.",
+    title: "A stable, strict specification",
+    body: "The specification defines the format and validation rules, with a stable encoding throughout 1.x. Use it with shared test vectors to build and verify your own implementation, including with AI.",
   },
 ];
 
