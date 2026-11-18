@@ -57,28 +57,28 @@ const fields: { key: Field; label: string; hint: string }[] = [
 
 const features = [
   {
-    title: "Fixed 22 characters",
-    body: "Always exactly 22 characters, padded with leading 1s. Validate with one length check and store in a fixed-width column such as CHAR(22).",
+    title: "Two-way UUID ⇄ Base58 conversion",
+    body: "uuid58 converts UUIDs to fixed 22-character Base58 strings and back without losing any information. Keep UUIDs in your database and use uuid58 in URLs, APIs, and logs.",
   },
   {
-    title: "URL-safe, no look-alikes",
-    body: "Uses the Bitcoin Base58 alphabet: nothing to escape in URLs, and no 0, O, I, or l to confuse when reading or typing.",
+    title: "Easy to read, copy, and share",
+    body: "uuid58 strings are always 22 characters long and URL-safe, with no 0, O, I, or l to confuse when reading or typing. No hyphens or other separators means the whole ID is easy to select with a double-click.",
   },
   {
-    title: "Sortable",
-    body: "Encoded strings sort in the same order as the UUIDs they encode, so UUIDv7 IDs stay time-ordered as strings.",
+    title: "Preserves UUID sort order",
+    body: "When compared in ASCII order, uuid58 strings preserve the numeric order of the original UUIDs, so UUIDv7 IDs stay time-ordered. Use binary or C collation rather than locale-aware or case-insensitive sorting.",
   },
   {
-    title: "Same output in every language",
-    body: "A string made in Go decodes to the same UUID in Python, Rust, or PostgreSQL.",
+    title: "Multi-language support",
+    body: "uuid58 implementations across multiple languages follow the same encoding specification. If you change languages, your existing uuid58 IDs remain valid—no ID conversion or reissuance needed.",
   },
   {
-    title: "Stable, strict, well tested",
-    body: "Spec 1.1.0 defines every accepted input and every error, and the format will not change within 1.x. Over 200 shared test vectors, 120 of them invalid inputs, run in CI for every implementation.",
+    title: "Well tested",
+    body: "uuid58 implementations are checked against over 200 shared test vectors, including 120 invalid inputs, in CI.",
   },
   {
-    title: "Convert at the boundary",
-    body: "Keep UUID columns in your database and show uuid58 in URLs, APIs, and logs. Conversion is lossless both ways, so you can change where each form lives at any time.",
+    title: "A stable, strict specification",
+    body: "The uuid58 specification defines the encoding, accepted inputs, and error behavior. The encoding format stays unchanged within 1.x. You can use the specification and shared test vectors to build and verify your own implementation for any language or environment, including with an AI coding assistant.",
   },
 ];
 
