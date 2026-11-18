@@ -17,3 +17,35 @@ jobs:
 
       - name: Check that spec/vectors.json is up to date
         run: python3 spec/generate_vectors.py --check
+
+      - name: Install the pinned Lean and Aeneas releases
+        run: |
+          tag=$(cat formal/aeneas-version)
+          version=$(cut -d: -f2 formal/lean-toolchain)
+          cd "$RUNNER_TEMP"
+          curl -fsSL --retry 3 "https://github.com/AeneasVerif/aeneas/releases/download/$tag/aeneas-linux-x86_64.tar.gz" -o aeneas.tar.gz
+          curl -fsSL --retry 3 "https://github.com/leanprover/lean4/releases/download/$version/lean-${version#v}-linux.tar.zst" -o lean.tar.zst
+          sha256sum --check <<'SUMS'
+          09c07d644ca0e7b1d0c751049e8d733438194a85e8a6941b7ac00d99609a4391  aeneas.tar.gz
+          0a0a3208617e9eab92f1041efa83ad94d405e69d172fb654a62dbfa9fbc5313b  lean.tar.zst
+          SUMS
+          mkdir aeneas
+          tar -xzf aeneas.tar.gz -C aeneas
+          tar --zstd -xf lean.tar.zst
+          echo "$RUNNER_TEMP/lean-${version#v}-linux/bin" >> "$GITHUB_PATH"
+          echo "AENEAS_DIR=$RUNNER_TEMP/aeneas" >> "$GITHUB_ENV"
+
+      - name: Fetch prebuilt mathlib dependencies used by Aeneas
+        working-directory: ${{ runner.temp }}/aeneas/backends/lean
+        env:
+          MATHLIB_NO_CACHE_ON_UPDATE: 1
+        run: |
+          set -o pipefail
+          if ! lake query +Aeneas:transImports --json \
+            | jq -r '.[] | select(startswith("Mathlib."))' \
+            | xargs -r lake exe cache get --cache-from=master; then
+            echo "::warning::Lake will build any missing dependencies from source."
+          fi
+
+      - name: Prove the uuid58 specification and Rust numeric codec
+        run: formal/check.sh

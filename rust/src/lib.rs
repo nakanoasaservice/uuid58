@@ -76,7 +76,10 @@ use core::fmt;
 
 /// The uuid58 alphabet (the Bitcoin Base58 alphabet). The character at index
 /// `i` is the digit with value `i`.
-pub const ALPHABET: &str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+pub const ALPHABET: &str = match core::str::from_utf8(ALPHABET_BYTES) {
+    Ok(s) => s,
+    Err(_) => panic!("alphabet must be valid UTF-8"),
+};
 
 /// The length of every uuid58 string, in bytes (all characters are ASCII).
 pub const ENCODED_LEN: usize = 22;
@@ -91,26 +94,25 @@ pub const MAX_UUID58: &str = "YcVfxkQb6JRzqk5kF2tNLv";
 /// The encoding of `0` (the nil UUID).
 pub const NIL_UUID58: &str = "1111111111111111111111";
 
-const ALPHABET_BYTES: &[u8; 58] = match ALPHABET.as_bytes().first_chunk::<58>() {
-    Some(a) => a,
-    None => panic!("alphabet must have 58 characters"),
-};
+const ALPHABET_BYTES: &[u8; 58] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 const INVALID: u8 = 0xff;
 
 /// Byte -> digit value, or `INVALID`. Bytes `0x80..=0xff` are all `INVALID`.
-const DIGITS: [u8; 256] = {
+const DIGITS: [u8; 256] = make_digit_table(ALPHABET_BYTES);
+
+const fn make_digit_table(alphabet: &[u8; 58]) -> [u8; 256] {
     let mut table = [INVALID; 256];
     let mut i = 0;
     while i < 58 {
-        table[ALPHABET_BYTES[i] as usize] = i as u8;
+        table[alphabet[i] as usize] = i as u8;
         i += 1;
     }
     table
-};
+}
 
 /// `58^10`, the largest power of 58 used to split the work into `u64` chunks.
-const CHUNK: u64 = 58u64.pow(10);
+const CHUNK: u64 = 430_804_206_899_405_824;
 
 /// The error kinds defined by Section 7 of the specification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -144,10 +146,17 @@ impl core::error::Error for Error {}
 // Encoding
 // ---------------------------------------------------------------------------
 
-/// Writes the `out.len()` least significant base-58 digits of `v` into `out`.
-fn write_digits(mut v: u64, out: &mut [u8]) {
-    for b in out.iter_mut().rev() {
-        *b = ALPHABET_BYTES[(v % 58) as usize];
+#[inline]
+fn digit_symbol(digit: usize) -> u8 {
+    ALPHABET_BYTES[digit]
+}
+
+/// Writes the low `end - start` base-58 digits of `v` into `out[start..end]`.
+fn write_digits(mut v: u64, out: &mut [u8; ENCODED_LEN], start: usize, end: usize) {
+    let mut i = end;
+    while i > start {
+        i -= 1;
+        out[i] = digit_symbol((v % 58) as usize);
         v /= 58;
     }
 }
@@ -160,9 +169,9 @@ fn encode_array(value: u128) -> [u8; ENCODED_LEN] {
     let mid = (rest % chunk) as u64;
     let hi = (rest / chunk) as u64;
     let mut out = [0u8; ENCODED_LEN];
-    write_digits(hi, &mut out[..2]);
-    write_digits(mid, &mut out[2..12]);
-    write_digits(lo, &mut out[12..]);
+    write_digits(hi, &mut out, 0, 2);
+    write_digits(mid, &mut out, 2, 12);
+    write_digits(lo, &mut out, 12, 22);
     out
 }
 
@@ -293,30 +302,43 @@ pub fn encode_uuid(uuid: &uuid::Uuid) -> String {
 /// assert_eq!(uuid58::decode("zzzzzzzzzzzzzzzzzzzzzz"), Err(uuid58::Error::Overflow));
 /// ```
 pub fn decode(input: impl AsRef<[u8]>) -> Result<u128, Error> {
-    let input: &[u8; ENCODED_LEN] = input
-        .as_ref()
-        .try_into()
-        .map_err(|_| Error::InvalidLength)?;
+    decode_value(input.as_ref())
+}
 
-    // Check every character before the range, so that an overflowing prefix
-    // never hides a bad character later in the input.
-    let mut digits = [0u8; ENCODED_LEN];
-    for (d, &b) in digits.iter_mut().zip(input) {
-        *d = DIGITS[usize::from(b)];
-        if *d == INVALID {
+/// Reads one chunk of at most ten digits, so the accumulator fits in a u64.
+fn read_digits(input: &[u8], mut start: usize, end: usize) -> Result<u64, Error> {
+    let mut acc = 0;
+    while start < end {
+        let d = DIGITS[usize::from(input[start])];
+        if d == INVALID {
             return Err(Error::InvalidCharacter);
         }
+        acc = acc * 58 + u64::from(d);
+        start += 1;
     }
+    Ok(acc)
+}
 
-    let chunk = |ds: &[u8]| ds.iter().fold(0u64, |acc, &d| acc * 58 + u64::from(d));
-    let hi = chunk(&digits[..2]);
-    let mid = chunk(&digits[2..12]);
-    let lo = chunk(&digits[12..]);
-    // hi * 58^10 + mid < 58^12 < 2^128, so only the last step can overflow.
-    (u128::from(hi) * u128::from(CHUNK) + u128::from(mid))
-        .checked_mul(u128::from(CHUNK))
-        .and_then(|v| v.checked_add(u128::from(lo)))
-        .ok_or(Error::Overflow)
+fn decode_value(input: &[u8]) -> Result<u128, Error> {
+    if input.len() != ENCODED_LEN {
+        return Err(Error::InvalidLength);
+    }
+    // Read every digit before the range check, as required by section 4.
+    let hi = read_digits(input, 0, 2)?;
+    let mid = read_digits(input, 2, 12)?;
+    let lo = read_digits(input, 12, 22)?;
+    join_chunks(hi, mid, lo)
+}
+
+fn join_chunks(hi: u64, mid: u64, lo: u64) -> Result<u128, Error> {
+    let prefix = u128::from(hi) * u128::from(CHUNK) + u128::from(mid);
+    let Some(shifted) = prefix.checked_mul(u128::from(CHUNK)) else {
+        return Err(Error::Overflow);
+    };
+    let Some(value) = shifted.checked_add(u128::from(lo)) else {
+        return Err(Error::Overflow);
+    };
+    Ok(value)
 }
 
 /// Decodes a uuid58 string to 16 big-endian bytes.

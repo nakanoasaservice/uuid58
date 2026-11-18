@@ -33,6 +33,8 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   1.x.
 - **[Shared test vectors](spec/vectors.json)**: over 200 cases, 120 of them
   invalid inputs. Every implementation runs them in CI.
+- **[Formal proofs](formal/):** Lean checks round trips and ASCII ordering for
+  all 128-bit values, and verifies that the Rust numeric codec implements the spec.
 
 ## Install
 
