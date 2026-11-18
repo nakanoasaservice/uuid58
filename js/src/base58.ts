@@ -15,7 +15,8 @@ const WORD = 4294967296;
 
 /**
  * 58^3. A remainder below it, shifted left by one 32-bit word, stays below
- * 2^50, so long division by it is exact in Number (double) arithmetic.
+ * 2^50. The integer intermediates are exact in Number arithmetic, and
+ * rounding the division preserves its integer quotient.
  */
 const BASE58_CUBE = 195112;
 

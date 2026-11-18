@@ -47,5 +47,5 @@ jobs:
             echo "::warning::Lake will build any missing dependencies from source."
           fi
 
-      - name: Prove the uuid58 specification and Rust numeric codec
+      - name: Prove the specification, Rust codec and JavaScript encoder
         run: formal/check.sh

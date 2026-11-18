@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerate the model from Rust on every run, including local runs.
+# Regenerate the Rust and JavaScript models on every run.
 set -euo pipefail
 formal=$(cd "$(dirname "$0")" && pwd)
 cd "$formal"
@@ -35,7 +35,10 @@ backend_path=$(cd "$backend" && "$lean_bin/lake" env printenv LEAN_PATH)
 export LEAN_PATH="$build:$backend_path"
 check=("$lean_bin/lean" -DwarningAsError=true)
 (cd "$build" && "${check[@]}" -o Uuid58.olean Uuid58.lean)
-for module in Spec Proofs Chunk RustTables RustEncode RustDecode; do
+python3 extract_js.py ../js/src > "$build/JsExtracted.lean"
+"${check[@]}" -o "$build/JsNumber.olean" JsNumber.lean
+(cd "$build" && "${check[@]}" -o JsExtracted.olean JsExtracted.lean)
+for module in Spec Proofs Chunk RustTables RustEncode RustDecode JsEncode; do
   "${check[@]}" -o "$build/$module.olean" "$module.lean"
 done
 "${check[@]}" Audit.lean
