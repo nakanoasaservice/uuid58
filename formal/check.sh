@@ -38,7 +38,7 @@ check=("$lean_bin/lean" -DwarningAsError=true)
 python3 extract_js.py ../js/src > "$build/JsExtracted.lean"
 "${check[@]}" -o "$build/JsNumber.olean" JsNumber.lean
 (cd "$build" && "${check[@]}" -o JsExtracted.olean JsExtracted.lean)
-for module in Spec Proofs Chunk RustTables RustEncode RustDecode JsEncode; do
+for module in Spec Proofs Chunk RustTables RustEncode RustDecode JsEncode JsDecode; do
   "${check[@]}" -o "$build/$module.olean" "$module.lean"
 done
 "${check[@]}" Audit.lean

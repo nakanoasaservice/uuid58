@@ -116,6 +116,23 @@ def sub (r : Rounding) (a b : Nat) := if b ≤ a then integer r (a-b) else none
 def floorDiv (r : Rounding) (a b : Nat) : Option Nat :=
   if b = 0 then none else some (r.ticks a b / unit)
 
+/-- Plain Number division on the decoder's integer domain. The guard
+requires an integral quotient in the exactly representable range. -/
+def exactDiv (r : Rounding) (a b : Nat) : Option Nat :=
+  if 0 < b ∧ a % b = 0 ∧ a/b < 2^53 then some (r.ticks a b / unit) else none
+
+theorem exactDiv_mul (r : Rounding) (q d : Nat) (hd : 0 < d) (hq : q < 2^53) :
+    exactDiv r (q*d) d = some q := by
+  have hn : q*d < d*2^53 := by rw [Nat.mul_comm d]; exact Nat.mul_lt_mul_of_pos_right hq hd
+  have best := (r.nearest _ _ hd hn).2 _ (integer_finite q hq)
+  rw [Nat.mul_right_comm q unit d] at best
+  simp only [distance, Nat.sub_self, Nat.zero_add] at best
+  have eqn : r.ticks (q*d) d * d = (q*d)*unit := by omega
+  rw [Nat.mul_right_comm q d unit] at eqn
+  have exactTicks := Nat.eq_of_mul_eq_mul_right hd eqn
+  simp [exactDiv, hd, hq, exactTicks, Nat.mul_div_cancel _ hd,
+    Nat.mul_div_cancel _ (by decide : 0 < unit)]
+
 @[simp] theorem integer_of_lt (r : Rounding) (n : Nat) (h : n < 2^53) :
     integer r n = some n := by
   rw [integer, ite_eq_left h, integer_exact r n h, Nat.mul_div_cancel _ (by decide : 0 < unit)]
