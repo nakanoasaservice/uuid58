@@ -42,6 +42,8 @@ AENEAS_DIR=/path/to/extracted/aeneas formal/check.sh
 The first run installs the release's Rust nightly if needed and builds the pinned
 Lean dependencies in the Aeneas directory. Every run regenerates the Rust model in
 a fresh temporary directory, checks the proofs and runs the applicable shared
-vectors (round trips, additional valid pairs and invalid decoder inputs). The
-[CI workflow](../.github/workflows/ci-spec.yml) includes the Linux setup and
-archive checksums.
+vectors (round trips, additional valid pairs and invalid decoder inputs).
+The [CI workflow](../.github/workflows/ci-spec.yml) fetches the required mathlib
+modules from mathlib's official build cache for the pinned dependency versions.
+Lake builds any missing modules from source. The workflow also includes the
+Linux setup and archive checksums.

@@ -35,5 +35,17 @@ jobs:
           echo "$RUNNER_TEMP/lean-${version#v}-linux/bin" >> "$GITHUB_PATH"
           echo "AENEAS_DIR=$RUNNER_TEMP/aeneas" >> "$GITHUB_ENV"
 
+      - name: Fetch prebuilt mathlib dependencies used by Aeneas
+        working-directory: ${{ runner.temp }}/aeneas/backends/lean
+        env:
+          MATHLIB_NO_CACHE_ON_UPDATE: 1
+        run: |
+          set -o pipefail
+          if ! lake query +Aeneas:transImports --json \
+            | jq -r '.[] | select(startswith("Mathlib."))' \
+            | xargs -r lake exe cache get --cache-from=master; then
+            echo "::warning::Lake will build any missing dependencies from source."
+          fi
+
       - name: Prove the uuid58 specification and Rust numeric codec
         run: formal/check.sh
