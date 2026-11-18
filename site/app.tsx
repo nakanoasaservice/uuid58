@@ -58,27 +58,27 @@ const fields: { key: Field; label: string; hint: string }[] = [
 const features = [
   {
     title: "Two-way UUID ⇄ Base58 conversion",
-    body: "uuid58 converts UUIDs to fixed 22-character Base58 strings and back without losing any information. Keep UUIDs in your database and use uuid58 in URLs, APIs, and logs.",
+    body: "Convert UUIDs to 22-character Base58 strings and back without losing information. Keep UUIDs in your database; use uuid58 in URLs, APIs, and logs.",
   },
   {
     title: "Easy to read, copy, and share",
-    body: "uuid58 strings are always 22 characters long and URL-safe, with no 0, O, I, or l to confuse when reading or typing. No hyphens or other separators means the whole ID is easy to select with a double-click.",
+    body: "Always 22 characters, URL-safe, and free of look-alikes (0, O, I, l). No separators, so you can select the whole ID with a double-click.",
   },
   {
     title: "Preserves UUID sort order",
-    body: "When compared in ASCII order, uuid58 strings preserve the numeric order of the original UUIDs, so UUIDv7 IDs stay time-ordered. Use binary or C collation rather than locale-aware or case-insensitive sorting.",
+    body: "uuid58 preserves UUID order when sorted by ASCII value, keeping UUIDv7 IDs time-ordered. Use binary or C collation for database sorting.",
   },
   {
     title: "Multi-language support",
-    body: "uuid58 implementations across multiple languages follow the same encoding specification. If you change languages, your existing uuid58 IDs remain valid—no ID conversion or reissuance needed.",
+    body: "Implementations across languages follow the same specification. Switch languages without converting or reissuing your existing uuid58 IDs.",
   },
   {
     title: "Well tested",
-    body: "uuid58 implementations are checked against over 200 shared test vectors, including 120 invalid inputs, in CI.",
+    body: "Over 200 shared test vectors check valid conversions and error handling, including 120 invalid inputs. Implementations run these checks in CI.",
   },
   {
     title: "A stable, strict specification",
-    body: "The uuid58 specification defines the encoding, accepted inputs, and error behavior. The encoding format stays unchanged within 1.x. You can use the specification and shared test vectors to build and verify your own implementation for any language or environment, including with an AI coding assistant.",
+    body: "The specification defines the format and validation rules, with a stable encoding throughout 1.x. Use it with shared test vectors to build and verify your own implementation, including with AI.",
   },
 ];
 
