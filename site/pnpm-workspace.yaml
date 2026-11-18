@@ -4,3 +4,18 @@ overrides:
 
 # Refuse to resolve package versions published less than 3 days ago (minutes).
 minimumReleaseAge: 4320
+
+# Solid 2's coordinated stable release is the target of this migration.
+# Keep the waiting period for unrelated packages and future releases.
+minimumReleaseAgeExclude:
+  - solid-js@2.0.0
+  - "@solidjs/web@2.0.0"
+  - "@solidjs/signals@2.0.0"
+  - "@solidjs/vite-plugin@3.0.1"
+  - "@solidjs/compiler@2.0.0"
+  - "@solidjs/compiler-darwin-x64@2.0.0"
+  - "@solidjs/compiler-darwin-arm64@2.0.0"
+  - "@solidjs/compiler-linux-x64-gnu@2.0.0"
+  - "@solidjs/compiler-linux-arm64-gnu@2.0.0"
+  - "@solidjs/compiler-win32-x64-msvc@2.0.0"
+  - "@solidjs/compiler-wasm32-wasi@2.0.0"

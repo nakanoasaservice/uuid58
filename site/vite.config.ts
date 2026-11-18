@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig, runnerImport, type Plugin } from "vite-plus";
-import solid from "vite-plugin-solid";
+import solid from "@solidjs/vite-plugin";
 import { highlight } from "./highlight";
 import { specPage, specVersion } from "./spec-page";
 

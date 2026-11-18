@@ -1,4 +1,4 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, For, onCleanup, onSettled, Show } from "solid-js";
 import {
   uuid58,
   uuid58Decode,
@@ -257,10 +257,12 @@ function Playground(props: {
                 onInput={(event) =>
                   convert(field.key, event.currentTarget.value)
                 }
-                spellcheck={false}
+                spellcheck="false"
                 autocomplete="off"
                 autocapitalize="off"
-                aria-invalid={conversion().error?.field === field.key}
+                aria-invalid={
+                  conversion().error?.field === field.key ? "true" : "false"
+                }
                 aria-describedby={
                   conversion().error?.field === field.key
                     ? `${field.key}-error`
@@ -309,9 +311,9 @@ function Samples(props: { values: () => Pair }) {
               type="button"
               role="tab"
               id={`tab-${s.id}`}
-              aria-selected={selected() === s.id}
+              aria-selected={selected() === s.id ? "true" : "false"}
               aria-controls={`sample-panel-${s.id}`}
-              tabIndex={selected() === s.id ? 0 : -1}
+              tabindex={selected() === s.id ? 0 : -1}
               onClick={() => setSelected(s.id)}
               onKeyDown={(event) => {
                 const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
@@ -397,9 +399,9 @@ function CommandLine(props: { values: () => Pair }) {
               type="button"
               role="tab"
               id={`install-tab-${m.id}`}
-              aria-selected={selected() === m.id}
+              aria-selected={selected() === m.id ? "true" : "false"}
               aria-controls={`install-panel-${m.id}`}
-              tabIndex={selected() === m.id ? 0 : -1}
+              tabindex={selected() === m.id ? 0 : -1}
               onClick={() => setSelected(m.id)}
               onKeyDown={(event) => {
                 const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
@@ -523,7 +525,7 @@ export function App() {
     error: undefined,
     valid: initial,
   });
-  onMount(() => {
+  onSettled(() => {
     const pair = newPair();
     setConversion({ ...pair, error: undefined, valid: pair });
   });

@@ -10,7 +10,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
