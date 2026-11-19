@@ -26,6 +26,18 @@ theorem digits_snoc (k n : Nat) (h : n < 58^(k+1)) :
     simp [ds, value_append, value, value_digits _ _ hq, Nat.div_add_mod, Nat.mul_comm]
   simpa only [hl, hv] using (digits_value ds).symm
 
+/-- Any split of the digits: the leading `a` digits and the trailing `b`. -/
+theorem digits_append (a b n : Nat) (h : n < 58^(a+b)) :
+    digits a (n / 58^b) ++ digits b (n % 58^b) = digits (a+b) n := by
+  let ds := digits a (n / 58^b) ++ digits b (n % 58^b)
+  have hl : ds.length = a+b := by simp [ds]
+  have p : 0 < 58^b := Nat.pow_pos (by decide)
+  have hq : n / 58^b < 58^a := (Nat.div_lt_iff_lt_mul p).2 (by simpa [Nat.pow_add] using h)
+  have hv : value ds = n := by
+    simp only [ds, value_append, length_digits, value_digits _ _ hq, value_digits _ _ (Nat.mod_lt _ p)]
+    exact Nat.div_add_mod' n (58^b)
+  simpa only [hl, hv] using (digits_value ds).symm
+
 abbrev chunk : Nat := 58^10
 
 theorem split_encode (v : UUID) :

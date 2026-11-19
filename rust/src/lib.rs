@@ -140,24 +140,7 @@ const HALF_LEAD: u64 = 11_316_496;
 const CHUNK_ODD: u64 = CHUNK >> 10;
 
 /// `ceil(2^167 / 29^10)`, for dividing by `CHUNK` with a multiplication.
-const CHUNK_ODD_RECIPROCAL: u128 = {
-    // Long division of 2^167 by 29^10, one bit at a time.
-    let d = CHUNK_ODD as u128;
-    let mut quotient = 0u128;
-    let mut remainder = 1u128;
-    let mut bit = 0;
-    while bit < 167 {
-        remainder <<= 1;
-        quotient <<= 1;
-        if remainder >= d {
-            remainder -= d;
-            quotient |= 1;
-        }
-        bit += 1;
-    }
-    // 29^10 is odd, so the division is never exact: round up.
-    quotient + 1
-};
+const CHUNK_ODD_RECIPROCAL: u128 = 0x0055_a37e_2ddb_2fc8_4b2b_ae47_fb74_c160;
 
 /// The number of fraction bits in the fixed-point numbers of `write_half`.
 const FRACTION_BITS: u32 = 58;
@@ -165,6 +148,40 @@ const FRACTION_BITS: u32 = 58;
 /// `ceil(2^58 / 58^4)`: a half times this is the half divided by `58^4`, as
 /// a fixed-point number.
 const HALF_LEAD_RECIPROCAL: u64 = (1 << FRACTION_BITS) / HALF_LEAD + 1;
+
+const LOWER_HEX: &[u8; 16] = b"0123456789abcdef";
+const UPPER_HEX: &[u8; 16] = b"0123456789ABCDEF";
+
+/// Marks a byte that is not a hexadecimal digit. Larger than any number made
+/// of two digits, see `hex_byte`.
+const NOT_HEX: u16 = 0x100;
+
+/// Byte -> value of that hexadecimal digit, in either case, or `NOT_HEX`.
+const HEX_VALUES: [u16; 256] = make_hex_values(LOWER_HEX, UPPER_HEX);
+
+const fn make_hex_values(lower: &[u8; 16], upper: &[u8; 16]) -> [u16; 256] {
+    let mut table = [NOT_HEX; 256];
+    let mut i = 0;
+    while i < 16 {
+        table[lower[i] as usize] = i as u16;
+        table[upper[i] as usize] = i as u16;
+        i += 1;
+    }
+    table
+}
+
+/// Byte -> its two lowercase hexadecimal digits.
+const HEX_PAIRS: [[u8; 2]; 256] = make_hex_pairs(LOWER_HEX);
+
+const fn make_hex_pairs(digits: &[u8; 16]) -> [[u8; 2]; 256] {
+    let mut table = [[0u8; 2]; 256];
+    let mut i = 0;
+    while i < 256 {
+        table[i] = [digits[i / 16], digits[i % 16]];
+        i += 1;
+    }
+    table
+}
 
 /// The error kinds defined by Section 7 of the specification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -235,9 +252,12 @@ fn write_half(v: u64, out: &mut [u8; ENCODED_LEN], at: usize) {
     // The integer part is the top six bits, so the lookup needs no bounds
     // check.
     let mut t = v * HALF_LEAD_RECIPROCAL;
-    for symbol in &mut out[at..at + 5] {
-        *symbol = SYMBOLS[(t >> FRACTION_BITS) as usize];
+    let end = at + 5;
+    let mut i = at;
+    while i < end {
+        out[i] = SYMBOLS[(t >> FRACTION_BITS) as usize];
         t = (t & ((1 << FRACTION_BITS) - 1)) * 58;
+        i += 1;
     }
 }
 
@@ -253,11 +273,10 @@ fn write_chunk(v: u64, out: &mut [u8; ENCODED_LEN], at: usize) {
 fn encode_into(value: u128, out: &mut [u8; ENCODED_LEN]) {
     // value = hi * 58^20 + mid * 58^10 + lo, with hi < 58^2.
     let rest = div_chunk(value);
-    // lo = value - rest * 58^10 is below 2^64, so its low 64 bits are all of
-    // it. The same goes for mid.
-    let lo = (value as u64).wrapping_sub((rest as u64).wrapping_mul(CHUNK));
+    // The two remainders are below 58^10, so they fit in a u64.
+    let lo = (value - rest * u128::from(CHUNK)) as u64;
     let hi = (rest >> 10) as u64 / CHUNK_ODD;
-    let mid = (rest as u64).wrapping_sub(hi.wrapping_mul(CHUNK));
+    let mid = (rest - u128::from(hi) * u128::from(CHUNK)) as u64;
     // `hi / 58` is below 58; the mask only removes the bounds check.
     out[0] = SYMBOLS[(hi / 58) as usize & 63];
     out[1] = SYMBOLS[(hi % 58) as usize];
@@ -439,23 +458,19 @@ fn decode_value(input: &[u8]) -> Result<u128, Error> {
         return Err(Error::InvalidLength);
     };
     let (first, second) = (digit(input, 0), digit(input, 1));
-    let halves = [
-        read_half(input, 2),
-        read_half(input, 7),
-        read_half(input, 12),
-        read_half(input, 17),
-    ];
+    let (mid_high, mid_low) = (read_half(input, 2), read_half(input, 7));
+    let (lo_high, lo_low) = (read_half(input, 12), read_half(input, 17));
     // Read every digit before the range check, as required by section 4.
     // Without an invalid character every term is below 2^30, and so is
     // their OR. An invalid one puts its term, and the OR, at `INVALID` or
     // above.
-    let seen = first | second | halves[0] | halves[1] | halves[2] | halves[3];
+    let seen = first | second | mid_high | mid_low | lo_high | lo_low;
     if seen >= u64::from(INVALID) {
         return Err(Error::InvalidCharacter);
     }
     let hi = first * 58 + second;
-    let mid = halves[0] * HALF + halves[1];
-    let lo = halves[2] * HALF + halves[3];
+    let mid = mid_high * HALF + mid_low;
+    let lo = lo_high * HALF + lo_low;
     join_chunks(hi, mid, lo)
 }
 
@@ -550,97 +565,66 @@ pub fn is_valid(input: impl AsRef<[u8]>) -> bool {
 // UUID strings
 // ---------------------------------------------------------------------------
 
-/// A `u64` with every byte set to `byte`.
-const fn splat(byte: u8) -> u64 {
-    u64::from_ne_bytes([byte; 8])
+/// The byte written as the two characters `input[at]` and `input[at + 1]`:
+/// below 256 if both are hexadecimal digits, and at least `NOT_HEX` if not.
+#[inline(always)]
+fn hex_byte(input: &[u8], at: usize) -> u64 {
+    u64::from(HEX_VALUES[usize::from(input[at])]) * 16
+        + u64::from(HEX_VALUES[usize::from(input[at + 1])])
 }
 
-/// Parses the eight ASCII hexadecimal digits held in the bytes of `word`,
-/// most significant first. `None` if any byte is not a hexadecimal digit.
-#[inline]
-fn parse_hex_word(word: u64) -> Option<u32> {
-    // All eight bytes are handled at once. With bit 7 cleared, a byte plus a
-    // constant of at most 0x80 never carries into its neighbour, and
-    // `b + (0x80 - k)` has bit 7 set exactly when `b >= k`.
-    let low = word & splat(0x7f);
-    let at_least = |bytes: u64, k: u8| bytes + splat(0x80 - k);
-    let digit = at_least(low, b'0') & !at_least(low, b'9' + 1);
-    let lower = low | splat(0x20);
-    let letter = at_least(lower, b'a') & !at_least(lower, b'f' + 1);
-    // Bit 7 of each byte: is a digit or a letter, and was ASCII to begin with.
-    if (digit | letter) & !word & splat(0x80) != splat(0x80) {
-        return None;
+/// Parses the 16 bytes of a UUID from five groups of hexadecimal digits: 4,
+/// 2, 2, 2 and 6 bytes, starting at `a`, `b`, `c`, `d` and `e`.
+#[inline(always)]
+fn parse_groups(
+    input: &[u8],
+    a: usize,
+    b: usize,
+    c: usize,
+    d: usize,
+    e: usize,
+) -> Result<u128, Error> {
+    let b0 = hex_byte(input, a);
+    let b1 = hex_byte(input, a + 2);
+    let b2 = hex_byte(input, a + 4);
+    let b3 = hex_byte(input, a + 6);
+    let b4 = hex_byte(input, b);
+    let b5 = hex_byte(input, b + 2);
+    let b6 = hex_byte(input, c);
+    let b7 = hex_byte(input, c + 2);
+    let b8 = hex_byte(input, d);
+    let b9 = hex_byte(input, d + 2);
+    let b10 = hex_byte(input, e);
+    let b11 = hex_byte(input, e + 2);
+    let b12 = hex_byte(input, e + 4);
+    let b13 = hex_byte(input, e + 6);
+    let b14 = hex_byte(input, e + 8);
+    let b15 = hex_byte(input, e + 10);
+    // Without an invalid character every byte is below 256, and so is their
+    // OR. An invalid one puts its byte, and the OR, at `NOT_HEX` or above.
+    let seen = b0 | b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8 | b9 | b10 | b11 | b12 | b13 | b14 | b15;
+    if seen >= u64::from(NOT_HEX) {
+        return Err(Error::InvalidCharacter);
     }
-    // The low four bits are the value of '0'..='9', and nine less than the
-    // value of a letter; only letters have bit 6 set.
-    let nibbles = (word & splat(0x0f)) + ((word >> 6) & splat(1)) * 9;
-    // Squeeze the eight nibbles, one per byte, into the low 32 bits.
-    let pairs = (nibbles | (nibbles >> 4)) & 0x00ff_00ff_00ff_00ff;
-    let quads = (pairs | (pairs >> 8)) & 0x0000_ffff_0000_ffff;
-    Some((quads | (quads >> 16)) as u32)
-}
-
-/// Formats `value` as eight lowercase hexadecimal digits.
-#[inline]
-fn format_hex_word(value: u32) -> [u8; 8] {
-    // Spread the eight nibbles out, one per byte.
-    let quads = u64::from(value);
-    let quads = (quads | (quads << 16)) & 0x0000_ffff_0000_ffff;
-    let pairs = (quads | (quads << 8)) & 0x00ff_00ff_00ff_00ff;
-    let nibbles = (pairs | (pairs << 4)) & splat(0x0f);
-    // 1 in every byte that holds 10..=15: those skip from '9' to 'a'.
-    let letters = ((nibbles + splat(6)) >> 4) & splat(1);
-    (nibbles + splat(b'0') + letters * u64::from(b'a' - b'9' - 1)).to_be_bytes()
-}
-
-/// Reads four bytes of `input` at `at` into the low half of a `u64`,
-/// most significant first.
-#[inline(always)]
-fn read_four<const N: usize>(input: &[u8; N], at: usize) -> u64 {
-    u64::from(u32::from_be_bytes([
-        input[at],
-        input[at + 1],
-        input[at + 2],
-        input[at + 3],
-    ]))
-}
-
-/// Reads eight bytes of `input` at `at`, most significant first.
-#[inline(always)]
-fn read_eight<const N: usize>(input: &[u8; N], at: usize) -> u64 {
-    (read_four(input, at) << 32) | read_four(input, at + 4)
+    let high =
+        ((((((b0 * 256 + b1) * 256 + b2) * 256 + b3) * 256 + b4) * 256 + b5) * 256 + b6) * 256 + b7;
+    let low = ((((((b8 * 256 + b9) * 256 + b10) * 256 + b11) * 256 + b12) * 256 + b13) * 256 + b14)
+        * 256
+        + b15;
+    Ok((u128::from(high) << 64) | u128::from(low))
 }
 
 fn parse_uuid_bytes(input: &[u8]) -> Result<u128, Error> {
-    // The 32 hexadecimal digits, as four words of eight.
-    let words = if let Ok(plain) = <&[u8; 32]>::try_from(input) {
-        [
-            read_eight(plain, 0),
-            read_eight(plain, 8),
-            read_eight(plain, 16),
-            read_eight(plain, 24),
-        ]
-    } else if let Ok(hyphenated) = <&[u8; UUID_STR_LEN]>::try_from(input) {
-        if hyphenated[8] != b'-'
-            || hyphenated[13] != b'-'
-            || hyphenated[18] != b'-'
-            || hyphenated[23] != b'-'
-        {
-            return Err(Error::InvalidCharacter);
+    match input.len() {
+        32 => parse_groups(input, 0, 8, 12, 16, 20),
+        UUID_STR_LEN => {
+            if input[8] != b'-' || input[13] != b'-' || input[18] != b'-' || input[23] != b'-' {
+                return Err(Error::InvalidCharacter);
+            }
+            parse_groups(input, 0, 9, 14, 19, 24)
         }
-        [
-            read_eight(hyphenated, 0),
-            (read_four(hyphenated, 9) << 32) | read_four(hyphenated, 14),
-            (read_four(hyphenated, 19) << 32) | read_four(hyphenated, 24),
-            read_eight(hyphenated, 28),
-        ]
-    } else {
-        return Err(Error::InvalidLength);
-    };
-    let [Some(a), Some(b), Some(c), Some(d)] = words.map(parse_hex_word) else {
-        return Err(Error::InvalidCharacter);
-    };
-    Ok((u128::from(a) << 96) | (u128::from(b) << 64) | (u128::from(c) << 32) | u128::from(d))
+        _ => Err(Error::InvalidLength),
+    }
 }
 
 /// Parses a UUID string strictly, per Section 5.1 of the specification.
@@ -679,20 +663,18 @@ fn format_uuid(value: u128, buf: &mut [u8; UUID_STR_LEN]) -> &str {
 
 /// Writes the 36 characters of `value` as a lowercase hyphenated UUID string.
 fn write_uuid(value: u128, buf: &mut [u8; UUID_STR_LEN]) {
-    let a = format_hex_word((value >> 96) as u32);
-    let b = format_hex_word((value >> 64) as u32);
-    let c = format_hex_word((value >> 32) as u32);
-    let d = format_hex_word(value as u32);
-    buf[0..8].copy_from_slice(&a);
-    buf[8] = b'-';
-    buf[9..13].copy_from_slice(&b[0..4]);
-    buf[13] = b'-';
-    buf[14..18].copy_from_slice(&b[4..8]);
-    buf[18] = b'-';
-    buf[19..23].copy_from_slice(&c[0..4]);
-    buf[23] = b'-';
-    buf[24..28].copy_from_slice(&c[4..8]);
-    buf[28..36].copy_from_slice(&d);
+    let bytes = value.to_be_bytes();
+    let mut pos = 0;
+    for (i, &b) in bytes.iter().enumerate() {
+        if matches!(i, 4 | 6 | 8 | 10) {
+            buf[pos] = b'-';
+            pos += 1;
+        }
+        let pair = HEX_PAIRS[usize::from(b)];
+        buf[pos] = pair[0];
+        buf[pos + 1] = pair[1];
+        pos += 2;
+    }
 }
 
 #[cfg(test)]

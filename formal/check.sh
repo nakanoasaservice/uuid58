@@ -23,7 +23,7 @@ trap 'rm -rf "$build"' EXIT
 (
   cd ../rust
   "$aeneas/charon" rustc --preset=aeneas --consts initializers --sysroot default \
-    --start-from=crate::encode_array --start-from=crate::decode --start-from=crate::is_valid \
+    --start-from=crate::encode_into --start-from=crate::decode --start-from=crate::is_valid \
     --start-from=crate::parse_uuid_str --start-from=crate::format_uuid --start-from=crate::decode_to_uuid_buf \
     --dest-file "$build/uuid58.llbc" -- --edition=2024 --crate-type=lib --crate-name=uuid58 src/lib.rs
 )
