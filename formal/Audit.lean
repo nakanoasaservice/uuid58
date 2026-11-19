@@ -1,7 +1,6 @@
 import RustEncode
 import RustDecode
-import JsValidate
-import JsText
+import JsGenerate
 import Lean.Util.CollectAxioms
 
 open Aeneas Aeneas.Std Aeneas.Std.WP
@@ -37,7 +36,8 @@ run_cmd do
       ``Uuid58.Js.parseUuidString_correct, ``Uuid58.Js.formatUuidString_correct,
       ``Uuid58.Js.encodeStringSafe_correct, ``Uuid58.Js.encodeStringSafe_accepts, ``Uuid58.Js.decodeStringSafe_correct,
       ``Uuid58.Js.encodeString_correct, ``Uuid58.Js.decodeString_correct,
-      ``Uuid58.Js.text_decode_encode, ``Uuid58.Js.text_encode_decode] do
+      ``Uuid58.Js.text_decode_encode, ``Uuid58.Js.text_encode_decode,
+      ``Uuid58.Js.stampRandom_correct, ``Uuid58.Js.uuid58_correct, ``Uuid58.Js.uuid58_roundtrip] do
     for axiomName in ← collectAxioms decl do
       unless allowed.contains axiomName do
         throwError "{decl} depends on unexpected axiom {axiomName}"

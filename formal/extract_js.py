@@ -1,4 +1,4 @@
-"""Translate the TypeScript numeric codec, validator and byte API into Lean."""
+"""Translate the TypeScript numeric codec, validator, byte API and UUID generator into Lean."""
 
 import ast
 from pathlib import Path
@@ -53,6 +53,23 @@ def read_source(path):
         return "\n" if re.search(r"[\r\n\u2028\u2029]", token[0]) else " "
 
     return re.sub(tokens, strip_comment, path.read_text(), flags=re.DOTALL)
+
+
+def require_exports(directory, module, names):
+    public = set()
+    for statement in read_source(directory / "index.ts").strip().removesuffix(";").split(";"):
+        items, path = match(r'export\s*\{([^{}]*)\}\s*from\s*"([^"]+)"', statement)
+        if path == module:
+            public.update(name.strip() for name in items.split(","))
+    if not names <= public:
+        raise ValueError(f"missing public export from {module}: {sorted(names - public)}")
+
+
+def number(literal):
+    value = int(literal, 16 if literal.startswith("0x") else 10)
+    if value >= 2**53:
+        raise ValueError(f"unsupported Number literal: {literal}")
+    return value
 
 
 def expect_js(source, expected):
@@ -239,6 +256,26 @@ def extract_bytes(source):
     yield "  [" + ", ".join(octets) + "]"
 
 
+def extract_generator(directory):
+    require_exports(directory, "./generate.ts", {"uuid58"})
+    header, body, tail = split_function(read_source(directory / "generate.ts"),
+                                        r"export function uuid58\(\): string")
+    expect_js(header, """import { encodeWords } from "./base58.ts";
+        const random = new Uint32Array(4);""")
+    expect_js(tail, "")
+    fill, *stores, result = body.strip().removesuffix(";").split(";")
+    expect_js(fill, "crypto.getRandomValues(random)")
+    expect_js(result, "return encodeWords(random)")
+    literal = r"(0x[0-9a-fA-F]+|0|[1-9][0-9]*)"
+    assignment = r"random\[([0-3])\] = \(random\[([0-3])\]! & " + literal + r"\) \| " + literal
+    yield "\ndef stampRandom (w0 w1 w2 w3 : BitVec 32) : BitVec 32 × BitVec 32 × BitVec 32 × BitVec 32 :="
+    for statement in stores:
+        dest, src, mask, bits = match(assignment, statement)
+        # Bitwise operations and the following Uint32Array store retain the same low 32 bits.
+        yield f"  let w{dest} := (w{src} &&& BitVec.ofNat 32 {number(mask)}) ||| BitVec.ofNat 32 {number(bits)}"
+    yield "  (w0, w1, w2, w3)"
+
+
 def extract(directory):
     alphabet, = match(r'export const UUID58_ALPHABET: string =\s*"([A-Za-z0-9]+)";',
                       read_source(directory / "alphabet.ts"))
@@ -302,6 +339,7 @@ def extract(directory):
     yield from extract_decoder(after, read_source(directory / "errors.ts"))
     yield from extract_validator(directory / "check.ts")
     yield from extract_bytes(read_source(directory / "bytes.ts"))
+    yield from extract_generator(directory)
     yield "\nend Uuid58.Js.Extracted"
 
 

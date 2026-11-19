@@ -40,7 +40,7 @@ python3 -B extract_js_text.py ../js/src > "$build/JsTextExtracted.lean"
 "${check[@]}" -o "$build/JsNumber.olean" JsNumber.lean
 (cd "$build" && "${check[@]}" -o JsExtracted.olean JsExtracted.lean)
 (cd "$build" && "${check[@]}" -o JsTextExtracted.olean JsTextExtracted.lean)
-for module in Spec Proofs Bytes Chunk RustTables RustEncode RustDecode JsEncode JsDecode JsValidate JsBytes UuidText JsTextParse JsText; do
+for module in Spec Proofs Bytes Chunk RustTables RustEncode RustDecode JsEncode JsDecode JsValidate JsBytes UuidText JsTextParse JsText JsGenerate; do
   "${check[@]}" -o "$build/$module.olean" "$module.lean"
 done
 "${check[@]}" Audit.lean
