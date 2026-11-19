@@ -212,6 +212,39 @@ fn decode_invalid() {
 }
 
 #[test]
+fn decode_to_uuid_buf_reuse_after_errors() {
+    let max_text = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+    let nil_text = "00000000-0000-0000-0000-000000000000";
+    let mut buf = [0; uuid58::UUID_STR_LEN];
+    assert_eq!(
+        uuid58::decode_to_uuid_buf(uuid58::MAX_UUID58, &mut buf),
+        Ok(max_text)
+    );
+
+    let overflow = [b'z'; uuid58::ENCODED_LEN];
+    let mut malformed = overflow;
+    malformed[1] = 0xff;
+    for (input, error) in [
+        (&malformed[..21], Error::InvalidLength),
+        (&malformed[..], Error::InvalidCharacter),
+        (&overflow[..], Error::Overflow),
+    ] {
+        assert_eq!(
+            uuid58::decode_to_uuid_buf(input, &mut buf),
+            Err(error),
+            "{input:x?}"
+        );
+        assert_eq!(buf.as_slice(), max_text.as_bytes(), "{input:x?}");
+    }
+
+    assert_eq!(
+        uuid58::decode_to_uuid_buf(uuid58::NIL_UUID58, &mut buf),
+        Ok(nil_text)
+    );
+    assert_eq!(buf.as_slice(), nil_text.as_bytes());
+}
+
+#[test]
 fn validation() {
     let v = vectors();
     for case in cases(&v, &["roundtrip"]) {

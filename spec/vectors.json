@@ -343,6 +343,26 @@
       "uuid58": "1211111111111111111111"
     },
     {
+      "description": "one below the highest multiple of 58^5 in range",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffeba647f",
+      "uuid58": "YcVfxkQb6JRzqk5kEzzzzz"
+    },
+    {
+      "description": "highest multiple of 58^5 in range",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffeba6480",
+      "uuid58": "YcVfxkQb6JRzqk5kF11111"
+    },
+    {
+      "description": "one below the highest multiple of 58^10 in range",
+      "uuid": "ffffffff-ffff-ffff-faf9-c229d42a73ff",
+      "uuid58": "YcVfxkQb6JRyzzzzzzzzzz"
+    },
+    {
+      "description": "highest multiple of 58^10 in range",
+      "uuid": "ffffffff-ffff-ffff-faf9-c229d42a7400",
+      "uuid58": "YcVfxkQb6JRz1111111111"
+    },
+    {
       "description": "smallest value with first digit Y",
       "uuid": "fb0b4c67-da47-6b6e-6b4e-26f976600000",
       "uuid58": "Y111111111111111111111"
@@ -536,6 +556,13 @@
       {
         "description": "non-hex letter, hyphenated",
         "input": "g4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "non-hex last digit in both 64-bit halves",
+        "input": "000000000000000g000000000000000g",
         "errors": [
           "invalid_character"
         ]
@@ -1183,6 +1210,20 @@
       {
         "description": "invalid first character, overflowing digits",
         "input": "0zzzzzzzzzzzzzzzzzzzzz",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "invalid second character after an overflowing first digit",
+        "input": "z011111111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "invalid 0 and O at indices 6 and 16",
+        "input": "1111110111111111O11111",
         "errors": [
           "invalid_character"
         ]

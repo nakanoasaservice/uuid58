@@ -149,6 +149,11 @@ def sample_values():
     for k in range(2, 21):
         values.append((58**k - 1, f"58^{k} - 1 (largest {k}-digit value)"))
         values.append((58**k, f"58^{k} (smallest {k + 1}-digit value)"))
+    # The last five or ten digits roll from all 'z' to all '1' near the UUID limit.
+    for k in (5, 10):
+        multiple = MAX_VALUE - MAX_VALUE % 58**k
+        values.append((multiple - 1, f"one below the highest multiple of 58^{k} in range"))
+        values.append((multiple, f"highest multiple of 58^{k} in range"))
     # Values near the top of the range, given by their encoding.
     for text, description in [
         ("Y111111111111111111111", "smallest value with first digit Y"),
@@ -190,6 +195,7 @@ INVALID_ENCODE_INPUTS = [
     (EXAMPLE_HEX + "0000", "36 hex digits without hyphens"),
     ("g" + EXAMPLE_HEX[1:], "non-hex letter, 32 characters"),
     ("g" + EXAMPLE[1:], "non-hex letter, hyphenated"),
+    (("0" * 15 + "g") * 2, "non-hex last digit in both 64-bit halves"),
     ("0x" + EXAMPLE_HEX[2:], "0x prefix"),
     (" " + EXAMPLE_HEX[1:], "leading space, 32 characters"),
     (EXAMPLE_HEX[:31] + "\n", "trailing newline, 32 characters"),
@@ -285,6 +291,9 @@ INVALID_DECODE_INPUTS = [
     ("Z" + "1" * 21, "first digit Z (exceeds 128 bits)"),
     ("z" * 22, "largest 22-character value"),
     ("0" + "z" * 21, "invalid first character, overflowing digits"),
+    ("z0" + "1" * 20, "invalid second character after an overflowing first digit"),
+    # Both invalid digits have the same weight within their ten-digit groups.
+    ("1" * 6 + "0" + "1" * 9 + "O" + "1" * 5, "invalid 0 and O at indices 6 and 16"),
     # The character check comes before the range check (SPEC.md Section 4),
     # even when the invalid character is last.
     ("Z" + "z" * 20 + "0", "overflowing digits, invalid last character"),

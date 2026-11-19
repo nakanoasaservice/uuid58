@@ -31,7 +31,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 - **[Spec 1.1.0](spec/SPEC.md)** defines the alphabet, the padding, every
   accepted input, and every error kind. The format will not change within
   1.x.
-- **[Shared test vectors](spec/vectors.json)**: over 200 cases, 120 of them
+- **[Shared test vectors](spec/vectors.json)**: over 200 cases, 123 of them
   invalid inputs. Every implementation runs them in CI.
 - **[Formal proofs](formal/)** cover round trips and ASCII ordering for all 128-bit
   values. Lean also checks the Rust and JavaScript numeric codecs against the
