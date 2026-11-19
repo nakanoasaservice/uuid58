@@ -99,6 +99,15 @@ private theorem pack_ofNat (n : Nat) : (Words.ofNat n).value = n := by
   have reconstruct (v : Nat) : v/W*W+v%W=v := by simpa [Nat.mul_comm] using Nat.div_add_mod v W
   simp only [Words.ofNat, Words.value, reconstruct]
 
+theorem Words.ofNat_uuid (w : Words) (hw : w.valid) : Words.ofNat (w.uuid hw).val = w :=
+  unpack w hw.2.1 hw.2.2.1 hw.2.2.2
+
+theorem Words.valid_of_uuid (v : UUID) : (Words.ofNat v.val).valid :=
+  ⟨(top_fits _).2 v.isLt, Nat.mod_lt _ (by decide), Nat.mod_lt _ (by decide), Nat.mod_lt _ (by decide)⟩
+
+theorem Words.uuid_ofNat (v : UUID) : (Words.ofNat v.val).uuid (Words.valid_of_uuid v) = v :=
+  Fin.ext (pack_ofNat _)
+
 /-- One group propagates three carries from low to high, exactly as in decodeWords. -/
 def appendChunk (r : Rounding) (w : Words) (chunk : Nat) : Option Words := do
   let t3 ← Extracted.accumulate3 r w.d chunk

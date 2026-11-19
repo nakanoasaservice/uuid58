@@ -1,10 +1,12 @@
 # Formal verification
 
-Lean checks the numeric codec against sections 2–4 and the Rust and JavaScript
-validators against section 6 of specification 1.1.0.
-The model treats a UUID as an unsigned integer below `2^128` and reads text as bytes,
-one of the length units allowed by section 4.1. Its decoder evaluates the positional
-polynomial using natural numbers. [Specification](../spec/SPEC.md)
+Lean checks the numeric codec against sections 2–4, the JavaScript UUID string
+APIs against section 5 and the Rust and JavaScript validators against section 6
+of specification 1.1.0.
+The numeric specification treats a UUID as an unsigned integer below `2^128`
+and reads Base58 text as bytes, one of the length units allowed by section 4.1.
+Its decoder evaluates the positional polynomial using natural numbers.
+The JavaScript model measures strings in UTF-16 code units. [Specification](../spec/SPEC.md)
 
 | What is checked | Lean source |
 | --- | --- |
@@ -16,6 +18,7 @@ polynomial using natural numbers. [Specification](../spec/SPEC.md)
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
 | The JavaScript byte APIs encode and decode 16 bytes in big-endian order. Both round trips hold. The safe APIs return the specified error kind and the ordinary APIs throw it. | [Byte specification](Bytes.lean), [JavaScript byte API](JsBytes.lean) |
+| The JavaScript string APIs accept plain or hyphenated UUIDs with any mix of ASCII hex letter cases. A UUID round trip produces lowercase hyphenated text, and a Base58 round trip preserves the input exactly. The safe and throwing APIs report the specified first error kind. | [UUID text specification](UuidText.lean), [parser](JsTextParse.lean), [formatter and public APIs](JsText.lean) |
 
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
@@ -67,13 +70,21 @@ offset. The decoder theorem describes the returned bytes. The source check and
 runtime tests also cover allocation of a fresh result on each successful call.
 [Byte API source](../js/src/bytes.ts)
 
+The UUID text extractor reads the input tables, hex accumulator, parser ranges and
+separator checks. Lean proves that all eight digits of each word are exact in
+binary64. If the first part of a split word fails, its negative accumulator stays
+negative through the second part. The formatter proof checks every buffer store
+and every argument to `String.fromCharCode` against the 32 lowercase hex digits
+and four separators of the canonical form. The public API proofs compose those
+results with the numeric codec on every UTF-16 code-unit sequence.
+[Text extractor](extract_js_text.py) · [UUID text source](../js/src/uuid-hex.ts) · [Public wrappers](../js/src/string.ts)
+
 The rounding proof compares exact rational results with the representable
 binary64 values on either side of an integer boundary. It applies to every
 nearest rounding, including ECMAScript's ties-to-even rule. The JavaScript
 theorems assume the extractor's translation and standard Number, typed-array
 and string operations. The encoder takes four unsigned input words. The
 decoder result describes the contents of the reused array when it returns.
-The public UUID text parser and formatter are covered by the conformance tests.
 [ECMAScript Number type](https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type)
 
 ## Run the check
@@ -91,7 +102,7 @@ AENEAS_DIR=/path/to/extracted/aeneas formal/check.sh
 The first run installs the release's Rust nightly if needed and builds the pinned
 Lean dependencies in the Aeneas directory. Every run regenerates the Rust and
 JavaScript models in a fresh temporary directory, checks the proofs and runs the applicable shared
-vectors (round trips, additional valid pairs and invalid decoder inputs).
+vectors (round trips, alternative UUID spellings, invalid UUID strings and invalid Base58 inputs).
 The [CI workflow](../.github/workflows/ci-spec.yml) fetches the required mathlib
 modules from mathlib's official build cache for the pinned dependency versions.
 Lake builds any missing modules from source. The workflow also includes the

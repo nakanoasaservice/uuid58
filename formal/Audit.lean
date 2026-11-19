@@ -1,7 +1,7 @@
 import RustEncode
 import RustDecode
 import JsValidate
-import JsBytes
+import JsText
 import Lean.Util.CollectAxioms
 
 open Aeneas Aeneas.Std Aeneas.Std.WP
@@ -32,7 +32,12 @@ run_cmd do
       ``Uuid58.Js.roundtrip, ``Uuid58.Js.regex_correct, ``Uuid58.Js.isUuid58_correct,
       ``Uuid58.Js.isUuid58_iff_decodeWords, ``Uuid58.Js.encodeBytesSafe_correct, ``Uuid58.Js.decodeBytesSafe_correct,
       ``Uuid58.Js.encodeBytes_correct, ``Uuid58.Js.decodeBytes_correct,
-      ``Uuid58.Js.bytes_decode_encode, ``Uuid58.Js.bytes_encode_decode] do
+      ``Uuid58.Js.bytes_decode_encode, ``Uuid58.Js.bytes_encode_decode,
+      ``Uuid58.Js.Text.block_fits, ``Uuid58.Js.Text.parse_accepts, ``Uuid58.Js.Text.parse_canonical,
+      ``Uuid58.Js.parseUuidString_correct, ``Uuid58.Js.formatUuidString_correct,
+      ``Uuid58.Js.encodeStringSafe_correct, ``Uuid58.Js.encodeStringSafe_accepts, ``Uuid58.Js.decodeStringSafe_correct,
+      ``Uuid58.Js.encodeString_correct, ``Uuid58.Js.decodeString_correct,
+      ``Uuid58.Js.text_decode_encode, ``Uuid58.Js.text_encode_decode] do
     for axiomName in ← collectAxioms decl do
       unless allowed.contains axiomName do
         throwError "{decl} depends on unexpected axiom {axiomName}"
