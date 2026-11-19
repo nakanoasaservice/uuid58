@@ -1,11 +1,240 @@
+# Dependency updates. AGENTS.md describes the whole flow.
+#
+# - Language ecosystems: daily at 08:00 JST. github-actions and nix: weekly.
+# - cooldown skips versions published in the last few days (broken releases,
+#   hijacked packages); majors wait longer. Security updates are not delayed.
+# - Patch/minor updates are grouped per entry; majors are not grouped, so each
+#   major lands as its own PR. dependabot-triage.yml enables auto-merge only for
+#   patch/minor updates on versions >= 1.0.
 version: 2
 updates:
+  - package-ecosystem: "npm"
+    directory: "/js"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # The Vite+ toolchain is pinned via pnpm overrides in js/pnpm-workspace.yaml
+    # (vite -> npm:@voidzero-dev/vite-plus-core, vitest), which Dependabot cannot keep
+    # in sync. Update vite-plus, vite and vitest together by hand (see AGENTS.md).
+    ignore:
+      - dependency-name: "vite"
+      - dependency-name: "vite-plus"
+      - dependency-name: "vitest"
+    groups:
+      js-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/site"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # Same Vite+ pinning as js/: vite is an npm alias and vite/vitest are pinned via
+    # pnpm overrides in site/pnpm-workspace.yaml. Update them together by hand.
+    ignore:
+      - dependency-name: "vite"
+      - dependency-name: "vite-plus"
+      - dependency-name: "vitest"
+    groups:
+      site-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "uv"
+    directory: "/python"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # uv_build must match the uv version pinned in pyproject.toml
+    # ([tool.uv] required-version) and python/mise.toml. Update them together by hand.
+    ignore:
+      - dependency-name: "uv_build"
+    groups:
+      python-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "cargo"
+    directory: "/rust"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      rust-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "gomod"
+    directory: "/go"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      go-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "bundler"
+    directory: "/ruby"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      ruby-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "composer"
+    directory: "/php"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      php-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pub"
+    directory: "/dart"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      dart-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "maven"
+    directory: "/java"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      # JUnit 6 requires Java 17, but the library is built and tested on Java 8.
+      - dependency-name: "org.junit:junit-bom"
+        update-types: ["version-update:semver-major"]
+      # The Maven version in .mvn/wrapper/maven-wrapper.properties must match
+      # java/mise.toml. Update both together by hand.
+      - dependency-name: "org.apache.maven:apache-maven"
+    groups:
+      java-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "nuget"
+    directory: "/dotnet"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      dotnet-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Dependabot updates .github/workflows/actions.lock together with the workflow
+  # files (see earlier github-actions PRs), so ci-actions-lock.yml keeps passing.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "08:00"
       timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
     labels:
       - "dependencies"
       - "github-actions"
@@ -13,198 +242,17 @@ updates:
       prefix: "chore"
       include: "scope"
     groups:
-      github-actions:
-        patterns:
-          - "*"
+      actions-minor-patch:
+        update-types: ["minor", "patch"]
 
-  - package-ecosystem: "npm"
-    directory: "/js"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    # Wait a few days before proposing a fresh release, so compromised
-    # versions are more likely to be pulled before they reach us.
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-      - "javascript"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      dev-dependencies:
-        dependency-type: "development"
-
-  - package-ecosystem: "npm"
-    directory: "/site"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-      - "javascript"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      site-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "uv"
-    directory: "/python"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      python-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "cargo"
-    directory: "/rust"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      rust-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "gomod"
-    directory: "/go"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      go-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "bundler"
-    directory: "/ruby"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      ruby-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "composer"
-    directory: "/php"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      php-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "pub"
-    directory: "/dart"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      dart-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "maven"
-    directory: "/java"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      java-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "nuget"
-    directory: "/dotnet"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      dotnet-dependencies:
-        patterns:
-          - "*"
-
+  # flake.lock inputs (nixpkgs) are commits, not SemVer releases, so these PRs
+  # never get auto-merge from dependabot-triage.yml.
   - package-ecosystem: "nix"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "08:00"
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 3
@@ -214,6 +262,5 @@ updates:
       prefix: "chore"
       include: "scope"
     groups:
-      nix-dependencies:
-        patterns:
-          - "*"
+      nix:
+        patterns: ["*"]
