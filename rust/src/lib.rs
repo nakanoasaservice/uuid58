@@ -477,10 +477,10 @@ pub fn parse_uuid_str(input: impl AsRef<[u8]>) -> Result<u128, Error> {
 
 /// Writes `value` into `buf` as a lowercase hyphenated UUID string.
 fn format_uuid(value: u128, buf: &mut [u8; UUID_STR_LEN]) -> &str {
-    const HEX: &[u8; 16] = b"0123456789abcdef";
+    const HEX: [u8; 16] = *b"0123456789abcdef";
     let bytes = value.to_be_bytes();
     let mut pos = 0;
-    for (i, b) in bytes.iter().enumerate() {
+    for (i, &b) in bytes.iter().enumerate() {
         if matches!(i, 4 | 6 | 8 | 10) {
             buf[pos] = b'-';
             pos += 1;

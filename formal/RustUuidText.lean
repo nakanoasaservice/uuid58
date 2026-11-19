@@ -34,18 +34,21 @@ private theorem push_bits (n : Nat) (d : Text.Nibble) :
   rw [← BitVec.ofNat_mul, ← BitVec.ofNat_or, Nat.mul_comm n 16,
     ← Nat.two_pow_add_eq_or_of_lt (i := 4) d.isLt n]
 
-private abbrev Iter := core.iter.adapters.enumerate.Enumerate (core.slice.iter.Iter Std.U8)
 open core.iter.adapters.enumerate core.iter.traits.iterator
 
-private def index (i : Nat) (hi : i ≤ 36) : Std.Usize := Usize.ofNatCore i (by scalar_tac)
-private def iterAt (s : Slice Std.U8) (i : Nat) (hi : i ≤ 36) : Iter := ⟨⟨s, i⟩, index i hi⟩
+namespace TextIter
 
-private theorem next_end (s : Slice Std.U8) (hi : s.val.length ≤ 36) :
+abbrev Iter := core.iter.adapters.enumerate.Enumerate (core.slice.iter.Iter Std.U8)
+
+def index (i : Nat) (hi : i ≤ 36) : Std.Usize := Usize.ofNatCore i (by scalar_tac)
+def iterAt (s : Slice Std.U8) (i : Nat) (hi : i ≤ 36) : Iter := ⟨⟨s, i⟩, index i hi⟩
+
+theorem next_end (s : Slice Std.U8) (hi : s.val.length ≤ 36) :
     IteratorEnumerate.next (IteratorSliceIter Std.U8) (iterAt s s.val.length hi) = ok (none, iterAt s s.val.length hi) := by
   simp [iterAt, core.iter.adapters.enumerate.IteratorEnumerate.next,
     core.slice.iter.IteratorSliceIter.next]
 
-private theorem next_byte (s : Slice Std.U8) (i : Nat) (h : i < s.val.length) (hi : i+1 ≤ 36) :
+theorem next_byte (s : Slice Std.U8) (i : Nat) (h : i < s.val.length) (hi : i+1 ≤ 36) :
     IteratorEnumerate.next (IteratorSliceIter Std.U8) (iterAt s i (by omega)) =
       ok (some (index i (by omega), s.val[i]), iterAt s (i+1) hi) := by
   have add : index i (by omega) + 1#usize = ok (index (i+1) hi) := by
@@ -56,6 +59,10 @@ private theorem next_byte (s : Slice Std.U8) (i : Nat) (h : i < s.val.length) (h
     simpa [index, iv] using hv
   simp [iterAt, core.iter.adapters.enumerate.IteratorEnumerate.next,
     core.slice.iter.IteratorSliceIter.next, h, add]
+
+end TextIter
+
+open TextIter
 
 private theorem hyphens (i : Std.Usize) :
     core.slice.Slice.contains core.cmp.PartialEqUsize (Array.to_slice HYPHENS) i =

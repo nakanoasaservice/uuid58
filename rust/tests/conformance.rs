@@ -92,12 +92,13 @@ fn roundtrip() {
         assert_eq!(uuid58::decode(id), Ok(value), "{case}");
         assert_eq!(uuid58::decode(id.as_bytes()), Ok(value), "{case}");
         assert_eq!(uuid58::decode_to_bytes(id), Ok(bytes), "{case}");
-        let mut ubuf = [0u8; uuid58::UUID_STR_LEN];
+        let mut ubuf = [0xff; uuid58::UUID_STR_LEN];
         assert_eq!(
             uuid58::decode_to_uuid_buf(id, &mut ubuf),
             Ok(uuid),
             "{case}"
         );
+        assert_eq!(ubuf.as_slice(), uuid.as_bytes(), "{case}");
         assert!(uuid58::is_valid(id), "{case}");
 
         #[cfg(feature = "alloc")]

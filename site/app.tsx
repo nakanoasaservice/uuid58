@@ -168,7 +168,7 @@ const faqs: {
   {
     question: "What exactly is formally verified?",
     answer:
-      "The spec's guarantees: decoding an encoded UUID returns it unchanged, every encoding is 22 characters, and string order matches UUID order. Lean also proves that the JavaScript library's public functions and the Rust library's numeric codec, validator, and UUID text parser follow the spec for every input. The proofs are rechecked against the current source on every change. The other libraries are checked with the shared test vectors.",
+      "The spec's guarantees: decoding an encoded UUID returns it unchanged, every encoding is 22 characters, and string order matches UUID order. Lean also proves that the JavaScript library's public functions and the Rust library's numeric codec, validator, UUID text parser, and UUID text formatter follow the spec for every input. The proofs are rechecked against the current source on every change. The other libraries are checked with the shared test vectors.",
     link: {
       label: "Proof scope and trust assumptions",
       href: `${REPO}/tree/main/formal#readme`,
