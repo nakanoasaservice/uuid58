@@ -15,6 +15,7 @@ polynomial using natural numbers. [Specification](../spec/SPEC.md)
 | For every four unsigned 32-bit words, the JavaScript encoder produces the specified 22 ASCII characters, including leading zero digits. | [Number rounding](JsNumber.lean), [encoder](JsEncode.lean) |
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
+| The JavaScript byte APIs encode and decode 16 bytes in big-endian order. Both round trips hold. The safe APIs return the specified error kind and the ordinary APIs throw it. | [Byte specification](Bytes.lean), [JavaScript byte API](JsBytes.lean) |
 
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
@@ -57,13 +58,22 @@ comparison agrees with numeric order, including equality at `2¹²⁸ − 1`.
 The proof assumes the exported regex retains its declared pattern and flags
 and uses the standard ECMAScript regex and string operations. [Validator source](../js/src/check.ts)
 
+For the public byte APIs, the extractor reads the byte indices, shifts and bitwise
+ORs. It checks the typed-array allocations, the four loop iterations and the
+error branches. Lean compares the resulting 32-bit patterns with an independent
+base-256 specification. The input is the sequence of bytes in a standard
+`Uint8Array` view, held fixed during the call, so a subarray starts at its own
+offset. The decoder theorem describes the returned bytes. The source check and
+runtime tests also cover allocation of a fresh result on each successful call.
+[Byte API source](../js/src/bytes.ts)
+
 The rounding proof compares exact rational results with the representable
 binary64 values on either side of an integer boundary. It applies to every
 nearest rounding, including ECMAScript's ties-to-even rule. The JavaScript
 theorems assume the extractor's translation and standard Number, typed-array
 and string operations. The encoder takes four unsigned input words. The
 decoder result describes the contents of the reused array when it returns.
-The public UUID text and byte wrappers are covered by the conformance tests.
+The public UUID text parser and formatter are covered by the conformance tests.
 [ECMAScript Number type](https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type)
 
 ## Run the check

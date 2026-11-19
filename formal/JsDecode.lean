@@ -346,14 +346,35 @@ def toCodeUnit (b : Byte) : CodeUnit := ⟨b.val, Nat.lt_trans b.isLt (by decide
 
 private theorem ascii_symbols : ∀ d : Digit, specByte (toCodeUnit (symbol d)) = symbol d := by decide
 
+theorem specBytes_of_encoded_text (v : UUID) :
+    ((encode v).map toCodeUnit).map specByte = encode v := by
+  simp [encode, List.map_map, Function.comp_def, ascii_symbols]
+
+theorem encoded_text_of_decode {s : List CodeUnit} {v : UUID} (ok : decode (s.map specByte) = .ok v) :
+    (encode v).map toCodeUnit = s := by
+  have back := encode_decode ok
+  calc
+    (encode v).map toCodeUnit = (s.map specByte).map toCodeUnit := congrArg _ back
+    _ = s.map id := by
+      rw [List.map_map]
+      apply List.map_congr_left
+      intro u hu
+      have mem : specByte u ∈ encode v := back ▸ List.mem_map.mpr ⟨u, hu, rfl⟩
+      have ascii : u.val < 128 := by
+        by_cases h : u.val < 128
+        · exact h
+        · have invalid : (128 : Byte) ∉ alphabet := by decide
+          exact False.elim (invalid (by simpa [specByte, h] using encode_alphabet v mem))
+      apply Fin.ext
+      simp [toCodeUnit, specByte, ascii]
+    _ = s := List.map_id _
+
 theorem roundtrip (r : Rounding) (w : Words) (hw : w.valid) :
     (do let bs ← encodeWords r w; decodeWords r (bs.map toCodeUnit)) = some (.ok w) := by
-  have view (v : UUID) : ((encode v).map toCodeUnit).map specByte = encode v := by
-    simp [encode, List.map_map, Function.comp_def, ascii_symbols]
   have words := unpack w hw.2.1 hw.2.2.1 hw.2.2.2
   apply Option.bind_eq_some_iff.mpr
   refine ⟨_, encode_correct r w hw, ?_⟩
-  rw [decode_correct, view, decode_encode]
+  rw [decode_correct, specBytes_of_encoded_text, decode_encode]
   change some (Except.ok (Words.ofNat w.value) : Except Error Words) = _
   rw [words]
 
