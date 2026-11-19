@@ -195,13 +195,15 @@ fn encode_invalid_bytes() {
 #[test]
 fn decode_invalid() {
     let v = vectors();
+    let initial = std::array::from_fn(|i| 0x80 + i as u8);
     for case in cases(&v, &["decode", "invalid"]) {
         let input = str_field(case, "input");
         assert_kind(uuid58::decode(input), case);
         assert_kind(uuid58::decode(input.as_bytes()), case);
         assert_kind(uuid58::decode_to_bytes(input), case);
-        let mut buf = [0u8; uuid58::UUID_STR_LEN];
+        let mut buf = initial;
         assert_kind(uuid58::decode_to_uuid_buf(input, &mut buf), case);
+        assert_eq!(buf, initial, "{case}");
         #[cfg(feature = "alloc")]
         assert_kind(uuid58::decode_to_uuid_string(input), case);
         #[cfg(feature = "uuid")]
