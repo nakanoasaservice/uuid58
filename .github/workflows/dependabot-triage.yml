@@ -1,0 +1,46 @@
+name: Dependabot triage
+
+# pull_request_target: Dependabot-triggered pull_request runs get a read-only token.
+# This workflow never checks out PR code, so running with the base workflow is safe.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  triage:
+    name: Triage
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'nakanoasaservice/uuid58'
+
+    steps:
+      - name: Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v3.1.0
+
+      # Safe = every updated dependency is a patch/minor update on a >=1.0 version.
+      # Majors and 0.x minors (breaking under SemVer) are left without auto-merge;
+      # the AI task picks up Dependabot PRs that have no auto-merge or a failed check.
+      - name: Decide
+        id: decide
+        env:
+          DEPS: ${{ steps.meta.outputs.updated-dependencies-json }}
+        run: |
+          unsafe=$(jq '[.[] | select(
+              .updateType == "version-update:semver-major"
+              or (.updateType == "version-update:semver-minor" and ((.prevVersion // "") | startswith("0.")))
+              or ((.updateType // "") == "")
+            )] | length' <<<"$DEPS")
+          echo "Unsafe updates: $unsafe"
+          if [ "$unsafe" = "0" ]; then echo "safe=true" >>"$GITHUB_OUTPUT"; else echo "safe=false" >>"$GITHUB_OUTPUT"; fi
+
+      # Merges only after the required "Check" status passes (enforced by the main ruleset).
+      - name: Enable auto-merge
+        if: steps.decide.outputs.safe == 'true'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ github.token }}
