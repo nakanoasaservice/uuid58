@@ -1,4 +1,4 @@
-"""Translate the numeric codec in base58.ts into Lean's checked Number operations."""
+"""Translate the TypeScript numeric codec and validator into Lean."""
 
 import ast
 from pathlib import Path
@@ -142,6 +142,34 @@ def extract_decoder(source, errors):
     yield f"\ndef overflow (high : Nat) : Bool := decide (high {op} wordBase)"
 
 
+def extract_validator(path):
+    # Consume comments between declarations. Inside the regex literal every
+    # character matters, including characters that could begin a comment.
+    trivia = r"(?:\s|//[^\r\n\u2028\u2029]*|/\*(?:[^*]|\*(?!/))*\*/)*+"
+    class_item = r"[A-Za-z0-9](?:-[A-Za-z0-9])?"
+    maximum, char_class, width, comparison = match(trivia.join((
+        "",
+        r'const MAX_UUID58 = "([A-Za-z0-9]+)";',
+        rf"export const UUID58_REGEX: RegExp = /\^\[((?:{class_item})+)\]\{{([0-9]+)\}}\$/u;",
+        r"export function isUuid58\(uuid58: string\): boolean \{\s*"
+        r"return UUID58_REGEX\.test\(uuid58\) && uuid58 (<=|<) MAX_UUID58;\s*\}",
+        "",
+    )), path.read_text())
+
+    ranges = []
+    for item in re.findall(class_item, char_class):
+        lo, hi = ord(item[0]), ord(item[-1])
+        if lo > hi:
+            raise ValueError(f"descending regex range: {item}")
+        ranges.append(f"({lo} ≤ c ∧ c ≤ {hi})")
+    yield "\ndef regexChar (c : Nat) : Bool := decide (" + " ∨ ".join(ranges) + ")"
+    yield f"def regexWidth : Nat := {int(width)}"
+    yield f'def maxUuid58 := "{maximum}"'
+    op = "≤" if comparison == "<=" else "<"
+    yield "def withinLimit (units : List Nat) : Bool :="
+    yield f"  decide (units {op} maxUuid58.toList.map Char.toNat)"
+
+
 def extract(directory):
     alphabet, = match(r'export const UUID58_ALPHABET: string =\s*"([A-Za-z0-9]+)";',
                       read_source(directory / "alphabet.ts"))
@@ -203,6 +231,7 @@ def extract(directory):
     yield f"  let q := (← floorDiv r value {int(divisor)}) % 2^32"
     yield f"  return (q, {expression(digit, {'value': 'value', 'quotient': 'q'})})"
     yield from extract_decoder(after, read_source(directory / "errors.ts"))
+    yield from extract_validator(directory / "check.ts")
     yield "\nend Uuid58.Js.Extracted"
 
 

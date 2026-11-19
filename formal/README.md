@@ -1,9 +1,10 @@
 # Formal verification
 
-Lean checks the numeric codec against sections 2–4 of [specification 1.1.0](../spec/SPEC.md).
+Lean checks the numeric codec against sections 2–4 and the Rust and JavaScript
+validators against section 6 of specification 1.1.0.
 The model treats a UUID as an unsigned integer below `2^128` and reads text as bytes,
 one of the length units allowed by section 4.1. Its decoder evaluates the positional
-polynomial using natural numbers.
+polynomial using natural numbers. [Specification](../spec/SPEC.md)
 
 | What is checked | Lean source |
 | --- | --- |
@@ -13,6 +14,7 @@ polynomial using natural numbers.
 | For every byte slice, Rust decoding returns the specified value or the specified first error. `is_valid` agrees with successful decoding. | [Decoder](RustDecode.lean) |
 | For every four unsigned 32-bit words, the JavaScript encoder produces the specified 22 ASCII characters, including leading zero digits. | [Number rounding](JsNumber.lean), [encoder](JsEncode.lean) |
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
+| For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
 
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
@@ -46,6 +48,14 @@ The decoder measures length in UTF-16 code units. To apply the byte-oriented
 specification, the proof preserves every ASCII unit and maps each other unit
 to one invalid byte. This keeps the length and first invalid position,
 including for unpaired surrogates.
+
+The extractor also reads the validator's anchored Unicode regex, its character
+ranges and repetition count, the upper-bound literal and the comparison.
+Lean checks how the regex consumes UTF-16 surrogate pairs and proves that each
+accepted character occupies one ASCII code unit. On those inputs the JS string
+comparison agrees with numeric order, including equality at `2¹²⁸ − 1`.
+The proof assumes the exported regex retains its declared pattern and flags
+and uses the standard ECMAScript regex and string operations. [Validator source](../js/src/check.ts)
 
 The rounding proof compares exact rational results with the representable
 binary64 values on either side of an integer boundary. It applies to every
