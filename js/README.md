@@ -104,8 +104,8 @@ UUID58_REGEX.test("XDY9dmBbcMBXqcRvYw8xJ2"); // true
 
 ### `uuid58()`
 
-Generates a new random UUID with `crypto.getRandomValues()` and returns its
-uuid58 encoding (always 22 characters).
+Generates a random UUIDv4 with `crypto.getRandomValues()` and returns its
+22-character uuid58 encoding. Decoding recovers the same UUIDv4.
 
 ```typescript
 function uuid58(): string; // always returns a 22-character string

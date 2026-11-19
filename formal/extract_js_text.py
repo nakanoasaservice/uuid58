@@ -4,14 +4,7 @@ from pathlib import Path
 import re
 import sys
 
-from extract_js import expect_js, match, read_source, split_function
-
-
-def number(literal):
-    value = int(literal, 16 if literal.startswith("0x") else 10)
-    if value >= 2**53:
-        raise ValueError(f"unsupported Number literal: {literal}")
-    return value
+from extract_js import expect_js, match, number, read_source, require_exports, split_function
 
 
 def ranges(expr):
@@ -102,13 +95,7 @@ def formatter(table, writer, body):
 
 def extract(directory):
     # The package entry point directly re-exports these four functions under their own names.
-    public = set()
-    for statement in read_source(directory / "index.ts").strip().removesuffix(";").split(";"):
-        items, module = match(r'export\s*\{([^{}]*)\}\s*from\s*"([^"]+)"', statement)
-        if module == "./string.ts":
-            public.update(name.strip() for name in items.split(","))
-    if not {"uuid58Encode", "uuid58EncodeSafe", "uuid58Decode", "uuid58DecodeSafe"} <= public:
-        raise ValueError("missing public UUID text export")
+    require_exports(directory, "./string.ts", {"uuid58Encode", "uuid58EncodeSafe", "uuid58Decode", "uuid58DecodeSafe"})
     expect_js(read_source(directory / "string.ts"), """
         import { decodeWords, encodeWords } from "./base58.ts";
         import { Uuid58DecodeError, Uuid58EncodeError } from "./errors.ts";

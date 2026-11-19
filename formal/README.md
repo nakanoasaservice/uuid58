@@ -19,6 +19,7 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
 | The JavaScript byte APIs encode and decode 16 bytes in big-endian order. Both round trips hold. The safe APIs return the specified error kind and the ordinary APIs throw it. | [Byte specification](Bytes.lean), [JavaScript byte API](JsBytes.lean) |
 | The JavaScript string APIs accept plain or hyphenated UUIDs with any mix of ASCII hex letter cases. A UUID round trip produces lowercase hyphenated text, and a Base58 round trip preserves the input exactly. The safe and throwing APIs report the specified first error kind. | [UUID text specification](UuidText.lean), [parser](JsTextParse.lean), [formatter and public APIs](JsText.lean) |
+| After a successful Web Crypto fill, JavaScript's `uuid58()` sets the UUIDv4 version and variant and preserves the other 122 bits. Its 22-character result passes `isUuid58` and `uuid58Decode` returns that UUID in canonical form. | [UUIDv4 generator](JsGenerate.lean) |
 
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
@@ -78,6 +79,16 @@ and every argument to `String.fromCharCode` against the 32 lowercase hex digits
 and four separators of the canonical form. The public API proofs compose those
 results with the numeric codec on every UTF-16 code-unit sequence.
 [Text extractor](extract_js_text.py) · [UUID text source](../js/src/uuid-hex.ts) · [Public wrappers](../js/src/string.ts)
+
+JavaScript offers the optional generator mentioned in section 1.2. Its proof
+starts with the four unsigned words supplied by a successful `crypto.getRandomValues`
+call. The extractor checks the fill and encoder call and translates each intervening
+array read, mask and store in source order. A signed bitwise result keeps its 32-bit
+pattern when stored in the unsigned array. Lean compares the result with the RFC
+9562 layout, which copies 48 bits, inserts `0100`, copies 12 bits, inserts `10`,
+and copies the final 62 bits. The guarantee holds for every input, including
+repeated draws. The randomness of the draws comes from the host's Web Crypto implementation.
+[Generator source](../js/src/generate.ts) · [UUIDv4 layout](https://www.rfc-editor.org/rfc/rfc9562#section-5.4)
 
 The rounding proof compares exact rational results with the representable
 binary64 values on either side of an integer boundary. It applies to every
