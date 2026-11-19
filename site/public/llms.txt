@@ -1,6 +1,6 @@
 # uuid58
 
-> uuid58 shortens UUIDs to fixed 22-character Base58 strings (Bitcoin alphabet), and back. Strings are URL-safe, have no look-alike characters (0, O, I, l), and sort in the same order as the UUIDs they encode, so UUIDv7 stays time-ordered. One stable spec (1.0.0) and 200+ shared test vectors make every implementation produce the same string.
+> uuid58 shortens UUIDs to fixed 22-character Base58 strings (Bitcoin alphabet), and back. Strings are URL-safe, have no look-alike characters (0, O, I, l), and sort in the same order as the UUIDs they encode, so UUIDv7 stays time-ordered. One stable spec (1.1.0) and 200+ shared test vectors make every implementation produce the same string.
 
 Example: `f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf` ⇄ `XDY9dmBbcMBXqcRvYw8xJ2`
 
@@ -8,6 +8,7 @@ Key facts:
 
 - Conversion is lossless both ways: keep UUIDs in your database and show uuid58 in URLs, APIs, and logs.
 - The format is fixed by spec 1.1.0 and does not change within spec 1.x.
+- Lean proofs cover the spec's core guarantees (lossless round trips, fixed 22-character length, order preservation) and verify the JavaScript library and the Rust codec against the spec for every input. Other implementations are checked with the shared test vectors.
 - Not interchangeable with short-uuid (npm, Flickr Base58 by default), shortuuid (Python, 57-character alphabet), or slugid (URL-safe Base64), even though those are also 22 characters.
 - The JavaScript package encodes in about 0.5 µs and decodes in about 0.3 µs on Node.js, several times faster than short-uuid and bs58.
 

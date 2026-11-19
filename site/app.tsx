@@ -73,8 +73,8 @@ const features = [
     body: "Implementations across languages follow the same specification. Switch languages without converting or reissuing your existing uuid58 IDs.",
   },
   {
-    title: "Well tested",
-    body: "Over 200 shared test vectors check valid conversions and error handling, including 120 invalid inputs. Implementations run these checks in CI.",
+    title: "Proven correct, not just tested",
+    body: "Lean proofs show that conversion is lossless, always 22 characters, and order-preserving for every UUID. They also check the Rust and JavaScript libraries against the spec on every input. Every library passes over 200 shared test vectors.",
   },
   {
     title: "A stable, strict specification",
@@ -145,7 +145,11 @@ const alternatives = [
   },
 ];
 
-const faqs = [
+const faqs: {
+  question: string;
+  answer: string;
+  link?: { label: string; href: string };
+}[] = [
   {
     question: "Will the format change?",
     answer:
@@ -160,6 +164,15 @@ const faqs = [
     question: "Can I use uuid58 for Firestore document IDs?",
     answer:
       "Yes. uuid58 strings meet Firestore's document ID rules. Use random (v4) UUIDs: Firestore advises against sequential IDs, which can cause write hotspots. If you later move to a relational database, decode each ID into a UUID column; references between records carry over as they are.",
+  },
+  {
+    question: "What exactly is formally verified?",
+    answer:
+      "The spec's guarantees: decoding an encoded UUID returns it unchanged, every encoding is 22 characters, and string order matches UUID order. Lean also proves that the JavaScript library's public functions and the Rust library's encoding, decoding, and validation follow the spec for every input. The proofs are rechecked against the current source on every change. The other libraries are checked with the shared test vectors.",
+    link: {
+      label: "Proof scope and trust assumptions",
+      href: `${REPO}/tree/main/formal#readme`,
+    },
   },
   {
     question:
@@ -556,10 +569,11 @@ export function App() {
             and leaves out look-alike characters (0, O, I, l).
           </p>
           <p class="lead">
-            The format is fixed by a stable, versioned spec and checked by over
-            200 shared test vectors, so every implementation (JavaScript, Go,
-            Python, Rust, PostgreSQL, and more) produces the same string, today
-            and in future releases.
+            The format is fixed by a stable, versioned spec, with its core
+            guarantees proven in Lean, and checked by over 200 shared test
+            vectors, so every implementation (JavaScript, Go, Python, Rust,
+            PostgreSQL, and more) produces the same string, today and in future
+            releases.
           </p>
           <div class="compare" aria-label="Example">
             <div>
@@ -660,7 +674,17 @@ export function App() {
             {(faq) => (
               <details>
                 <summary>{faq.question}</summary>
-                <p>{faq.answer}</p>
+                <p>
+                  {faq.answer}
+                  <Show when={faq.link}>
+                    {(link) => (
+                      <>
+                        {" "}
+                        <a href={link().href}>{link().label}</a>
+                      </>
+                    )}
+                  </Show>
+                </p>
               </details>
             )}
           </For>
