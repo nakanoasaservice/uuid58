@@ -24,24 +24,31 @@ trap 'rm -rf "$build"' EXIT
   cd ../rust
   "$aeneas/charon" rustc --preset=aeneas --consts initializers --sysroot default \
     --start-from=crate::encode_array --start-from=crate::decode --start-from=crate::is_valid \
-    --start-from=crate::parse_uuid_str \
+    --start-from=crate::parse_uuid_str --start-from=crate::format_uuid \
     --dest-file "$build/uuid58.llbc" -- --edition=2024 --crate-type=lib --crate-name=uuid58 src/lib.rs
 )
-"$aeneas/aeneas" -backend lean -loops-to-rec -warnings-as-errors -namespace RustUuid58 \
-  -dest "$build" "$build/uuid58.llbc"
+mkdir "$build/Uuid58"
+"$aeneas/aeneas" -backend lean -split-files -loops-to-rec -warnings-as-errors -namespace RustUuid58 \
+  -dest "$build/Uuid58" "$build/uuid58.llbc"
 
 # Lake resolves the transitive revisions in the release's lake-manifest.json.
 (cd "$backend" && MATHLIB_NO_CACHE_ON_UPDATE=1 "$lean_bin/lake" build +Aeneas:olean)
 backend_path=$(cd "$backend" && "$lean_bin/lake" env printenv LEAN_PATH)
 export LEAN_PATH="$build:$backend_path"
 check=("$lean_bin/lean" -DwarningAsError=true)
-(cd "$build" && "${check[@]}" -o Uuid58.olean Uuid58.lean)
+cp Uuid58/{TypesExternal,FunsExternal}.lean "$build/Uuid58/"
+(
+  cd "$build"
+  for part in TypesExternal Types FunsExternal Funs; do
+    "${check[@]}" -o "Uuid58/$part.olean" "Uuid58/$part.lean"
+  done
+)
 python3 extract_js.py ../js/src > "$build/JsExtracted.lean"
 python3 -B extract_js_text.py ../js/src > "$build/JsTextExtracted.lean"
 "${check[@]}" -o "$build/JsNumber.olean" JsNumber.lean
 (cd "$build" && "${check[@]}" -o JsExtracted.olean JsExtracted.lean)
 (cd "$build" && "${check[@]}" -o JsTextExtracted.olean JsTextExtracted.lean)
-for module in Spec Proofs Bytes Chunk RustTables RustEncode RustDecode JsEncode JsDecode JsValidate JsBytes UuidText UuidTextScan RustUuidText JsTextParse JsText JsGenerate; do
+for module in Spec Proofs Bytes Chunk RustTables RustEncode RustDecode JsEncode JsDecode JsValidate JsBytes UuidText UuidTextScan RustUuidText RustUuidLayout RustUuidFormat JsTextParse JsText JsGenerate; do
   "${check[@]}" -o "$build/$module.olean" "$module.lean"
 done
 "${check[@]}" Audit.lean

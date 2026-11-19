@@ -1,7 +1,7 @@
 # Formal verification
 
-Lean checks the numeric codec against sections 2–4, the Rust UUID text parser
-against section 5.1, the JavaScript UUID string APIs against section 5 and the
+Lean checks the numeric codec against sections 2–4, the Rust UUID text parser and
+formatter and the JavaScript UUID string APIs against section 5, and the
 Rust and JavaScript validators against section 6 of specification 1.1.0.
 The numeric specification treats a UUID as an unsigned integer below `2^128`
 and reads Base58 text as bytes, one of the length units allowed by section 4.1.
@@ -15,6 +15,7 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 | The Rust encoder emits those exact bytes for every `u128`. The lookup table classifies every possible byte. | [Encoder](RustEncode.lean), [tables](RustTables.lean) |
 | For every byte slice, Rust decoding returns the specified value or the specified first error. `is_valid` agrees with successful decoding. | [Decoder](RustDecode.lean) |
 | For every byte slice, Rust `parse_uuid_str` accepts exactly the two specified UUID spellings, returns their big-endian `u128` value and checks byte length before characters. | [Byte-oriented UUID text specification](UuidTextScan.lean), [Rust parser](RustUuidText.lean) |
+| For every `u128` and every initial 36-byte buffer, Rust `format_uuid` writes the lowercase hyphenated UUID and returns those same bytes as a string. Passing it to `parse_uuid_str` recovers the original value. | [Big-endian byte and nibble layout](RustUuidLayout.lean), [formatter and round trip](RustUuidFormat.lean) |
 | For every four unsigned 32-bit words, the JavaScript encoder produces the specified 22 ASCII characters, including leading zero digits. | [Number rounding](JsNumber.lean), [encoder](JsEncode.lean) |
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
@@ -30,11 +31,13 @@ implementation returns its input slice successfully. [Audit.lean](Audit.lean)
 also composes the extracted encoder and decoder and checks the transitive axioms
 of the main theorems against Lean's `propext`, `Classical.choice` and `Quot.sound`.
 
-The Rust guarantee covers the numeric core and UUID text parser shared by the crate's feature configurations.
+The Rust guarantee covers the numeric core, UUID text parser and UUID text formatter
+shared by the crate's feature configurations.
 Extraction uses the crate without optional features on the host target. Its trust
 boundary includes the correspondence between the written and formal specifications,
 Lean's kernel and libraries, rustc, Charon, Aeneas and its Rust library models.
-Formatting, allocation wrappers and generated machine code are outside the Rust proof.
+The extraction models Rust functions before machine-code generation. Runtime
+conformance tests also exercise the public buffer and allocation wrappers.
 
 The Rust parser proof follows the two extracted loops over an enumerated byte slice.
 It widens each byte to one code unit in the shared UUID text specification, preserving
@@ -42,6 +45,16 @@ byte length even for ill-formed UTF-8. For each hex digit, the proof relates the
 shift and bitwise OR to multiplication by 16 and addition. Reading all 32 digits
 produces the value of the four big-endian words in the specification.
 [Parser source](../rust/src/lib.rs) · [UUID text specification](UuidText.lean)
+
+The Rust formatter proof follows both nibbles of each big-endian byte through the
+lowercase hex table. It verifies every buffer write, including the four hyphens,
+and relates the final bytes to the same canonical spelling used for JavaScript.
+The pinned Aeneas library represents a Rust string slice by its bytes. The model
+of `core::str::from_utf8` uses Lean's UTF-8 validator and preserves the error tag.
+The formatter sees only the tag on error. Lean proves every output byte is ASCII,
+so the conversion succeeds and returns the complete contents of the final buffer.
+The round trip passes this byte view to the extracted public parser.
+[UTF-8 model](Uuid58/FunsExternal.lean) · [Formatter proof](RustUuidFormat.lean)
 
 The [JavaScript extractor](extract_js.py) reads the alphabet and the arithmetic
 expressions from the TypeScript sources on each run. It checks the loop and

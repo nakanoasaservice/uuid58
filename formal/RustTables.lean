@@ -1,4 +1,4 @@
-import Uuid58  -- generated from Rust by Charon and Aeneas
+import Uuid58.Funs  -- generated from Rust by Charon and Aeneas
 import Chunk
 
 open Aeneas Aeneas.Std Aeneas.Std.WP Result
