@@ -1,8 +1,8 @@
 # Formal verification
 
-Lean checks the numeric codec against sections 2–4, the JavaScript UUID string
-APIs against section 5 and the Rust and JavaScript validators against section 6
-of specification 1.1.0.
+Lean checks the numeric codec against sections 2–4, the Rust UUID text parser
+against section 5.1, the JavaScript UUID string APIs against section 5 and the
+Rust and JavaScript validators against section 6 of specification 1.1.0.
 The numeric specification treats a UUID as an unsigned integer below `2^128`
 and reads Base58 text as bytes, one of the length units allowed by section 4.1.
 Its decoder evaluates the positional polynomial using natural numbers.
@@ -14,6 +14,7 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 | The 2 + 10 + 10 digit split and its inverse preserve the value. | [Chunk arithmetic](Chunk.lean) |
 | The Rust encoder emits those exact bytes for every `u128`. The lookup table classifies every possible byte. | [Encoder](RustEncode.lean), [tables](RustTables.lean) |
 | For every byte slice, Rust decoding returns the specified value or the specified first error. `is_valid` agrees with successful decoding. | [Decoder](RustDecode.lean) |
+| For every byte slice, Rust `parse_uuid_str` accepts exactly the two specified UUID spellings, returns their big-endian `u128` value and checks byte length before characters. | [Byte-oriented UUID text specification](UuidTextScan.lean), [Rust parser](RustUuidText.lean) |
 | For every four unsigned 32-bit words, the JavaScript encoder produces the specified 22 ASCII characters, including leading zero digits. | [Number rounding](JsNumber.lean), [encoder](JsEncode.lean) |
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
@@ -24,17 +25,23 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
 Aeneas's model, including the bounds on array accesses, casts and arithmetic.
-The public decoder and validator theorems assume that the caller's `AsRef`
+The public decoder, validator and UUID text parser theorems assume that the caller's `AsRef`
 implementation returns its input slice successfully. [Audit.lean](Audit.lean)
 also composes the extracted encoder and decoder and checks the transitive axioms
 of the main theorems against Lean's `propext`, `Classical.choice` and `Quot.sound`.
 
-The Rust guarantee covers the numeric core shared by the crate's feature configurations.
+The Rust guarantee covers the numeric core and UUID text parser shared by the crate's feature configurations.
 Extraction uses the crate without optional features on the host target. Its trust
 boundary includes the correspondence between the written and formal specifications,
 Lean's kernel and libraries, rustc, Charon, Aeneas and its Rust library models.
-The UUID text parser, formatting and allocation wrappers and generated machine code
-are outside the Rust proof.
+Formatting, allocation wrappers and generated machine code are outside the Rust proof.
+
+The Rust parser proof follows the two extracted loops over an enumerated byte slice.
+It widens each byte to one code unit in the shared UUID text specification, preserving
+byte length even for ill-formed UTF-8. For each hex digit, the proof relates the Rust
+shift and bitwise OR to multiplication by 16 and addition. Reading all 32 digits
+produces the value of the four big-endian words in the specification.
+[Parser source](../rust/src/lib.rs) · [UUID text specification](UuidText.lean)
 
 The [JavaScript extractor](extract_js.py) reads the alphabet and the arithmetic
 expressions from the TypeScript sources on each run. It checks the loop and

@@ -1,5 +1,5 @@
 import Lean.Data.Json
-import UuidText
+import UuidTextScan
 
 open Lean Uuid58
 
@@ -16,6 +16,8 @@ private def utf16 (s : String) : List Js.CodeUnit := s.toList.flatMap fun c =>
 private def checkPair (uuid encoded : String) (canonical : Bool) : Except String Unit := do
   let .ok w := Js.Text.parse (utf16 uuid) | throw s!"failed to parse {uuid}"
   let v := w.val.uuid w.property
+  let .ok value := parseUuidBytes (bytes uuid) | throw s!"byte parser rejected {uuid}"
+  unless value = v do throw s!"wrong byte parser value for {uuid}"
   if canonical && Js.Text.canonical w.val != utf16 uuid then throw s!"wrong UUID spelling for {encoded}"
   unless encode v = bytes encoded do throw s!"wrong encoding for {uuid}"
   match decode (bytes encoded) with
@@ -38,7 +40,10 @@ private def checkVectors (json : Json) : Except String Nat := do
   for c in extra do checkPair (← field c "input") (← field c "output") false
   for c in invalidUuid do
     let expected ← c.getObjValAs? (Array String) "errors"
-    match Js.Text.parse (utf16 (← field c "input")) with
+    let input ← field c "input"
+    let .error e := parseUuidBytes (bytes input) | throw s!"byte parser accepted {input}"
+    unless expected.contains (kind e) do throw s!"wrong byte parser error for {input}"
+    match Js.Text.parse (utf16 input) with
     | .error e => if expected.contains (kind e) then continue
     | .ok _ => pure ()
     throw s!"wrong UUID rejection for {← field c "description"}"
