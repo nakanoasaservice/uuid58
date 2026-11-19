@@ -26,7 +26,7 @@ run_cmd do
       ``RustUuid58.encode_correct, ``RustUuid58.decode_correct, ``RustUuid58.public_decode_correct,
       ``RustUuid58.is_valid_correct, ``RustUuid58.roundtrip,
       ``RustUuid58.parse_uuid_str_correct, ``RustUuid58.parse_uuid_str_accepts,
-      ``RustUuid58.format_uuid_correct, ``RustUuid58.format_parse_roundtrip,
+      ``RustUuid58.format_uuid_correct, ``RustUuid58.format_parse_roundtrip, ``RustUuid58.decode_to_uuid_buf_correct,
       ``Uuid58.Js.rounding_exists, ``Uuid58.Js.integer_exact, ``Uuid58.Js.floor_div_exact,
       ``Uuid58.Js.divideWords_correct, ``Uuid58.Js.encode_correct, ``Uuid58.Js.digitAt_correct,
       ``Uuid58.Js.appendChunk_correct, ``Uuid58.Js.decode_correct, ``Uuid58.Js.invalid_index_correct,

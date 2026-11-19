@@ -41,9 +41,10 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   JavaScript string APIs accept both UUID spellings with mixed-case hex digits.
   Rust returns the specified 128-bit value or first error for every byte slice.
   Both languages format UUIDs as lowercase, hyphenated text. Parsing the Rust
-  formatter's output recovers the original `u128`. After a successful Web Crypto
-  call, the JavaScript generator sets the UUIDv4 version and variant and
-  preserves all 122 payload bits.
+  formatter's output recovers the original `u128`. Rust's `decode_to_uuid_buf`
+  writes and returns that text on success and preserves the caller's buffer on
+  error. After a successful Web Crypto call, the JavaScript generator sets the
+  UUIDv4 version and variant and preserves all 122 payload bits.
 
 ## Install
 

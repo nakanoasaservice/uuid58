@@ -166,4 +166,26 @@ theorem format_parse_roundtrip (v : Std.U128) (buf : Array Std.U8 36#usize) :
   rw [Words.uuid_ofNat]
   rfl
 
+/-- The public decoder returns the canonical contents of the destination on success.
+On the first decoding error it returns that error and preserves the entire destination. -/
+theorem decode_to_uuid_buf_correct {α : Type} (asRef : core.convert.AsRef α (Slice Std.U8))
+    (x : α) (s : Slice Std.U8) (view : asRef.as_ref x ⦃ t => t = s ⦄) (buf : Array Std.U8 36#usize) :
+    decode_to_uuid_buf asRef x buf ⦃ result out =>
+      match rustResult (Uuid58.decode (s.val.map toByte)) with
+      | .Ok v => out.val = Format.canonical (Words.ofNat v.val) ∧ result = .Ok out.to_slice
+      | .Err e => result = .Err e ∧ out = buf ⦄ := by
+  unfold decode_to_uuid_buf
+  apply spec_bind (public_decode_correct asRef x s view)
+  rintro _ rfl
+  cases rustResult (Uuid58.decode (s.val.map toByte)) with
+  | Ok v =>
+    simp only [core.result.Result.Insts.CoreOpsTry.branch, bind_ok]
+    apply spec_bind (format_uuid_correct v buf)
+    rintro ⟨text, out⟩ ⟨written, returned⟩
+    apply (spec_ok _).mpr
+    exact ⟨written, congrArg core.result.Result.Ok returned⟩
+  | Err e =>
+    simp [core.result.Result.Insts.CoreOpsTry.branch,
+      core.result.Result.Insts.CoreOpsTry_traitFromResidualResult.from_residual]
+
 end RustUuid58

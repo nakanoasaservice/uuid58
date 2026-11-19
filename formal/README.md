@@ -16,6 +16,7 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 | For every byte slice, Rust decoding returns the specified value or the specified first error. `is_valid` agrees with successful decoding. | [Decoder](RustDecode.lean) |
 | For every byte slice, Rust `parse_uuid_str` accepts exactly the two specified UUID spellings, returns their big-endian `u128` value and checks byte length before characters. | [Byte-oriented UUID text specification](UuidTextScan.lean), [Rust parser](RustUuidText.lean) |
 | For every `u128` and every initial 36-byte buffer, Rust `format_uuid` writes the lowercase hyphenated UUID and returns those same bytes as a string. Passing it to `parse_uuid_str` recovers the original value. | [Big-endian byte and nibble layout](RustUuidLayout.lean), [formatter and round trip](RustUuidFormat.lean) |
+| For every input byte slice and every initial 36-byte buffer, Rust `decode_to_uuid_buf` writes and returns the canonical UUID on success. On failure it returns the first decoding error and preserves all 36 bytes. | [Public decoder and output buffer](RustUuidFormat.lean) |
 | For every four unsigned 32-bit words, the JavaScript encoder produces the specified 22 ASCII characters, including leading zero digits. | [Number rounding](JsNumber.lean), [encoder](JsEncode.lean) |
 | For every UTF-16 code-unit sequence, the JavaScript decoder returns the four specified big-endian words or the specified error kind. Encoding and decoding returns the original four words. | [Decoder and round trip](JsDecode.lean) |
 | For every UTF-16 code-unit sequence, JavaScript's `isUuid58` returns true exactly when `decodeWords` succeeds. | [Validator](JsValidate.lean) |
@@ -26,13 +27,13 @@ The JavaScript model measures strings in UTF-16 code units. [Specification](../s
 The script runs Charon on the crate's actual source and translates the reachable
 functions with Aeneas. The Rust theorems establish successful termination in
 Aeneas's model, including the bounds on array accesses, casts and arithmetic.
-The public decoder, validator and UUID text parser theorems assume that the caller's `AsRef`
-implementation returns its input slice successfully. [Audit.lean](Audit.lean)
+The proofs for public functions that accept `AsRef<[u8]>` assume that the caller's
+`AsRef` implementation returns its input slice successfully. [Audit.lean](Audit.lean)
 also composes the extracted encoder and decoder and checks the transitive axioms
 of the main theorems against Lean's `propext`, `Classical.choice` and `Quot.sound`.
 
-The Rust guarantee covers the numeric core, UUID text parser and UUID text formatter
-shared by the crate's feature configurations.
+The Rust guarantee covers the numeric core, UUID text parser, UUID text formatter
+and public `decode_to_uuid_buf` function shared by the crate's feature configurations.
 Extraction uses the crate without optional features on the host target. Its trust
 boundary includes the correspondence between the written and formal specifications,
 Lean's kernel and libraries, rustc, Charon, Aeneas and its Rust library models.
