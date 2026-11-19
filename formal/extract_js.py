@@ -1,4 +1,4 @@
-"""Translate the TypeScript numeric codec and validator into Lean."""
+"""Translate the TypeScript numeric codec, validator and byte API into Lean."""
 
 import ast
 from pathlib import Path
@@ -170,6 +170,75 @@ def extract_validator(path):
     yield f"  decide (units {op} maxUuid58.toList.map Char.toNat)"
 
 
+def shift_count(literal):
+    """JS shifts use the low five bits of the right operand."""
+    count = int(literal)
+    if count >= 2**53:
+        raise ValueError(f"unsupported Number shift count: {literal}")
+    return f"({count} % 32)"
+
+
+def extract_bytes(source):
+    preamble, encode, rest = split_function(source,
+        r"export function uuid58EncodeBytesSafe\(\s*bytes: Uint8Array,?\s*\): string \| Uuid58EncodeError")
+    gap1, throwing_encode, rest = split_function(rest,
+        r"export function uuid58EncodeBytes\(bytes: Uint8Array\): string")
+    gap2, decode, rest = split_function(rest,
+        r"export function uuid58DecodeBytesSafe\(\s*uuid58: string,?\s*\): Uint8Array \| Uuid58DecodeError")
+    gap3, throwing_decode, end = split_function(rest,
+        r"export function uuid58DecodeBytes\(uuid58: string\): Uint8Array")
+    if any(s.strip() for s in (gap1, gap2, gap3, end)):
+        raise ValueError("unexpected statement outside the byte API functions")
+    expect_js(preamble, """
+        import { decodeWords, encodeWords } from "./base58.ts";
+        import { Uuid58DecodeError, Uuid58EncodeError } from "./errors.ts";
+        const words = new Uint32Array(4);
+    """)
+    for body, call, error in ((throwing_encode, "uuid58EncodeBytesSafe(bytes)", "Uuid58EncodeError"),
+                              (throwing_decode, "uuid58DecodeBytesSafe(uuid58)", "Uuid58DecodeError")):
+        expect_js(body, f"""const result = {call};
+            if (result instanceof {error}) {{ throw result; }} return result;""")
+
+    guard, rest = encode.split(") {", 1)
+    width, = match(r"if \(bytes\.length !== ([0-9]+)", guard)
+    head, rest = rest.split("words[i] =")
+    expect_js(head, """return new Uuid58EncodeError(
+        `Invalid byte length: expected 16 bytes, got ${bytes.length}`, "invalid_length",); }
+        for (let i = 0; i < 4; i++) { const j = i * 4;""")
+    rhs, tail = rest.split(";", 1)
+    expect_js(tail, "} return encodeWords(words);")
+    # JS bitwise operations expose the same 32-bit pattern in the Uint32Array
+    # store, including when the shifted high byte makes the Number negative.
+    terms = []
+    read = r"bytes\[j(?: \+ ([0-3]))?\]!"
+    for term in rhs.split("|"):
+        if term.strip().startswith("("):
+            index, shift = match(r"\(" + read + r" << ([0-9]+)\)", term)
+            terms.append(f"((b{index or '0'}.setWidth 32) <<< {shift_count(shift)})")
+        else:
+            index, = match(read, term)
+            terms.append(f"(b{index or '0'}.setWidth 32)")
+    yield f"\ndef byteInputLength : Nat := {int(width)}"
+    yield "def packWord (b0 b1 b2 b3 : BitVec 8) : BitVec 32 :="
+    yield "  " + " ||| ".join(terms)
+
+    head, stores = decode.split("const word = decoded[i]!;")
+    expect_js(head, """const decoded = decodeWords(uuid58);
+        if (decoded instanceof Uuid58DecodeError) { return decoded; }
+        const bytes = new Uint8Array(16); for (let i = 0; i < 4; i++) {""")
+    assignments, tail = stores.split("}")
+    expect_js(tail, "return bytes;")
+    octets = []
+    statements = assignments.strip().removesuffix(";").split(";")
+    for i, statement in zip(range(4), statements, strict=True):
+        offset = rf" \+ {i}" if i else ""
+        shift, = match(rf"bytes\[i \* 4{offset}\] = word(?: >>> ([0-9]+))?", statement)
+        value = f"(word >>> {shift_count(shift)})" if shift is not None else "word"
+        octets.append(f"{value}.setWidth 8")
+    yield "def unpackWord (word : BitVec 32) : List (BitVec 8) :="
+    yield "  [" + ", ".join(octets) + "]"
+
+
 def extract(directory):
     alphabet, = match(r'export const UUID58_ALPHABET: string =\s*"([A-Za-z0-9]+)";',
                       read_source(directory / "alphabet.ts"))
@@ -232,6 +301,7 @@ def extract(directory):
     yield f"  return (q, {expression(digit, {'value': 'value', 'quotient': 'q'})})"
     yield from extract_decoder(after, read_source(directory / "errors.ts"))
     yield from extract_validator(directory / "check.ts")
+    yield from extract_bytes(read_source(directory / "bytes.ts"))
     yield "\nend Uuid58.Js.Extracted"
 
 
