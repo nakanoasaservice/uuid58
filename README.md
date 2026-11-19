@@ -35,7 +35,8 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   invalid inputs. Every implementation runs them in CI.
 - **[Formal proofs](formal/)** cover round trips and ASCII ordering for all 128-bit
   values. Lean also checks the Rust and JavaScript numeric codecs against the
-  spec, including decoding error precedence.
+  spec, including decoding error precedence. In both languages, the validator
+  accepts exactly the inputs that decode successfully.
 
 ## Install
 
