@@ -5,11 +5,11 @@ import Lean.Util.CollectAxioms
 
 open Aeneas Aeneas.Std Aeneas.Std.WP
 
-/-- Encode using the extracted Rust function, then decode the resulting byte slice. -/
-theorem RustUuid58.roundtrip (v : Std.U128) :
-    (do let a ← RustUuid58.encode_array v; RustUuid58.decode_value a.to_slice)
+/-- Encode into any buffer using the extracted Rust function, then decode the resulting byte slice. -/
+theorem RustUuid58.roundtrip (v : Std.U128) (buf : Array Std.U8 22#usize) :
+    (do let a ← RustUuid58.encode_into v buf; RustUuid58.decode_value a.to_slice)
       ⦃ r => r = core.result.Result.Ok v ⦄ := by
-  apply spec_bind (RustUuid58.encode_correct v)
+  apply spec_bind (RustUuid58.encode_correct v buf)
   intro a h
   apply spec_mono (RustUuid58.decode_correct a.to_slice)
   intro r hr
