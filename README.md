@@ -37,9 +37,10 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   values. Lean also checks the Rust and JavaScript numeric codecs against the
   spec, including decoding error precedence. In both languages, the validator
   accepts exactly the inputs that decode successfully. The JavaScript byte
-  APIs preserve all 16 bytes in big-endian order. The JavaScript string APIs
-  accept both specified UUID spellings in any letter case and decode to the
-  lowercase, hyphenated UUID. After a successful Web Crypto call, the JavaScript
+  APIs preserve all 16 bytes in big-endian order. The Rust UUID text parser and
+  JavaScript string APIs accept both UUID spellings with mixed-case hex digits.
+  Rust returns the specified 128-bit value or first error for every byte slice.
+  JavaScript decodes to lowercase, hyphenated UUIDs. After a successful Web Crypto call, the JavaScript
   generator sets the UUIDv4 version and variant and preserves all 122 payload bits.
 
 ## Install

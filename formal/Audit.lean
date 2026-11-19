@@ -1,5 +1,5 @@
 import RustEncode
-import RustDecode
+import RustUuidText
 import JsGenerate
 import Lean.Util.CollectAxioms
 
@@ -25,6 +25,7 @@ run_cmd do
       ``Uuid58.encode_injective, ``Uuid58.encode_order, ``Uuid58.max_encoding,
       ``RustUuid58.encode_correct, ``RustUuid58.decode_correct, ``RustUuid58.public_decode_correct,
       ``RustUuid58.is_valid_correct, ``RustUuid58.roundtrip,
+      ``RustUuid58.parse_uuid_str_correct, ``RustUuid58.parse_uuid_str_accepts,
       ``Uuid58.Js.rounding_exists, ``Uuid58.Js.integer_exact, ``Uuid58.Js.floor_div_exact,
       ``Uuid58.Js.divideWords_correct, ``Uuid58.Js.encode_correct, ``Uuid58.Js.digitAt_correct,
       ``Uuid58.Js.appendChunk_correct, ``Uuid58.Js.decode_correct, ``Uuid58.Js.invalid_index_correct,
@@ -33,7 +34,7 @@ run_cmd do
       ``Uuid58.Js.encodeBytes_correct, ``Uuid58.Js.decodeBytes_correct,
       ``Uuid58.Js.bytes_decode_encode, ``Uuid58.Js.bytes_encode_decode,
       ``Uuid58.Js.Text.block_fits, ``Uuid58.Js.Text.parse_accepts, ``Uuid58.Js.Text.parse_canonical,
-      ``Uuid58.Js.parseUuidString_correct, ``Uuid58.Js.formatUuidString_correct,
+      ``Uuid58.Js.Text.scan_spec, ``Uuid58.Js.parseUuidString_correct, ``Uuid58.Js.formatUuidString_correct,
       ``Uuid58.Js.encodeStringSafe_correct, ``Uuid58.Js.encodeStringSafe_accepts, ``Uuid58.Js.decodeStringSafe_correct,
       ``Uuid58.Js.encodeString_correct, ``Uuid58.Js.decodeString_correct,
       ``Uuid58.Js.text_decode_encode, ``Uuid58.Js.text_encode_decode,
