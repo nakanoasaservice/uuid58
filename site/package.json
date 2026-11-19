@@ -16,7 +16,7 @@
   "devDependencies": {
     "@solidjs/vite-plugin": "^3.0.1",
     "@types/node": "^26.6.6",
-    "marked": "^18.2.0",
+    "marked": "^18.2.1",
     "shiki": "^4.6.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
     "vite-plus": "^1.6.0"
