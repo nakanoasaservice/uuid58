@@ -161,6 +161,20 @@ def sample_values():
         value = decode_uuid58(text)
         assert isinstance(value, int), text
         values.append((value, description))
+    # One below the largest multiple of 58^k, for every k: the remainder of a
+    # division by 58^k is as large as it gets and so is the quotient. A
+    # quotient estimated by multiplying with a reciprocal is least exact
+    # here (58^k - 1 above has the same remainder with a zero quotient).
+    for k in range(1, 22):
+        floor = MAX_VALUE // 58**k * 58**k
+        values.append((floor - 1, f"one below the largest multiple of 58^{k}"))
+    # Every byte value once, for implementations that format or parse a UUID
+    # through a table indexed by a whole byte.
+    for i in range(16):
+        block = bytes(range(16 * i, 16 * i + 16))
+        values.append(
+            (int.from_bytes(block, "big"), f"bytes 0x{block[0]:02x} to 0x{block[-1]:02x} in order")
+        )
     # Deterministic pseudo-random values, stable across Python versions.
     for i in range(16):
         digest = hashlib.sha256(f"uuid58-vector-{i}".encode()).digest()
@@ -199,6 +213,10 @@ INVALID_ENCODE_INPUTS = [
     ("urn:uuid:" + EXAMPLE, "URN prefix"),
     (EXAMPLE.replace("-", "_"), "underscores instead of hyphens"),
     (EXAMPLE_HEX[:8] + "-" + EXAMPLE_HEX[8:], "one hyphen only (33 characters)"),
+    (
+        EXAMPLE_HEX[:8] + "-" + EXAMPLE_HEX[8:12] + "-" + EXAMPLE_HEX[12:],
+        "two hyphens only (34 characters)",
+    ),
     ("f4b247f-d1f87-45d4-aa06-1c6fc0a8dfaf", "hyphen in the wrong position"),
     ("f4b247fd1f87-45d4-aa06-1c6fc0a8dfaf", "first hyphen missing"),
     ("f4b247fd-1f874-5d4-aa06-1c6fc0a8dfaf", "second hyphen in the wrong position"),
@@ -256,6 +274,23 @@ INVALID_ENCODE_INPUTS = [
     (EXAMPLE[:30] + "g" + EXAMPLE[31:], "non-hex letter in the fifth group, hyphenated"),
     (EXAMPLE[:35] + "g", "non-hex letter as the last character, hyphenated"),
 ]
+
+# A character that is not a hexadecimal digit at every digit position, with
+# zero digits everywhere else. An implementation that checks all digits at
+# once (by OR-ing or adding table entries) has to notice each position on its
+# own: the zero digits contribute nothing that could hide a lost marker.
+NIL_UUID = "00000000-0000-0000-0000-000000000000"
+NON_HEX = "gG/:@`"
+for i in range(32):
+    c = NON_HEX[i % len(NON_HEX)]
+    INVALID_ENCODE_INPUTS.append(
+        ("0" * i + c + "0" * (31 - i), f"zero digits with {c} at index {i}, 32 characters")
+    )
+for n, i in enumerate(i for i in range(36) if i not in HYPHEN_POSITIONS):
+    c = NON_HEX[(n + 3) % len(NON_HEX)]
+    INVALID_ENCODE_INPUTS.append(
+        (NIL_UUID[:i] + c + NIL_UUID[i + 1 :], f"zero digits with {c} at index {i}, hyphenated")
+    )
 
 MAX_UUID58 = encode_value(MAX_VALUE)
 VALID_UUID58 = encode_value(0xF4B247FD1F8745D4AA061C6FC0A8DFAF)
@@ -322,6 +357,14 @@ INVALID_DECODE_INPUTS = [
     (VALID_UUID58[:9] + "l" + VALID_UUID58[10:], "contains l at index 9"),
     (VALID_UUID58[:16] + "I" + VALID_UUID58[17:], "contains I at index 16"),
 ]
+
+# A character outside the alphabet at every position, with zero digits
+# everywhere else (see the UUID strings above for why).
+for i in range(UUID58_LENGTH):
+    c = "0OIl"[i % 4]
+    INVALID_DECODE_INPUTS.append(
+        ("1" * i + c + "1" * (UUID58_LENGTH - 1 - i), f"zero digits with {c} at index {i}")
+    )
 
 # SPEC.md Section 3.3: invalid inputs for APIs that encode from bytes or from
 # an arbitrary-precision integer.
