@@ -92,12 +92,13 @@ fn roundtrip() {
         assert_eq!(uuid58::decode(id), Ok(value), "{case}");
         assert_eq!(uuid58::decode(id.as_bytes()), Ok(value), "{case}");
         assert_eq!(uuid58::decode_to_bytes(id), Ok(bytes), "{case}");
-        let mut ubuf = [0u8; uuid58::UUID_STR_LEN];
+        let mut ubuf = [0xff; uuid58::UUID_STR_LEN];
         assert_eq!(
             uuid58::decode_to_uuid_buf(id, &mut ubuf),
             Ok(uuid),
             "{case}"
         );
+        assert_eq!(ubuf.as_slice(), uuid.as_bytes(), "{case}");
         assert!(uuid58::is_valid(id), "{case}");
 
         #[cfg(feature = "alloc")]
@@ -194,13 +195,15 @@ fn encode_invalid_bytes() {
 #[test]
 fn decode_invalid() {
     let v = vectors();
+    let initial = std::array::from_fn(|i| 0x80 + i as u8);
     for case in cases(&v, &["decode", "invalid"]) {
         let input = str_field(case, "input");
         assert_kind(uuid58::decode(input), case);
         assert_kind(uuid58::decode(input.as_bytes()), case);
         assert_kind(uuid58::decode_to_bytes(input), case);
-        let mut buf = [0u8; uuid58::UUID_STR_LEN];
+        let mut buf = initial;
         assert_kind(uuid58::decode_to_uuid_buf(input, &mut buf), case);
+        assert_eq!(buf, initial, "{case}");
         #[cfg(feature = "alloc")]
         assert_kind(uuid58::decode_to_uuid_string(input), case);
         #[cfg(feature = "uuid")]

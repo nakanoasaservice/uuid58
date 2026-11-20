@@ -363,6 +363,191 @@
       "uuid58": "YcVfxkQB6JRzqk5kF2tNLv"
     },
     {
+      "description": "one below the largest multiple of 58^1",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffc9",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tNKz"
+    },
+    {
+      "description": "one below the largest multiple of 58^2",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffffffb7b",
+      "uuid58": "YcVfxkQb6JRzqk5kF2tMzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^3",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffffee787",
+      "uuid58": "YcVfxkQb6JRzqk5kF2szzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^4",
+      "uuid": "ffffffff-ffff-ffff-ffff-ffffff67118f",
+      "uuid58": "YcVfxkQb6JRzqk5kF1zzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^5",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffffeba647f",
+      "uuid58": "YcVfxkQb6JRzqk5kEzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^6",
+      "uuid": "ffffffff-ffff-ffff-ffff-fffddb0575bf",
+      "uuid58": "YcVfxkQb6JRzqk5jzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^7",
+      "uuid": "ffffffff-ffff-ffff-ffff-fe80b8f908ff",
+      "uuid58": "YcVfxkQb6JRzqk4zzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^8",
+      "uuid": "ffffffff-ffff-ffff-ffff-f67860865eff",
+      "uuid58": "YcVfxkQb6JRzqjzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^9",
+      "uuid": "ffffffff-ffff-ffff-ffec-6624f54153ff",
+      "uuid58": "YcVfxkQb6JRzpzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^10",
+      "uuid": "ffffffff-ffff-ffff-faf9-c229d42a73ff",
+      "uuid58": "YcVfxkQb6JRyzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^11",
+      "uuid": "ffffffff-ffff-fffe-a631-e3f94d22efff",
+      "uuid58": "YcVfxkQb6JQzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^12",
+      "uuid": "ffffffff-ffff-ffde-23f8-7bf9e4d72fff",
+      "uuid58": "YcVfxkQb6Hzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^13",
+      "uuid": "ffffffff-ffff-faa6-9342-0b6792af1fff",
+      "uuid58": "YcVfxkQb5zzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^14",
+      "uuid": "ffffffff-ffff-a1a7-6719-d65c374effff",
+      "uuid58": "YcVfxkQazzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^15",
+      "uuid": "ffffffff-ff76-8554-2c5b-50dd0a6a7fff",
+      "uuid58": "YcVfxkPzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^16",
+      "uuid": "ffffffff-ea72-f1bf-d128-265f4728ffff",
+      "uuid58": "YcVfxjzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^17",
+      "uuid": "fffffff7-03cd-bce8-d6e0-26d7713dffff",
+      "uuid58": "YcVfwzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^18",
+      "uuid": "fffffd62-b01d-5b13-90fc-f05c9147ffff",
+      "uuid58": "YcVezzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^19",
+      "uuid": "ffff9605-9677-eeb5-ca4b-51ed6fefffff",
+      "uuid58": "YcUzzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^20",
+      "uuid": "ffee5495-ba38-941b-9146-22529b8fffff",
+      "uuid58": "Ybzzzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "one below the largest multiple of 58^21",
+      "uuid": "fb0b4c67-da47-6b6e-6b4e-26f9765fffff",
+      "uuid58": "Xzzzzzzzzzzzzzzzzzzzzz"
+    },
+    {
+      "description": "bytes 0x00 to 0x0f in order",
+      "uuid": "00010203-0405-0607-0809-0a0b0c0d0e0f",
+      "uuid58": "112drXXUifSrRnXLGbXg8E"
+    },
+    {
+      "description": "bytes 0x10 to 0x1f in order",
+      "uuid": "10111213-1415-1617-1819-1a1b1c1d1e1f",
+      "uuid58": "2z57mqVKV81ov6EoKXKtP8"
+    },
+    {
+      "description": "bytes 0x20 to 0x2f in order",
+      "uuid": "20212223-2425-2627-2829-2a2b2c2d2e2f",
+      "uuid58": "4y7bh9TAFaamQPxGNT86e2"
+    },
+    {
+      "description": "bytes 0x30 to 0x3f in order",
+      "uuid": "30313233-3435-3637-3839-3a3b3c3d3e3f",
+      "uuid58": "6xA5cTR1239ithfjRNvJtv"
+    },
+    {
+      "description": "bytes 0x40 to 0x4f in order",
+      "uuid": "40414243-4445-4647-4849-4a4b4c4d4e4f",
+      "uuid58": "8wCZXmNqnVigP1PCUJiX9p"
+    },
+    {
+      "description": "bytes 0x50 to 0x5f in order",
+      "uuid": "50515253-5455-5657-5859-5a5b5c5d5e5f",
+      "uuid58": "AvF3T5LgYxHdsK6fXEWjQi"
+    },
+    {
+      "description": "bytes 0x60 to 0x6f in order",
+      "uuid": "60616263-6465-6667-6869-6a6b6c6d6e6f",
+      "uuid58": "CuHXNPJXKQrbMcp8aAJwfc"
+    },
+    {
+      "description": "bytes 0x70 to 0x7f in order",
+      "uuid": "70717273-7475-7677-7879-7a7b7c7d7e7f",
+      "uuid58": "EtL1HhGN5sRYqvXbd679vW"
+    },
+    {
+      "description": "bytes 0x80 to 0x8f in order",
+      "uuid": "80818283-8485-8687-8889-8a8b8c8d8e8f",
+      "uuid58": "GsNVD1ECrKzWLEF4g1uNBQ"
+    },
+    {
+      "description": "bytes 0x90 to 0x9f in order",
+      "uuid": "90919293-9495-9697-9899-9a9b9c9d9e9f",
+      "uuid58": "JrQy8KC3cnZTpXxXiwhaSJ"
+    },
+    {
+      "description": "bytes 0xa0 to 0xaf in order",
+      "uuid": "a0a1a2a3-a4a5-a6a7-a8a9-aaabacadaeaf",
+      "uuid58": "LqTT3d9tPF8RJqfzmsVnhC"
+    },
+    {
+      "description": "bytes 0xb0 to 0xbf in order",
+      "uuid": "b0b1b2b3-b4b5-b6b7-b8b9-babbbcbdbebf",
+      "uuid58": "NpVvxw7j9hhNo9PTpoHzx6"
+    },
+    {
+      "description": "bytes 0xc0 to 0xcf in order",
+      "uuid": "c0c1c2c3-c4c5-c6c7-c8c9-cacbcccdcecf",
+      "uuid58": "QoYQtF5ZvAGLHT6vsj6DCz"
+    },
+    {
+      "description": "bytes 0xd0 to 0xdf in order",
+      "uuid": "d0d1d2d3-d4d5-d6d7-d8d9-dadbdcdddedf",
+      "uuid58": "SnatoZ3QgcqHmkpPvetRTt"
+    },
+    {
+      "description": "bytes 0xe0 to 0xef in order",
+      "uuid": "e0e1e2e3-e4e5-e6e7-e8e9-eaebecedeeef",
+      "uuid58": "UmdNis1FT5QFG4Xryagdin"
+    },
+    {
+      "description": "bytes 0xf0 to 0xff in order",
+      "uuid": "f0f1f2f3-f4f5-f6f7-f8f9-fafbfcfdfeff",
+      "uuid58": "WkfreAy6DXyCkNFL2WUqyg"
+    },
+    {
       "description": "pseudo-random #0",
       "uuid": "45ba151a-6929-cb0e-08e4-4d26609b82ef",
       "uuid58": "9cPd4sUhN3KeSnqsvndJLn"
@@ -599,6 +784,15 @@
       {
         "description": "one hyphen only (33 characters)",
         "input": "f4b247fd-1f8745d4aa061c6fc0a8dfaf",
+        "errors": [
+          "invalid_length"
+        ],
+        "lenient": true,
+        "lenient_output": "XDY9dmBbcMBXqcRvYw8xJ2"
+      },
+      {
+        "description": "two hyphens only (34 characters)",
+        "input": "f4b247fd-1f87-45d4aa061c6fc0a8dfaf",
         "errors": [
           "invalid_length"
         ],
@@ -941,6 +1135,454 @@
       {
         "description": "non-hex letter as the last character, hyphenated",
         "input": "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfag",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 0, 32 characters",
+        "input": "g0000000000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 1, 32 characters",
+        "input": "0G000000000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 2, 32 characters",
+        "input": "00/00000000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 3, 32 characters",
+        "input": "000:0000000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 4, 32 characters",
+        "input": "0000@000000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 5, 32 characters",
+        "input": "00000`00000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 6, 32 characters",
+        "input": "000000g0000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 7, 32 characters",
+        "input": "0000000G000000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 8, 32 characters",
+        "input": "00000000/00000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 9, 32 characters",
+        "input": "000000000:0000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 10, 32 characters",
+        "input": "0000000000@000000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 11, 32 characters",
+        "input": "00000000000`00000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 12, 32 characters",
+        "input": "000000000000g0000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 13, 32 characters",
+        "input": "0000000000000G000000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 14, 32 characters",
+        "input": "00000000000000/00000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 15, 32 characters",
+        "input": "000000000000000:0000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 16, 32 characters",
+        "input": "0000000000000000@000000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 17, 32 characters",
+        "input": "00000000000000000`00000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 18, 32 characters",
+        "input": "000000000000000000g0000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 19, 32 characters",
+        "input": "0000000000000000000G000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 20, 32 characters",
+        "input": "00000000000000000000/00000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 21, 32 characters",
+        "input": "000000000000000000000:0000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 22, 32 characters",
+        "input": "0000000000000000000000@000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 23, 32 characters",
+        "input": "00000000000000000000000`00000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 24, 32 characters",
+        "input": "000000000000000000000000g0000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 25, 32 characters",
+        "input": "0000000000000000000000000G000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 26, 32 characters",
+        "input": "00000000000000000000000000/00000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 27, 32 characters",
+        "input": "000000000000000000000000000:0000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 28, 32 characters",
+        "input": "0000000000000000000000000000@000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 29, 32 characters",
+        "input": "00000000000000000000000000000`00",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 30, 32 characters",
+        "input": "000000000000000000000000000000g0",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 31, 32 characters",
+        "input": "0000000000000000000000000000000G",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 0, hyphenated",
+        "input": ":0000000-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 1, hyphenated",
+        "input": "0@000000-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 2, hyphenated",
+        "input": "00`00000-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 3, hyphenated",
+        "input": "000g0000-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 4, hyphenated",
+        "input": "0000G000-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 5, hyphenated",
+        "input": "00000/00-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 6, hyphenated",
+        "input": "000000:0-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 7, hyphenated",
+        "input": "0000000@-0000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 9, hyphenated",
+        "input": "00000000-`000-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 10, hyphenated",
+        "input": "00000000-0g00-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 11, hyphenated",
+        "input": "00000000-00G0-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 12, hyphenated",
+        "input": "00000000-000/-0000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 14, hyphenated",
+        "input": "00000000-0000-:000-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 15, hyphenated",
+        "input": "00000000-0000-0@00-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 16, hyphenated",
+        "input": "00000000-0000-00`0-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 17, hyphenated",
+        "input": "00000000-0000-000g-0000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 19, hyphenated",
+        "input": "00000000-0000-0000-G000-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 20, hyphenated",
+        "input": "00000000-0000-0000-0/00-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 21, hyphenated",
+        "input": "00000000-0000-0000-00:0-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 22, hyphenated",
+        "input": "00000000-0000-0000-000@-000000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 24, hyphenated",
+        "input": "00000000-0000-0000-0000-`00000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 25, hyphenated",
+        "input": "00000000-0000-0000-0000-0g0000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 26, hyphenated",
+        "input": "00000000-0000-0000-0000-00G000000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 27, hyphenated",
+        "input": "00000000-0000-0000-0000-000/00000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 28, hyphenated",
+        "input": "00000000-0000-0000-0000-0000:0000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 29, hyphenated",
+        "input": "00000000-0000-0000-0000-00000@000000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with ` at index 30, hyphenated",
+        "input": "00000000-0000-0000-0000-000000`00000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with g at index 31, hyphenated",
+        "input": "00000000-0000-0000-0000-0000000g0000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with G at index 32, hyphenated",
+        "input": "00000000-0000-0000-0000-00000000G000",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with / at index 33, hyphenated",
+        "input": "00000000-0000-0000-0000-000000000/00",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with : at index 34, hyphenated",
+        "input": "00000000-0000-0000-0000-0000000000:0",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with @ at index 35, hyphenated",
+        "input": "00000000-0000-0000-0000-00000000000@",
         "errors": [
           "invalid_character"
         ]
@@ -1357,6 +1999,160 @@
       {
         "description": "contains I at index 16",
         "input": "XDY9dmBbcMBXqcRvIw8xJ2",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 0",
+        "input": "0111111111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 1",
+        "input": "1O11111111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with I at index 2",
+        "input": "11I1111111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with l at index 3",
+        "input": "111l111111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 4",
+        "input": "1111011111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 5",
+        "input": "11111O1111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with I at index 6",
+        "input": "111111I111111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with l at index 7",
+        "input": "1111111l11111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 8",
+        "input": "1111111101111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 9",
+        "input": "111111111O111111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with I at index 10",
+        "input": "1111111111I11111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with l at index 11",
+        "input": "11111111111l1111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 12",
+        "input": "1111111111110111111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 13",
+        "input": "1111111111111O11111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with I at index 14",
+        "input": "11111111111111I1111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with l at index 15",
+        "input": "111111111111111l111111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 16",
+        "input": "1111111111111111011111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 17",
+        "input": "11111111111111111O1111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with I at index 18",
+        "input": "111111111111111111I111",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with l at index 19",
+        "input": "1111111111111111111l11",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with 0 at index 20",
+        "input": "1111111111111111111101",
+        "errors": [
+          "invalid_character"
+        ]
+      },
+      {
+        "description": "zero digits with O at index 21",
+        "input": "111111111111111111111O",
         "errors": [
           "invalid_character"
         ]
