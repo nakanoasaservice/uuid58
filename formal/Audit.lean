@@ -1,15 +1,15 @@
 import RustEncode
-import RustUuidText
+import RustUuidFormat
 import JsGenerate
 import Lean.Util.CollectAxioms
 
 open Aeneas Aeneas.Std Aeneas.Std.WP
 
-/-- Encode using the extracted Rust function, then decode the resulting byte slice. -/
-theorem RustUuid58.roundtrip (v : Std.U128) :
-    (do let a ← RustUuid58.encode_array v; RustUuid58.decode_value a.to_slice)
+/-- Encode into any buffer using the extracted Rust function, then decode the resulting byte slice. -/
+theorem RustUuid58.roundtrip (v : Std.U128) (buf : Array Std.U8 22#usize) :
+    (do let a ← RustUuid58.encode_into v buf; RustUuid58.decode_value a.to_slice)
       ⦃ r => r = core.result.Result.Ok v ⦄ := by
-  apply spec_bind (RustUuid58.encode_correct v)
+  apply spec_bind (RustUuid58.encode_correct v buf)
   intro a h
   apply spec_mono (RustUuid58.decode_correct a.to_slice)
   intro r hr
@@ -26,6 +26,7 @@ run_cmd do
       ``RustUuid58.encode_correct, ``RustUuid58.decode_correct, ``RustUuid58.public_decode_correct,
       ``RustUuid58.is_valid_correct, ``RustUuid58.roundtrip,
       ``RustUuid58.parse_uuid_str_correct, ``RustUuid58.parse_uuid_str_accepts,
+      ``RustUuid58.format_uuid_correct, ``RustUuid58.format_parse_roundtrip, ``RustUuid58.decode_to_uuid_buf_correct,
       ``Uuid58.Js.rounding_exists, ``Uuid58.Js.integer_exact, ``Uuid58.Js.floor_div_exact,
       ``Uuid58.Js.divideWords_correct, ``Uuid58.Js.encode_correct, ``Uuid58.Js.digitAt_correct,
       ``Uuid58.Js.appendChunk_correct, ``Uuid58.Js.decode_correct, ``Uuid58.Js.invalid_index_correct,
