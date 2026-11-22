@@ -180,7 +180,7 @@ defmodule Uuid58 do
   @doc """
   Decodes a uuid58 string to 16 big-endian bytes.
 
-  Raises, through the bang variant, the same errors as `decode/1`.
+  Returns the same errors as `decode/1`.
 
   ## Examples
 

@@ -23,7 +23,7 @@ defmodule Uuid58.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :crypto]
+      extra_applications: [:crypto]
     ]
   end
 

@@ -9,18 +9,22 @@ permissions:
 
 jobs:
   elixir:
+    name: elixir (${{ matrix.elixir }}, ${{ matrix.otp }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
           # setup-beam strict mode matches the builds.hex.pm entry exactly, so
-          # these are patch versions, not majors. 1.16.3 / OTP 26.2.5 is the
-          # minimum in elixir/mix.exs; 1.20.5 / OTP 29.1.2 is the current release.
+          # these are patch versions, not majors. 1.16 is the oldest minor
+          # elixir/mix.exs allows, on the newest OTP it supports; 1.20.5 /
+          # OTP 29.1.2 is the current release.
           - elixir: "1.16.3"
             otp: "26.2.5"
+          # lint: also check formatting and build the docs and the package.
           - elixir: "1.20.5"
             otp: "29.1.2"
+            lint: true
     defaults:
       run:
         working-directory: elixir
@@ -42,12 +46,18 @@ jobs:
       # The formatter can drift between Elixir versions. Check it on the
       # version pinned in elixir/mise.toml.
       - name: Check formatting
-        if: matrix.elixir == '1.20.5'
+        if: matrix.lint
         run: mix format --check-formatted
 
       - name: Run tests (including spec/vectors.json conformance)
         run: mix test
 
+      # mix hex.publish builds the docs at release time. Build them here so a
+      # broken doc fails the PR, not the release.
+      - name: Build docs
+        if: matrix.lint
+        run: mix docs --warnings-as-errors
+
       - name: Build package
-        if: matrix.elixir == '1.20.5'
+        if: matrix.lint
         run: mix hex.build

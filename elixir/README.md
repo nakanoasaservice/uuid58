@@ -78,9 +78,12 @@ defimpl Phoenix.Param, for: MyApp.Post do
 end
 ```
 
-Verified routes interpolate the value as written, so encode it in the path:
+Verified routes call `Phoenix.Param` on an interpolated struct, so pass the
+struct. A bare `post.id` is a string and is used as written, so encode it
+yourself:
 
 ```elixir
+~p"/posts/#{post}"
 ~p"/posts/#{Uuid58.encode!(post.id)}"
 ```
 
@@ -179,6 +182,7 @@ Uses Elixir and Erlang from [mise](https://mise.jdx.dev/) (pinned via
 mix deps.get
 mix format --check-formatted
 mix test          # includes spec/vectors.json
+mix docs --warnings-as-errors
 mix hex.build     # build uuid58-x.y.z.tar
 ```
 
