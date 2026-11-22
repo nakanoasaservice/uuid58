@@ -2,3 +2,4 @@ node_modules
 dist
 jsr.json
 bench/.baseline
+.vitest/
