@@ -2,7 +2,7 @@
 
 ## Language
 
-Write issues, pull requests, and commit messages in English. This is a public OSS repository.
+Write issues, pull requests, and commit messages in English.
 
 ## Layout
 
