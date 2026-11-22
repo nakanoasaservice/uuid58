@@ -31,8 +31,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 dart pub add uuid58
 ```
 
-or `flutter pub add uuid58`. The package is not on pub.dev yet; the commands
-work once the first version is published.
+or `flutter pub add uuid58`.
 
 ## Usage
 
@@ -118,7 +117,7 @@ character, including a lone surrogate, is rejected.
 
 This package implements
 [uuid58 specification](https://github.com/nakanoasaservice/uuid58/blob/main/spec/SPEC.md)
-1.0.0 and passes every case in
+1.1.0 and passes every case in
 [`spec/vectors.json`](https://github.com/nakanoasaservice/uuid58/blob/main/spec/vectors.json),
 so its output is identical to the
 [other implementations](https://github.com/nakanoasaservice/uuid58#install)
