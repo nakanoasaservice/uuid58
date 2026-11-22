@@ -33,18 +33,8 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
   1.x.
 - **[Shared test vectors](spec/vectors.json)**: over 200 cases, 120 of them
   invalid inputs. Every implementation runs them in CI.
-- **[Formal proofs](formal/)** cover round trips and ASCII ordering for all 128-bit
-  values. Lean also checks the Rust and JavaScript numeric codecs against the
-  spec, including decoding error precedence. In both languages, the validator
-  accepts exactly the inputs that decode successfully. The JavaScript byte
-  APIs preserve all 16 bytes in big-endian order. The Rust UUID text parser and
-  JavaScript string APIs accept both UUID spellings with mixed-case hex digits.
-  Rust returns the specified 128-bit value or first error for every byte slice.
-  Both languages format UUIDs as lowercase, hyphenated text. Parsing the Rust
-  formatter's output recovers the original `u128`. Rust's `decode_to_uuid_buf`
-  writes and returns that text on success and preserves the caller's buffer on
-  error. After a successful Web Crypto call, the JavaScript generator sets the
-  UUIDv4 version and variant and preserves all 122 payload bits.
+- **[Formal proofs](formal/)** go beyond tests: the core guarantees hold for
+  every UUID, not just the cases we wrote down.
 
 ## Install
 
@@ -111,6 +101,21 @@ Yes. uuid58 strings meet Firestore's document ID rules. Use random (v4)
 UUIDs: Firestore advises against sequential IDs, which can cause write
 hotspots. If you later move to a relational database, decode each ID into a
 UUID column; references between records carry over as they are.
+
+</details>
+
+<details>
+<summary>What exactly is formally verified?</summary>
+
+The spec's guarantees: decoding an encoded UUID returns it unchanged, every
+encoding is 22 characters, and string order matches UUID order. Lean also
+proves that the JavaScript library's public functions and the Rust library's
+numeric codec, validator, UUID text parser, and UUID text formatter follow
+the spec for every input. Rust's `decode_to_uuid_buf` writes and returns the
+canonical UUID on success and preserves the caller's buffer on error. The
+proofs are rechecked against the current source on every change. The other
+libraries are checked with the shared test vectors. See
+[formal/](formal/) for proof scope and trust assumptions.
 
 </details>
 
