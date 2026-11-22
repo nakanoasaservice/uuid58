@@ -34,3 +34,4 @@ Key facts:
 - [PHP](https://github.com/nakanoasaservice/uuid58-php#readme): `composer require nakanoaas/uuid58` ([Packagist](https://packagist.org/packages/nakanoaas/uuid58))
 - [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `bundle add uuid58` ([RubyGems](https://rubygems.org/gems/uuid58))
 - [Dart / Flutter](https://github.com/nakanoasaservice/uuid58/tree/main/dart#readme): `dart pub add uuid58` ([pub.dev](https://pub.dev/packages/uuid58))
+- [Elixir](https://github.com/nakanoasaservice/uuid58/tree/main/elixir#readme): `uuid58` (not yet on Hex)

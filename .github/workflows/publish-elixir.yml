@@ -1,0 +1,112 @@
+name: Publish Elixir
+
+# Release the Hex package by pushing an elixir/v… tag:
+#   1. Bump @version in elixir/mix.exs, add a "## <version>" section to
+#      elixir/CHANGELOG.md, and merge it into main.
+#   2. git tag elixir/v1.2.3 <commit on main> && git push origin elixir/v1.2.3
+#
+# Hex workload identity publishes the package. Configure it on the package
+# page (repository nakanoasaservice/uuid58, workflow publish-elixir.yml,
+# environment production). It cannot create a package, so publish 0.1.0 once
+# with a Hex account, then add the workload identity.
+# Requires Hex 2.6+ and OTP 27+. mix hex.publish exchanges the OIDC token
+# when no HEX_API_KEY or other Hex credential is set.
+on:
+  push:
+    tags:
+      - "elixir/v*"
+
+permissions: {}
+
+jobs:
+  # Checks the tag and runs the tests without any publishing credentials.
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: elixir
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1.24.1
+        with:
+          elixir-version: "1.20.5"
+          otp-version: "29.1.2"
+          version-type: strict
+
+      - name: Verify tag matches elixir/mix.exs and is on main
+        run: |
+          VERSION=$(sed -n 's/^  @version "\(.*\)"$/\1/p' mix.exs)
+          if [ "$GITHUB_REF_NAME" != "elixir/v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match elixir/mix.exs version elixir/v$VERSION"
+            exit 1
+          fi
+          if ! grep -qx "## $VERSION" CHANGELOG.md; then
+            echo "::error::elixir/CHANGELOG.md has no \"## $VERSION\" section"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that is not on main"
+            exit 1
+          fi
+
+      # No dependency cache in the release job, to rule out cache poisoning.
+      - name: Run tests
+        run: |
+          mix deps.get --check-locked
+          mix test
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: production
+    # The OIDC token lives only in this job. mix hex.publish has to load
+    # mix.exs to build the package; it publishes with the workload-identity
+    # token and no long-lived Hex key.
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: elixir
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1.24.1
+        with:
+          elixir-version: "1.20.5"
+          otp-version: "29.1.2"
+          version-type: strict
+
+      - name: Install Hex
+        run: mix local.hex --force
+
+      - name: Publish to Hex
+        run: |
+          mix deps.get --check-locked
+          mix hex.publish --yes
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    # The write token lives only in this job, which runs no project code.
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes

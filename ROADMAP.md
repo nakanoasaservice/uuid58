@@ -159,11 +159,12 @@ the spec as `1.0.0`.
 - [x] Add a table of supported languages to the README
 - [x] Show per-language code samples in the
       [Playground](https://nakanoasaservice.github.io/uuid58/)
-- [ ] More implementations, in the order below (1–6 and 8 done: PostgreSQL in
+- [ ] More implementations, in the order below (1–8 done: PostgreSQL in
       [`postgres/`](postgres/), the CLI in [`go/cmd/uuid58/`](go/cmd/uuid58/),
       C# in [`dotnet/`](dotnet/), PHP in [uuid58-php](https://github.com/nakanoasaservice/uuid58-php), Ruby in
-      [`ruby/`](ruby/), Dart in [`dart/`](dart/), and MySQL / MariaDB in
-      [`mysql/`](mysql/); first releases and registry setup are still to do)
+      [`ruby/`](ruby/), Dart in [`dart/`](dart/), Elixir in
+      [`elixir/`](elixir/), and MySQL / MariaDB in [`mysql/`](mysql/); first
+      releases and registry setup are still to do)
 
 ### More Implementations
 
