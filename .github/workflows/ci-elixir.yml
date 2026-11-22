@@ -1,0 +1,52 @@
+name: CI (Elixir)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  elixir:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The minimum version in elixir/mix.exs (OTP 26 is the newest it
+          # supports), and the current release.
+          - elixir: "1.16"
+            otp: "26"
+          - elixir: "1.20"
+            otp: "29"
+    defaults:
+      run:
+        working-directory: elixir
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1.24.1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+          version-type: strict
+
+      - name: Install dependencies
+        run: mix deps.get --check-locked
+
+      # The formatter can drift between Elixir versions. Check it on the
+      # version pinned in elixir/mise.toml.
+      - name: Check formatting
+        if: matrix.elixir == '1.20'
+        run: mix format --check-formatted
+
+      - name: Run tests (including spec/vectors.json conformance)
+        run: mix test
+
+      - name: Build package
+        if: matrix.elixir == '1.20'
+        run: mix hex.build

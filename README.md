@@ -5,7 +5,7 @@
 
 **Shorten UUIDs to 22-character Base58 strings, and back.** uuid58 is a
 stable, well-tested encoding with one spec and libraries for JavaScript, Go,
-Python, Rust, Java, Kotlin, Swift, C#, PHP, Ruby, Dart, and PostgreSQL.
+Python, Rust, Java, Kotlin, Swift, C#, PHP, Ruby, Dart, Elixir, and PostgreSQL.
 
 ```text
 f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
@@ -51,6 +51,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 | [PHP](php/)                                               | `composer require nakanoasaservice/uuid58`     | Packagist (not yet released)                                                                    |
 | [Ruby](ruby/)                                             | `bundle add uuid58`                            | RubyGems (not yet released)                                                                     |
 | [Dart / Flutter](dart/)                                   | `dart pub add uuid58`                          | pub.dev (not yet released)                                                                      |
+| [Elixir](elixir/)                                         | `{:uuid58, "~> 0.1.0"}`                        | [Hex](https://hex.pm/packages/uuid58) (not yet released)                                        |
 | [CLI](go/cmd/uuid58/)                                     | `brew install nakanoasaservice/tap/uuid58`     | Homebrew, `nix run github:nakanoasaservice/uuid58`, or `go install`                             |
 
 Each language links to its README with usage and API details. Swift has its

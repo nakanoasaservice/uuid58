@@ -33,3 +33,4 @@ Key facts:
 - [PHP](https://github.com/nakanoasaservice/uuid58/tree/main/php#readme): `nakanoasaservice/uuid58` (not yet on Packagist)
 - [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `uuid58` gem (not yet on RubyGems)
 - [Dart / Flutter](https://github.com/nakanoasaservice/uuid58/tree/main/dart#readme): `uuid58` (not yet on pub.dev)
+- [Elixir](https://github.com/nakanoasaservice/uuid58/tree/main/elixir#readme): `uuid58` (not yet on Hex)

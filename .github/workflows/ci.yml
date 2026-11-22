@@ -27,6 +27,7 @@ jobs:
       php: ${{ steps.filter.outputs.php }}
       ruby: ${{ steps.filter.outputs.ruby }}
       dart: ${{ steps.filter.outputs.dart }}
+      elixir: ${{ steps.filter.outputs.elixir }}
       nix: ${{ steps.filter.outputs.nix }}
       site: ${{ steps.filter.outputs.site }}
     permissions:
@@ -71,6 +72,7 @@ jobs:
           set_output php      '^(php/|\.github/workflows/ci-php\.yml$)'
           set_output ruby     '^(ruby/|\.github/workflows/ci-ruby\.yml$)'
           set_output dart     '^(dart/|\.github/workflows/ci-dart\.yml$)'
+          set_output elixir   '^(elixir/|\.github/workflows/ci-elixir\.yml$)'
           # The flake builds the CLI from go/ and runs its tests, which read spec/.
           set_output nix      '^(go/|flake\.(nix|lock)$|\.github/workflows/ci-nix\.yml$)'
           # The site builds against js/ and reads spec/, so check it when those change too.
@@ -131,6 +133,11 @@ jobs:
     if: needs.changes.outputs.dart == 'true'
     uses: ./.github/workflows/ci-dart.yml
 
+  elixir:
+    needs: changes
+    if: needs.changes.outputs.elixir == 'true'
+    uses: ./.github/workflows/ci-elixir.yml
+
   nix:
     needs: changes
     if: needs.changes.outputs.nix == 'true'
@@ -149,7 +156,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, postgres, dotnet, php, ruby, dart, nix, site, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, postgres, dotnet, php, ruby, dart, elixir, nix, site, actions-lock]
     if: always()
     runs-on: ubuntu-slim
     steps:

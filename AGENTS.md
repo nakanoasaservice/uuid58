@@ -24,6 +24,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 | `php/` | PHP 8.1+ (CI: 8.1, 8.5), Composer 2 | `composer validate --strict`, `composer update`, `vendor/bin/phpstan analyse`, `vendor/bin/phpunit` |
 | `ruby/` | Ruby 4.0 locally (CI: 3.2 and latest) | `bundle install`, `bundle exec rake test`, `bundle exec rake build` |
 | `dart/` | Dart 3.14 locally (CI: 3.6 and stable) | `dart pub get`, `dart format --output=none --set-exit-if-changed .`, `dart analyze --fatal-infos`, `dart test` |
+| `elixir/` | Elixir 1.20, OTP 29 (CI: 1.16/OTP 26 and 1.20/OTP 29) | `mix deps.get --check-locked`, `mix format --check-formatted`, `mix test`, `mix hex.build` |
 | `postgres/` | PostgreSQL 14 and 18 | `psql -v ON_ERROR_STOP=1 -f test.sql` |
 | `/` (Nix) | Nix with flakes | `nix flake check -L` |
 | `spec/`, `formal/` | Python 3, Lean + Aeneas (`formal/lean-toolchain`, `formal/aeneas-version`) | `python3 spec/generate_vectors.py --check`, `formal/check.sh` |
@@ -63,6 +64,7 @@ Not managed by Dependabot (update by hand, together):
   | `dotnet/v*` | `publish-dotnet.yml` | NuGet |
   | `ruby/v*` | `publish-ruby.yml` | RubyGems |
   | `dart/v*` | `publish-dart.yml` | pub.dev |
+  | `elixir/v*` | `publish-elixir.yml` | Hex |
 
 - PHP (Packagist), PostgreSQL and Nix have no publish workflow.
 - Do not push release tags or run publish commands unless asked.
