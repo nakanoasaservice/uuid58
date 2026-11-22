@@ -38,10 +38,6 @@ jobs:
         with:
           working-directory: site
           cache: true
-          run-install: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Run fmt, lint and type check
         run: vp check

@@ -44,10 +44,6 @@ jobs:
           working-directory: js
           # No dependency cache in the release job, to rule out cache poisoning.
           cache: false
-          run-install: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: vp test run
