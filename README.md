@@ -47,15 +47,14 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 | [Java / Kotlin](java/)                                    | `io.github.nakanoasaservice:uuid58`            | [Maven Central](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58)        |
 | [Swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                          | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift)                                |
 | [PostgreSQL](postgres/)                                   | One SQL file, no extension                     | [`uuid58.sql`](postgres/uuid58.sql)                                                             |
-| [C# / .NET](dotnet/)                                      | `dotnet add package Uuid58`                    | NuGet (not yet released)                                                                        |
-| [PHP](php/)                                               | `composer require nakanoasaservice/uuid58`     | Packagist (not yet released)                                                                    |
-| [Ruby](ruby/)                                             | `bundle add uuid58`                            | RubyGems (not yet released)                                                                     |
-| [Dart / Flutter](dart/)                                   | `dart pub add uuid58`                          | pub.dev (not yet released)                                                                      |
+| [C# / .NET](dotnet/)                                      | `dotnet add package Uuid58`                    | [NuGet](https://www.nuget.org/packages/Uuid58)                                                    |
+| [PHP](https://github.com/nakanoasaservice/uuid58-php)                                               | `composer require nakanoaas/uuid58`     | [Packagist](https://packagist.org/packages/nakanoaas/uuid58)                                                                    |
+| [Ruby](ruby/)                                             | `bundle add uuid58`                            | [RubyGems](https://rubygems.org/gems/uuid58)                                                                     |
+| [Dart / Flutter](dart/)                                   | `dart pub add uuid58`                          | [pub.dev](https://pub.dev/packages/uuid58)                                                                      |
 | [CLI](go/cmd/uuid58/)                                     | `brew install nakanoasaservice/tap/uuid58`     | Homebrew, `nix run github:nakanoasaservice/uuid58`, or `go install`                             |
 
-Each language links to its README with usage and API details. Swift has its
-own repository because Swift Package Manager expects `Package.swift` at the
-root of a repository. The JavaScript package follows the spec from 2.0; 1.x
+Each language links to its README with usage and API details. Swift and PHP have their own repositories because Swift Package Manager and
+Packagist expect their package manifests at the repository root. The JavaScript package follows the spec from 2.0; 1.x
 accepts hyphens anywhere in its input, which the spec does not allow.
 
 ## How uuid58 compares
@@ -139,8 +138,8 @@ source in `js/`, so it always matches `main`. Run it locally with
 ## Releases
 
 Each implementation is released on its own, with tags prefixed by its
-directory, such as `js/v1.2.3`. Swift releases are plain version tags in
-uuid58-swift.
+directory, such as `js/v1.2.3`. Swift and PHP releases use version tags in their own repositories,
+`uuid58-swift` and `uuid58-php`.
 
 ## License
 
