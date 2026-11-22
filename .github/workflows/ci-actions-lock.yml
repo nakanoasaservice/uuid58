@@ -1,6 +1,6 @@
 name: CI (Actions lockfile)
 
-# Called from ci.yml on every PR.
+# Called from ci.yml when workflows or action manifests change.
 on:
   workflow_call:
 
