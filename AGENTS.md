@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Language
+
+Write issues, pull requests, and commit messages in English. This is a public OSS repository.
+
 ## Layout
 
 One implementation per directory, all checked against `spec/vectors.json`. `site/` is the website (it builds against `js/` and reads `spec/`). `formal/` holds the Lean proofs.
