@@ -36,7 +36,9 @@ if "$client" --help 2>&1 | grep -q -- '--abort-source-on-error'; then
 fi
 
 # POSIX od, so the script does not need Python. UNHEX accepts the lowercase hex.
-vectors_hex=$(od -An -tx1 ../spec/vectors.json | tr -d '[:space:]')
+# -v is required: without it od replaces repeated lines with "*", and UNHEX
+# then returns NULL.
+vectors_hex=$(od -An -v -tx1 ../spec/vectors.json | tr -d '[:space:]')
 
 {
   cat <<EOF

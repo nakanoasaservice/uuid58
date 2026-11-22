@@ -69,8 +69,16 @@ BEGIN
   DECLARE hex VARCHAR(32);
   DECLARE stmt LONGTEXT;
 
-  IF JSON_VALID(@vectors) <> 1
-     OR JSON_UNQUOTE(JSON_EXTRACT(@vectors, '$.spec_version')) <> '1.1.0' THEN
+  -- Every check is NULL-safe: a NULL @vectors, or a section that is missing,
+  -- must fail here instead of running no cases and passing.
+  IF @vectors IS NULL
+     OR IFNULL(JSON_VALID(@vectors), 0) <> 1
+     OR IFNULL(JSON_UNQUOTE(JSON_EXTRACT(@vectors, '$.spec_version')), '') <> '1.1.0'
+     OR IFNULL(JSON_LENGTH(@vectors, '$.roundtrip'), 0) = 0
+     OR IFNULL(JSON_LENGTH(@vectors, '$.encode.valid'), 0) = 0
+     OR IFNULL(JSON_LENGTH(@vectors, '$.encode.invalid'), 0) = 0
+     OR IFNULL(JSON_LENGTH(@vectors, '$.encode.invalid_bytes'), 0) = 0
+     OR IFNULL(JSON_LENGTH(@vectors, '$.decode.invalid'), 0) = 0 THEN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'unexpected or unreadable spec/vectors.json';
   END IF;
@@ -81,12 +89,13 @@ BEGIN
     SET uuid58 = JSON_UNQUOTE(JSON_EXTRACT(@vectors, CONCAT('$.roundtrip[', i, '].uuid58')));
     SET description = JSON_UNQUOTE(JSON_EXTRACT(@vectors, CONCAT('$.roundtrip[', i, '].description')));
     SET hex = REPLACE(uuid, '-', '');
-    IF uuid58_encode(uuid) COLLATE utf8mb4_bin <> uuid58 COLLATE utf8mb4_bin
-       OR uuid58_encode(hex) COLLATE utf8mb4_bin <> uuid58 COLLATE utf8mb4_bin
-       OR uuid58_encode_bytes(UNHEX(hex)) COLLATE utf8mb4_bin <> uuid58 COLLATE utf8mb4_bin
-       OR uuid58_decode(uuid58) COLLATE utf8mb4_bin <> uuid COLLATE utf8mb4_bin
-       OR LOWER(HEX(uuid58_decode_bytes(uuid58))) COLLATE utf8mb4_bin <> hex COLLATE utf8mb4_bin
-       OR IFNULL(is_uuid58(uuid58), 0) <> 1 THEN
+    -- <=> rather than <>: a function that returns NULL must count as a failure.
+    IF NOT (uuid58_encode(uuid) COLLATE utf8mb4_bin <=> uuid58 COLLATE utf8mb4_bin)
+       OR NOT (uuid58_encode(hex) COLLATE utf8mb4_bin <=> uuid58 COLLATE utf8mb4_bin)
+       OR NOT (uuid58_encode_bytes(UNHEX(hex)) COLLATE utf8mb4_bin <=> uuid58 COLLATE utf8mb4_bin)
+       OR NOT (uuid58_decode(uuid58) COLLATE utf8mb4_bin <=> uuid COLLATE utf8mb4_bin)
+       OR NOT (LOWER(HEX(uuid58_decode_bytes(uuid58))) COLLATE utf8mb4_bin <=> hex COLLATE utf8mb4_bin)
+       OR NOT (is_uuid58(uuid58) <=> 1) THEN
       INSERT INTO failures VALUES (CONCAT('roundtrip: ', description));
     END IF;
     INSERT INTO roundtrip_got VALUES (description, uuid, uuid58);
@@ -94,15 +103,16 @@ BEGIN
   END WHILE;
 
   -- Consecutive UUIDs in integer order must encode in increasing binary order,
-  -- using the collation the functions actually return.
+  -- using the collation the functions actually return. Columns are qualified
+  -- because a bare description or uuid is the local variable of that name.
   INSERT INTO failures (description)
-  SELECT CONCAT('ordering: ', description)
+  SELECT CONCAT('ordering: ', pairs.description)
   FROM (
-    SELECT description, uuid, LAG(uuid) OVER (ORDER BY uuid) AS prev_uuid
-    FROM roundtrip_got
+    SELECT r.description, r.uuid, LAG(r.uuid) OVER (ORDER BY r.uuid) AS prev_uuid
+    FROM roundtrip_got AS r
   ) AS pairs
-  WHERE prev_uuid IS NOT NULL
-    AND NOT (uuid58_encode(prev_uuid) < uuid58_encode(uuid));
+  WHERE pairs.prev_uuid IS NOT NULL
+    AND NOT IFNULL(uuid58_encode(pairs.prev_uuid) < uuid58_encode(pairs.uuid), FALSE);
 
   IF COLLATION(uuid58_encode('00000000-0000-0000-0000-000000000000')) <> 'utf8mb4_bin' THEN
     INSERT INTO failures VALUES ('encode result collation');
@@ -122,7 +132,9 @@ BEGIN
     CALL uuid58_test_error_kind(stmt, @kind);
     IF @kind IS NOT NULL
        OR @uuid58_test_out IS NULL
-       OR @uuid58_test_out COLLATE utf8mb4_bin <> expected COLLATE utf8mb4_bin THEN
+       -- CONVERT: a NULL user variable is binary, which MySQL will not collate.
+       OR NOT (CONVERT(@uuid58_test_out USING utf8mb4) COLLATE utf8mb4_bin
+                 <=> expected COLLATE utf8mb4_bin) THEN
       INSERT INTO failures VALUES (CONCAT(
         'encode valid: ', description, ': ', IFNULL(@kind, IFNULL(@uuid58_test_out, 'no output'))
       ));
@@ -180,7 +192,7 @@ BEGIN
       CONCAT('SET @uuid58_test_out = uuid58_decode_bytes(', QUOTE(input), ')'),
       @kind2
     );
-    IF @kind2 <> @kind OR IFNULL(is_uuid58(input), 1) <> 0 THEN
+    IF NOT (@kind2 <=> @kind) OR NOT (is_uuid58(input) <=> 0) THEN
       INSERT INTO failures VALUES (CONCAT(
         'decode invalid agreement: ', description,
         ': decode=', IFNULL(@kind, 'no error'),
@@ -199,10 +211,10 @@ BEGIN
     INSERT INTO failures VALUES ('NULL handling');
   END IF;
 
-  IF uuid58_encode_bytes(UNHEX('f4b247fd1f8745d4aa061c6fc0a8dfaf'))
-       COLLATE utf8mb4_bin <> 'XDY9dmBbcMBXqcRvYw8xJ2'
-     OR uuid58_decode_bytes('XDY9dmBbcMBXqcRvYw8xJ2')
-       <> UNHEX('f4b247fd1f8745d4aa061c6fc0a8dfaf') THEN
+  IF NOT (uuid58_encode_bytes(UNHEX('f4b247fd1f8745d4aa061c6fc0a8dfaf'))
+            COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
+     OR NOT (uuid58_decode_bytes('XDY9dmBbcMBXqcRvYw8xJ2')
+               <=> UNHEX('f4b247fd1f8745d4aa061c6fc0a8dfaf')) THEN
     INSERT INTO failures VALUES ('binary example');
   END IF;
 
@@ -216,17 +228,17 @@ BEGIN
     ('00000000-0000-0000-0000-000000000000');
   CREATE VIEW uuid58_ids AS
   SELECT id, uuid58_encode(id) AS short_id FROM uuid58_src;
-  IF (SELECT short_id FROM uuid58_ids WHERE id = 'f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf')
-       COLLATE utf8mb4_bin <> 'XDY9dmBbcMBXqcRvYw8xJ2'
-     OR (SELECT id FROM uuid58_ids ORDER BY short_id LIMIT 1)
-       <> '00000000-0000-0000-0000-000000000000'
-     OR (SELECT COLLATION(short_id) FROM uuid58_ids LIMIT 1) <> 'utf8mb4_bin' THEN
+  IF NOT ((SELECT short_id FROM uuid58_ids WHERE id = 'f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf')
+            COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
+     OR NOT ((SELECT id FROM uuid58_ids ORDER BY short_id LIMIT 1)
+               <=> '00000000-0000-0000-0000-000000000000')
+     OR NOT ((SELECT COLLATION(short_id) FROM uuid58_ids LIMIT 1) <=> 'utf8mb4_bin') THEN
     INSERT INTO failures VALUES ('view');
   END IF;
 
   SET @n = (SELECT COUNT(*) FROM failures);
   IF @n > 0 THEN
-    SELECT description AS failure FROM failures;
+    SELECT f.description AS failure FROM failures AS f;
     SET @uuid58_failure_message = CONCAT(@n, ' uuid58 conformance failure(s)');
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @uuid58_failure_message;
   END IF;
