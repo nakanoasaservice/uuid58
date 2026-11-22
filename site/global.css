@@ -325,8 +325,8 @@ input[aria-invalid="true"] {
   font-size: 15px;
 }
 
-/* Language samples */
-.samples {
+/* Language libraries */
+.libraries {
   margin-top: 20px;
 }
 .tabs {
