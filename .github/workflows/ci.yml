@@ -11,10 +11,11 @@ jobs:
   # Decides which jobs to run from the files the PR changes. Each job lives
   # in its own ci-<name>.yml, so a change to one of those (for example a
   # Dependabot bump of setup-java) runs only that job. Changes under spec/
-  # or to this file run every job.
+  # or to this file run every language job.
   changes:
     runs-on: ubuntu-latest
     outputs:
+      actions_lock: ${{ steps.filter.outputs.actions_lock }}
       spec: ${{ steps.filter.outputs.spec }}
       js: ${{ steps.filter.outputs.js }}
       go: ${{ steps.filter.outputs.go }}
@@ -38,8 +39,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
         run: |
-          files=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
+          # Include both paths of a rename so moving a workflow or action out
+          # of a watched path still verifies its lockfile entries.
+          files=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')
           echo "$files"
+          if grep -qE '^\.github/workflows/|(^|/)action\.ya?ml$' <<< "$files"; then
+            echo "actions_lock=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "actions_lock=false" >> "$GITHUB_OUTPUT"
+          fi
           all=false
           if echo "$files" | grep -qE '^(spec/|\.github/workflows/ci\.yml$)'; then
             all=true
@@ -134,6 +142,8 @@ jobs:
     uses: ./.github/workflows/ci-site.yml
 
   actions-lock:
+    needs: changes
+    if: needs.changes.outputs.actions_lock == 'true'
     uses: ./.github/workflows/ci-actions-lock.yml
 
   # The single required status check. Language jobs that were skipped
