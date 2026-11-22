@@ -38,7 +38,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 
 Not managed by Dependabot (update by hand, together):
 
-- The Vite+ toolchain in `js/` and `site/`: `vite-plus` and the Vite core alias are pinned in each `pnpm-workspace.yaml` catalog; Vitest is bundled with Vite+. Update both directories together with `vp migrate`, refresh both lockfiles, and keep the `setup-vp` version in CI and release workflows in sync.
+- The Vite+ toolchain in `js/` and `site/`: `vite-plus` and the Vite core alias are pinned in each `pnpm-workspace.yaml` catalog; Vitest is bundled with Vite+. Update both directories together with `vp migrate` and refresh both lockfiles. CI and release workflows resolve the Vite+ version from each directory's catalog automatically.
 - `uv_build` in `python/pyproject.toml`: keep it in step with `[tool.uv] required-version` and `python/mise.toml`.
 - Maven in `java/.mvn/wrapper/maven-wrapper.properties`: keep it in step with `java/mise.toml`.
 - JUnit majors in `java/pom.xml`: JUnit 6 requires Java 17, and the library targets Java 8.
