@@ -1,3 +1,8 @@
+## 0.1.1
+
+- Publish through GitHub Actions with trusted publishing on pub.dev.
+- No public API or runtime behavior changes.
+
 ## 0.1.0
 
 - Initial release, implementing uuid58 specification 1.1.0.
