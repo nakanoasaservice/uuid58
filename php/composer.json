@@ -1,5 +1,5 @@
 {
-    "name": "nakanoasaservice/uuid58",
+    "name": "nakanoaas/uuid58",
     "description": "Shorten UUIDs to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec. No extensions required.",
     "type": "library",
     "license": "MIT",

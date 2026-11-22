@@ -30,11 +30,12 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 ## Install
 
 ```bash
-composer require nakanoasaservice/uuid58
+composer require nakanoaas/uuid58
 ```
 
-The package is not released on Packagist yet; this command works once the
-first version is published.
+Available on [Packagist](https://packagist.org/packages/nakanoaas/uuid58).
+Releases are distributed from [uuid58-php](https://github.com/nakanoasaservice/uuid58-php);
+development continues in this repository.
 
 ## Usage
 
