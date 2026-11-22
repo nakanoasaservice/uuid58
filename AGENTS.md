@@ -6,7 +6,7 @@ One implementation per directory, all checked against `spec/vectors.json`. `site
 
 ## Toolchain and verify commands
 
-Local versions are pinned in each directory's `mise.toml`. Run the commands from that directory; they mirror `.github/workflows/ci-<name>.yml`.
+Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `package.json` pins development Node.js in `devEngines.runtime` and pnpm in `packageManager`; Vite+ reads those pins. Run the commands from that directory; they mirror `.github/workflows/ci-<name>.yml`.
 
 | Dir | Toolchain | Verify |
 | --- | --- | --- |

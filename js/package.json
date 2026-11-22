@@ -62,6 +62,12 @@
     "typescript": "^7.0.2",
     "vite-plus": "catalog:"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.22.1"
+    }
+  },
   "engines": {
     "node": ">=20"
   },

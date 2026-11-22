@@ -21,5 +21,11 @@
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.22.1"
+    }
+  },
   "packageManager": "pnpm@12.21.0"
 }

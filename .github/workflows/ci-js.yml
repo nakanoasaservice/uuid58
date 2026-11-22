@@ -23,9 +23,11 @@ jobs:
         with:
           version: "1.7.0"
           working-directory: js
-          node-version: "24.22.1"
           cache: true
           run-install: false
+
+      - name: Verify declared Node.js runtime
+        run: node -e 'const expected = require("./package.json").devEngines.runtime.version; if (process.versions.node !== expected) throw new Error(`Expected Node ${expected}, got ${process.version}`)'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
