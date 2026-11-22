@@ -39,6 +39,12 @@ Running the file again replaces the functions, so you can use it as a
 migration. It creates them under a strict `sql_mode`, then restores your
 session mode. Calls between the functions are bound to this database.
 
+On a server with binary logging enabled, creating a stored function needs the
+`SUPER` privilege or `log_bin_trust_function_creators = 1`. Without either,
+the file fails with error 1419. Binary logging is on by default in MySQL, and
+usually on managed databases, where you set the variable in the parameter
+group or database flags.
+
 ## Usage
 
 ```sql
@@ -59,6 +65,10 @@ SELECT * FROM users WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2');
 -- flag is omitted; do not pass 1.
 SELECT uuid58_encode_bytes(id) FROM users_bin;
 SELECT * FROM users_bin WHERE id = uuid58_decode_bytes('XDY9dmBbcMBXqcRvYw8xJ2');
+
+-- MariaDB UUID column.
+SELECT uuid58_encode(id) FROM users_uuid;
+SELECT * FROM users_uuid WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2');
 ```
 
 Generate new IDs with the server's own function, such as

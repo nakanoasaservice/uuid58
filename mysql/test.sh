@@ -29,12 +29,6 @@ else
   set -- --skip-password
 fi
 
-# MariaDB's client continues after an error in a script unless told to stop.
-# MySQL 8.4 already stops, and does not accept the flag.
-if "$client" --help 2>&1 | grep -q -- '--abort-source-on-error'; then
-  set -- "$@" --abort-source-on-error
-fi
-
 # POSIX od, so the script does not need Python. UNHEX accepts the lowercase hex.
 # -v is required: without it od replaces repeated lines with "*", and UNHEX
 # then returns NULL.

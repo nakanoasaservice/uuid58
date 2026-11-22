@@ -236,6 +236,26 @@ BEGIN
     INSERT INTO failures VALUES ('view');
   END IF;
 
+  -- MariaDB has a native UUID type. CREATE TABLE is prepared because MySQL
+  -- cannot parse the column type.
+  IF @@version LIKE '%MariaDB%' THEN
+    SET @uuid58_test_sql = 'CREATE TABLE uuid58_native (id UUID NOT NULL PRIMARY KEY)';
+    PREPARE uuid58_test_stmt FROM @uuid58_test_sql;
+    EXECUTE uuid58_test_stmt;
+    DEALLOCATE PREPARE uuid58_test_stmt;
+    INSERT INTO uuid58_native VALUES ('f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf');
+    IF NOT ((SELECT uuid58_encode(id) FROM uuid58_native)
+              COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
+       OR NOT ((SELECT uuid58_encode_bytes(id) FROM uuid58_native)
+                 COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
+       OR NOT ((SELECT COUNT(*) FROM uuid58_native
+                WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2')) <=> 1)
+       OR NOT ((SELECT COUNT(*) FROM uuid58_native
+                WHERE id = uuid58_decode_bytes('XDY9dmBbcMBXqcRvYw8xJ2')) <=> 1) THEN
+      INSERT INTO failures VALUES ('MariaDB UUID column');
+    END IF;
+  END IF;
+
   SET @n = (SELECT COUNT(*) FROM failures);
   IF @n > 0 THEN
     SELECT f.description AS failure FROM failures AS f;

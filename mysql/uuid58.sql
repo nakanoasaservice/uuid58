@@ -6,10 +6,14 @@
 -- functions in, for example: mysql -D mydb < uuid58.sql. Running it again
 -- replaces them.
 --
+-- On a server with binary logging enabled, creating a stored function needs
+-- the SUPER privilege or log_bin_trust_function_creators = 1. Without either,
+-- this file fails with error 1419.
+--
 -- MySQL has no function overloading, so the byte encoder is uuid58_encode_bytes
--- rather than a second uuid58_encode. There is no native UUID type: pass the
+-- rather than a second uuid58_encode. MySQL has no native UUID type: pass the
 -- 36-character text form, or 16 bytes in RFC 9562 order (UUID_TO_BIN without
--- the swap flag, on servers that have it).
+-- the swap flag). A MariaDB UUID value works with either encoder.
 --
 -- These servers reject stored functions in generated columns. Call the
 -- functions from queries or views instead.
@@ -49,8 +53,8 @@ BEGIN
   DECLARE alphabet VARCHAR(58) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
     DEFAULT '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   DECLARE result VARCHAR(22) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '';
-  DECLARE hi BIGINT UNSIGNED DEFAULT 0;
-  DECLARE lo BIGINT UNSIGNED DEFAULT 0;
+  DECLARE hi BIGINT UNSIGNED;
+  DECLARE lo BIGINT UNSIGNED;
   DECLARE qhi BIGINT UNSIGNED;
   DECLARE qlo BIGINT UNSIGNED;
   DECLARE pow64_div_58 BIGINT UNSIGNED DEFAULT 318047311615681924;
@@ -70,15 +74,9 @@ BEGIN
     SIGNAL SQLSTATE '22026' SET MESSAGE_TEXT = msg;
   END IF;
 
-  SET i = 1;
-  WHILE i <= 8 DO
-    SET hi = hi * 256 + CAST(CONV(HEX(SUBSTRING(b, i, 1)), 16, 10) AS UNSIGNED);
-    SET i = i + 1;
-  END WHILE;
-  WHILE i <= 16 DO
-    SET lo = lo * 256 + CAST(CONV(HEX(SUBSTRING(b, i, 1)), 16, 10) AS UNSIGNED);
-    SET i = i + 1;
-  END WHILE;
+  -- CONV works with 64-bit precision, so each half converts in one step.
+  SET hi = CAST(CONV(HEX(SUBSTRING(b, 1, 8)), 16, 10) AS UNSIGNED);
+  SET lo = CAST(CONV(HEX(SUBSTRING(b, 9, 8)), 16, 10) AS UNSIGNED);
 
   -- Least-significant digit first, prepended, so the string is big-endian.
   SET i = 0;
@@ -188,7 +186,6 @@ BEGIN
   DECLARE prod_l BIGINT UNSIGNED;
   DECLARE prod_h BIGINT UNSIGNED;
   DECLARE pow32 BIGINT UNSIGNED DEFAULT 4294967296;
-  DECLARE raw VARBINARY(16);
   DECLARE i INT;
   DECLARE digit INT;
   DECLARE carry INT;
@@ -232,20 +229,7 @@ BEGIN
     SET i = i + 1;
   END WHILE;
 
-  SET raw = x'00000000000000000000000000000000';
-  SET i = 16;
-  WHILE i >= 9 DO
-    SET raw = INSERT(raw, i, 1, UNHEX(LPAD(HEX(lo MOD 256), 2, '0')));
-    SET lo = lo DIV 256;
-    SET i = i - 1;
-  END WHILE;
-  SET i = 8;
-  WHILE i >= 1 DO
-    SET raw = INSERT(raw, i, 1, UNHEX(LPAD(HEX(hi MOD 256), 2, '0')));
-    SET hi = hi DIV 256;
-    SET i = i - 1;
-  END WHILE;
-  RETURN raw;
+  RETURN UNHEX(CONCAT(LPAD(HEX(hi), 16, '0'), LPAD(HEX(lo), 16, '0')));
 END$$
 
 -- Decodes a uuid58 string to the lowercase hyphenated UUID form.
