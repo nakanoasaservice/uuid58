@@ -14,12 +14,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # The minimum version in elixir/mix.exs (OTP 26 is the newest it
-          # supports), and the current release.
-          - elixir: "1.16"
-            otp: "26"
-          - elixir: "1.20"
-            otp: "29"
+          # setup-beam strict mode matches the builds.hex.pm entry exactly, so
+          # these are patch versions, not majors. 1.16.3 / OTP 26.2.5 is the
+          # minimum in elixir/mix.exs; 1.20.5 / OTP 29.1.2 is the current release.
+          - elixir: "1.16.3"
+            otp: "26.2.5"
+          - elixir: "1.20.5"
+            otp: "29.1.2"
     defaults:
       run:
         working-directory: elixir
@@ -41,12 +42,12 @@ jobs:
       # The formatter can drift between Elixir versions. Check it on the
       # version pinned in elixir/mise.toml.
       - name: Check formatting
-        if: matrix.elixir == '1.20'
+        if: matrix.elixir == '1.20.5'
         run: mix format --check-formatted
 
       - name: Run tests (including spec/vectors.json conformance)
         run: mix test
 
       - name: Build package
-        if: matrix.elixir == '1.20'
+        if: matrix.elixir == '1.20.5'
         run: mix hex.build

@@ -23,7 +23,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 | `dotnet/` | .NET 10 SDK + .NET 8 runtime | `dotnet format --verify-no-changes`, `dotnet build -c Release`, `dotnet test -c Release --no-build` |
 | `ruby/` | Ruby 4.0 locally (CI: 3.2 and latest) | `bundle install`, `bundle exec rake test`, `bundle exec rake build` |
 | `dart/` | Dart 3.14 locally (CI: 3.6 and stable) | `dart pub get`, `dart format --output=none --set-exit-if-changed .`, `dart analyze --fatal-infos`, `dart test` |
-| `elixir/` | Elixir 1.20, OTP 29 (CI: 1.16/OTP 26 and 1.20/OTP 29) | `mix deps.get --check-locked`, `mix format --check-formatted`, `mix test`, `mix hex.build` |
+| `elixir/` | Elixir 1.20.5, OTP 29.1.2 (CI: 1.16.3/OTP 26.2.5 and 1.20.5/OTP 29.1.2) | `mix deps.get --check-locked`, `mix format --check-formatted`, `mix test`, `mix hex.build` |
 | `postgres/` | PostgreSQL 14 and 18 | `psql -v ON_ERROR_STOP=1 -f test.sql` |
 | `/` (Nix) | Nix with flakes | `nix flake check -L` |
 | `spec/`, `formal/` | Python 3, Lean + Aeneas (`formal/lean-toolchain`, `formal/aeneas-version`) | `python3 spec/generate_vectors.py --check`, `formal/check.sh` |

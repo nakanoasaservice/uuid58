@@ -36,8 +36,8 @@ jobs:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1.24.1
         with:
-          elixir-version: "1.20"
-          otp-version: "29"
+          elixir-version: "1.20.5"
+          otp-version: "29.1.2"
           version-type: strict
 
       - name: Verify tag matches elixir/mix.exs and is on main
@@ -83,8 +83,8 @@ jobs:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1.24.1
         with:
-          elixir-version: "1.20"
-          otp-version: "29"
+          elixir-version: "1.20.5"
+          otp-version: "29.1.2"
           version-type: strict
 
       - name: Install Hex
