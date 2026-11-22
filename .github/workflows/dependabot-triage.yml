@@ -21,18 +21,25 @@ jobs:
         id: meta
         uses: dependabot/fetch-metadata@v3.1.0
 
-      # Safe = every updated dependency is a patch/minor update on a >=1.0 version.
+      # Safe = every updated dependency is a patch/minor update on a >=1.0 version,
+      # or the nixpkgs flake input.
       # Majors and 0.x minors (breaking under SemVer) are left without auto-merge;
       # the AI task picks up Dependabot PRs that have no auto-merge or a failed check.
+      # nixpkgs is a commit on nixos-unstable, not a SemVer release, and
+      # fetch-metadata reports every bump as a major. It only feeds the flake,
+      # which ci-nix.yml checks on every flake.lock change.
       - name: Decide
         id: decide
         env:
           DEPS: ${{ steps.meta.outputs.updated-dependencies-json }}
         run: |
           unsafe=$(jq '[.[] | select(
-              .updateType == "version-update:semver-major"
-              or (.updateType == "version-update:semver-minor" and ((.prevVersion // "") | startswith("0.")))
-              or ((.updateType // "") == "")
+              ((.packageEcosystem == "nix" and .dependencyName == "nixpkgs") | not)
+              and (
+                .updateType == "version-update:semver-major"
+                or (.updateType == "version-update:semver-minor" and ((.prevVersion // "") | startswith("0.")))
+                or ((.updateType // "") == "")
+              )
             )] | length' <<<"$DEPS")
           echo "Unsafe updates: $unsafe"
           if [ "$unsafe" = "0" ]; then echo "safe=true" >>"$GITHUB_OUTPUT"; else echo "safe=false" >>"$GITHUB_OUTPUT"; fi

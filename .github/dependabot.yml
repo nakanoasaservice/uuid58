@@ -5,7 +5,7 @@
 #   hijacked packages); majors wait longer. Security updates are not delayed.
 # - Patch/minor updates are grouped per entry; majors are not grouped, so each
 #   major lands as its own PR. dependabot-triage.yml enables auto-merge only for
-#   patch/minor updates on versions >= 1.0.
+#   patch/minor updates on versions >= 1.0, and for the nixpkgs flake input.
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -245,8 +245,8 @@ updates:
       actions-minor-patch:
         update-types: ["minor", "patch"]
 
-  # flake.lock inputs (nixpkgs) are commits, not SemVer releases, so these PRs
-  # never get auto-merge from dependabot-triage.yml.
+  # flake.lock inputs are commits, not SemVer releases. dependabot-triage.yml
+  # enables auto-merge for nixpkgs by name; any other input is left for review.
   - package-ecosystem: "nix"
     directory: "/"
     schedule:
