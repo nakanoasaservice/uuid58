@@ -24,6 +24,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 | `ruby/` | Ruby 4.0 locally (CI: 3.2 and latest) | `bundle install`, `bundle exec rake test`, `bundle exec rake build` |
 | `dart/` | Dart 3.14 locally (CI: 3.6 and stable) | `dart pub get`, `dart format --output=none --set-exit-if-changed .`, `dart analyze --fatal-infos`, `dart test` |
 | `postgres/` | PostgreSQL 14 and 18 | `psql -v ON_ERROR_STOP=1 -f test.sql` |
+| `mysql/` | MySQL 8.4 and 26, MariaDB 10.11 and 12 | `./test.sh` |
 | `/` (Nix) | Nix with flakes | `nix flake check -L` |
 | `spec/`, `formal/` | Python 3, Lean + Aeneas (`formal/lean-toolchain`, `formal/aeneas-version`) | `python3 spec/generate_vectors.py --check`, `formal/check.sh` |
 
@@ -63,5 +64,5 @@ Not managed by Dependabot (update by hand, together):
   | `ruby/v*` | `publish-ruby.yml` | RubyGems |
   | `dart/v*` | `publish-dart.yml` | pub.dev |
 
-- PostgreSQL and Nix have no publish workflow. PHP is developed and released in `nakanoasaservice/uuid58-php`, like Swift in `uuid58-swift`.
+- PostgreSQL, MySQL, and Nix have no publish workflow. PHP is developed and released in `nakanoasaservice/uuid58-php`, like Swift in `uuid58-swift`.
 - Do not push release tags or run publish commands unless asked.

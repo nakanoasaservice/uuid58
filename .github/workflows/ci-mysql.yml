@@ -1,0 +1,44 @@
+name: CI (MySQL)
+
+# Called from ci.yml when the PR touches files this job checks.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  mysql:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest supported release, and the current release, of each server.
+        image: ["mysql:8.4", "mysql:26.10", "mariadb:10.11", "mariadb:12"]
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Start ${{ matrix.image }}
+        run: |
+          case "${{ matrix.image }}" in
+            mysql:*) extra=(-e MYSQL_ALLOW_EMPTY_PASSWORD=yes) ;;
+            mariadb:*) extra=(-e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1) ;;
+          esac
+          docker run -d --name uuid58-db "${extra[@]}" "${{ matrix.image }}"
+          for i in $(seq 1 60); do
+            if docker exec uuid58-db sh -c 'mysqladmin ping -uroot --silent >/dev/null 2>&1 || mariadb-admin ping -uroot --silent >/dev/null 2>&1'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs uuid58-db
+          exit 1
+
+      - name: Test (spec/vectors.json conformance)
+        run: |
+          docker exec uuid58-db mkdir -p /work/mysql /work/spec
+          docker cp mysql/. uuid58-db:/work/mysql/
+          docker cp spec/vectors.json uuid58-db:/work/spec/vectors.json
+          docker exec -e MYSQL_PWD= -w /work/mysql uuid58-db ./test.sh

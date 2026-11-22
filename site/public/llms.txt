@@ -29,6 +29,7 @@ Key facts:
 - [Java / Kotlin](https://github.com/nakanoasaservice/uuid58/tree/main/java#readme): `io.github.nakanoasaservice:uuid58:0.1.1` on Maven Central
 - [Swift](https://github.com/nakanoasaservice/uuid58-swift): Swift Package Manager
 - [PostgreSQL](https://github.com/nakanoasaservice/uuid58/tree/main/postgres#readme): one SQL file, no extension
+- [MySQL / MariaDB](https://github.com/nakanoasaservice/uuid58/tree/main/mysql#readme): one SQL file, no extension
 - [C# / .NET](https://github.com/nakanoasaservice/uuid58/tree/main/dotnet#readme): `dotnet add package Uuid58` ([NuGet](https://www.nuget.org/packages/Uuid58))
 - [PHP](https://github.com/nakanoasaservice/uuid58-php#readme): `composer require nakanoaas/uuid58` ([Packagist](https://packagist.org/packages/nakanoaas/uuid58))
 - [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `bundle add uuid58` ([RubyGems](https://rubygems.org/gems/uuid58))

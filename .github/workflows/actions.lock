@@ -20,6 +20,8 @@ workflows:
     '.github/workflows/ci-js.yml':
         - 'actions/checkout@v7.0.1'
         - 'voidzero-dev/setup-vp@v1.22.0'
+    '.github/workflows/ci-mysql.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/ci-nix.yml':
         - 'actions/checkout@v7.0.1'
         - 'cachix/install-nix-action@v31.11.5'

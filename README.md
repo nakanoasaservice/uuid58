@@ -5,7 +5,7 @@
 
 **Shorten UUIDs to 22-character Base58 strings, and back.** uuid58 is a
 stable, well-tested encoding with one spec and libraries for JavaScript, Go,
-Python, Rust, Java, Kotlin, Swift, C#, PHP, Ruby, Dart, and PostgreSQL.
+Python, Rust, Java, Kotlin, Swift, C#, PHP, Ruby, Dart, PostgreSQL, and MySQL.
 
 ```text
 f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
@@ -24,7 +24,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 - **Still a UUID.** Conversion is lossless both ways. Keep UUID columns in
   your database, and show uuid58 in URLs, APIs, and logs.
 - **Same output everywhere.** A string made in Go decodes to the same UUID in
-  Python, Rust, or PostgreSQL.
+  Python, Rust, PostgreSQL, or MySQL.
 
 ## Stable and well tested
 
@@ -47,6 +47,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 | [Java / Kotlin](java/)                                    | `io.github.nakanoasaservice:uuid58`            | [Maven Central](https://central.sonatype.com/artifact/io.github.nakanoasaservice/uuid58)        |
 | [Swift](https://github.com/nakanoasaservice/uuid58-swift) | Swift Package Manager                          | [uuid58-swift](https://github.com/nakanoasaservice/uuid58-swift)                                |
 | [PostgreSQL](postgres/)                                   | One SQL file, no extension                     | [`uuid58.sql`](postgres/uuid58.sql)                                                             |
+| [MySQL / MariaDB](mysql/)                                 | One SQL file, no extension                     | [`uuid58.sql`](mysql/uuid58.sql)                                                                |
 | [C# / .NET](dotnet/)                                      | `dotnet add package Uuid58`                    | [NuGet](https://www.nuget.org/packages/Uuid58)                                                    |
 | [PHP](https://github.com/nakanoasaservice/uuid58-php)                                               | `composer require nakanoaas/uuid58`     | [Packagist](https://packagist.org/packages/nakanoaas/uuid58)                                                                    |
 | [Ruby](ruby/)                                             | `bundle add uuid58`                            | [RubyGems](https://rubygems.org/gems/uuid58)                                                                     |

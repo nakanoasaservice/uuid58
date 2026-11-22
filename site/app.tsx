@@ -554,8 +554,8 @@ export function App() {
             The format is fixed by a stable, versioned spec, with its core
             guarantees proven in Lean, and checked by over 200 shared test
             vectors, so every implementation (JavaScript, Go, Python, Rust,
-            PostgreSQL, and more) produces the same string, today and in future
-            releases.
+            PostgreSQL, MySQL, and more) produces the same string, today and in
+            future releases.
           </p>
           <div class="compare" aria-label="Example">
             <div>
