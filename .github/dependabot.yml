@@ -141,6 +141,25 @@ updates:
       ruby-minor-patch:
         update-types: ["minor", "patch"]
 
+  - package-ecosystem: "mix"
+    directory: "/elixir"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      elixir-minor-patch:
+        update-types: ["minor", "patch"]
+
   - package-ecosystem: "pub"
     directory: "/dart"
     schedule:

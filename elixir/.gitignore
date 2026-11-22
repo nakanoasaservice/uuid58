@@ -1,0 +1,8 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/tmp/
+erl_crash.dump
+*.ez
+uuid58-*.tar
