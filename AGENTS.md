@@ -31,7 +31,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 
 ## CI
 
-- `ci.yml` runs on every PR to `main`. Its `changes` job picks the `ci-*.yml` jobs from the changed paths (`spec/` or `ci.yml` changes run all language jobs); `actions-lock` runs only when `.github/workflows/**` (including `actions.lock`) or an `action.yml` / `action.yaml` manifest changes.
+- `ci.yml` runs on every PR to `main`. Its `changes` job picks the `ci-*.yml` jobs from the changed paths (`spec/` changes run all language jobs; a `ci.yml` change by itself runs none); `actions-lock` runs only when `.github/workflows/**` (including `actions.lock`) or an `action.yml` / `action.yaml` manifest changes.
 - `check` is the single required status check. It always reports; skipped jobs count as passing.
 - Actions are locked in `.github/workflows/actions.lock`. After changing any `uses:`, run `gh actions-lock` (extension `github/gh-actions-lock`) and commit the lockfile; CI runs `gh actions-lock --verify`.
 

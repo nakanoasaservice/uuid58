@@ -11,7 +11,8 @@ jobs:
   # Decides which jobs to run from the files the PR changes. Each job lives
   # in its own ci-<name>.yml, so a change to one of those (for example a
   # Dependabot bump of setup-java) runs only that job. Changes under spec/
-  # or to this file run every language job.
+  # run every language job. A change to this file selects no language job
+  # by itself, so registering a new job here runs only that job.
   changes:
     runs-on: ubuntu-slim
     outputs:
@@ -34,7 +35,7 @@ jobs:
       pull-requests: read
     steps:
       # Uses the API instead of actions/checkout so that this file pins no
-      # actions and Dependabot bumps never touch it (which would run everything).
+      # actions and Dependabot bumps never touch it.
       - id: filter
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,7 +51,7 @@ jobs:
             echo "actions_lock=false" >> "$GITHUB_OUTPUT"
           fi
           all=false
-          if echo "$files" | grep -qE '^(spec/|\.github/workflows/ci\.yml$)'; then
+          if echo "$files" | grep -qE '^spec/'; then
             all=true
           fi
           # set <job> <regex>: run <job> when any changed file matches.
