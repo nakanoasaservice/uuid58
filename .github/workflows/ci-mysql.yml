@@ -27,8 +27,11 @@ jobs:
             mariadb:*) extra=(-e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1) ;;
           esac
           docker run -d --name uuid58-db "${extra[@]}" "${{ matrix.image }}"
+          # Ping over TCP, as test.sh connects. The image first runs a
+          # temporary server that listens on the socket only; a socket ping
+          # succeeds against it, before the real server accepts connections.
           for i in $(seq 1 60); do
-            if docker exec uuid58-db sh -c 'mysqladmin ping -uroot --silent >/dev/null 2>&1 || mariadb-admin ping -uroot --silent >/dev/null 2>&1'; then
+            if docker exec uuid58-db sh -c 'mysqladmin ping --protocol=tcp --host=127.0.0.1 -uroot --silent >/dev/null 2>&1 || mariadb-admin ping --protocol=tcp --host=127.0.0.1 -uroot --silent >/dev/null 2>&1'; then
               exit 0
             fi
             sleep 2
