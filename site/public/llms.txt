@@ -26,10 +26,10 @@ Key facts:
 - [Go](https://github.com/nakanoasaservice/uuid58/tree/main/go#readme): `go get github.com/nakanoasaservice/uuid58/go`, plus a command-line tool
 - [Python](https://github.com/nakanoasaservice/uuid58/tree/main/python#readme): `pip install uuid58`
 - [Rust](https://github.com/nakanoasaservice/uuid58/tree/main/rust#readme): `cargo add uuid58` (no_std)
-- [Java / Kotlin](https://github.com/nakanoasaservice/uuid58/tree/main/java#readme): `io.github.nakanoasaservice:uuid58` on Maven Central
+- [Java / Kotlin](https://github.com/nakanoasaservice/uuid58/tree/main/java#readme): `io.github.nakanoasaservice:uuid58:0.1.1` on Maven Central
 - [Swift](https://github.com/nakanoasaservice/uuid58-swift): Swift Package Manager
 - [PostgreSQL](https://github.com/nakanoasaservice/uuid58/tree/main/postgres#readme): one SQL file, no extension
-- [C# / .NET](https://github.com/nakanoasaservice/uuid58/tree/main/dotnet#readme): `Uuid58` (not yet on NuGet)
-- [PHP](https://github.com/nakanoasaservice/uuid58/tree/main/php#readme): `nakanoasaservice/uuid58` (not yet on Packagist)
-- [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `uuid58` gem (not yet on RubyGems)
-- [Dart / Flutter](https://github.com/nakanoasaservice/uuid58/tree/main/dart#readme): `uuid58` (not yet on pub.dev)
+- [C# / .NET](https://github.com/nakanoasaservice/uuid58/tree/main/dotnet#readme): `dotnet add package Uuid58` ([NuGet](https://www.nuget.org/packages/Uuid58))
+- [PHP](https://github.com/nakanoasaservice/uuid58-php#readme): `composer require nakanoaas/uuid58` ([Packagist](https://packagist.org/packages/nakanoaas/uuid58))
+- [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `bundle add uuid58` ([RubyGems](https://rubygems.org/gems/uuid58))
+- [Dart / Flutter](https://github.com/nakanoasaservice/uuid58/tree/main/dart#readme): `dart pub add uuid58` ([pub.dev](https://pub.dev/packages/uuid58))
