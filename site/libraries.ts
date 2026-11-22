@@ -247,4 +247,17 @@ SELECT uuid58_decode('${examplePair.encoded}');
     docs: `${repo}/tree/main/postgres#readme`,
     registries: [],
   },
+  {
+    id: "mysql",
+    label: "MySQL",
+    language: "sql",
+    install: `curl -fsSL https://raw.githubusercontent.com/nakanoasaservice/uuid58/main/mysql/uuid58.sql | mysql -D mydb`,
+    code: `SELECT uuid58_encode('${examplePair.decoded}');
+-- ${examplePair.encoded}
+
+SELECT uuid58_decode('${examplePair.encoded}');
+-- ${examplePair.decoded}`,
+    docs: `${repo}/tree/main/mysql#readme`,
+    registries: [],
+  },
 ];

@@ -23,6 +23,7 @@ jobs:
       rust: ${{ steps.filter.outputs.rust }}
       java: ${{ steps.filter.outputs.java }}
       postgres: ${{ steps.filter.outputs.postgres }}
+      mysql: ${{ steps.filter.outputs.mysql }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
       ruby: ${{ steps.filter.outputs.ruby }}
       dart: ${{ steps.filter.outputs.dart }}
@@ -67,6 +68,7 @@ jobs:
           set_output rust   '^(rust/|\.github/workflows/ci-rust\.yml$)'
           set_output java   '^(java/|\.github/workflows/ci-java\.yml$)'
           set_output postgres '^(postgres/|\.github/workflows/ci-postgres\.yml$)'
+          set_output mysql    '^(mysql/|\.github/workflows/ci-mysql\.yml$)'
           set_output dotnet   '^(dotnet/|\.github/workflows/ci-dotnet\.yml$)'
           set_output ruby     '^(ruby/|\.github/workflows/ci-ruby\.yml$)'
           set_output dart     '^(dart/|\.github/workflows/ci-dart\.yml$)'
@@ -111,6 +113,11 @@ jobs:
     if: needs.changes.outputs.postgres == 'true'
     uses: ./.github/workflows/ci-postgres.yml
 
+  mysql:
+    needs: changes
+    if: needs.changes.outputs.mysql == 'true'
+    uses: ./.github/workflows/ci-mysql.yml
+
   dotnet:
     needs: changes
     if: needs.changes.outputs.dotnet == 'true'
@@ -149,7 +156,7 @@ jobs:
   # The single required status check. Language jobs that were skipped
   # because the PR does not touch them count as passing.
   check:
-    needs: [changes, spec, js, go, python, rust, java, postgres, dotnet, ruby, dart, elixir, nix, site, actions-lock]
+    needs: [changes, spec, js, go, python, rust, java, postgres, mysql, dotnet, ruby, dart, elixir, nix, site, actions-lock]
     if: always()
     runs-on: ubuntu-slim
     steps:

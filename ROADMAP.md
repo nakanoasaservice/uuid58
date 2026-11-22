@@ -159,13 +159,12 @@ the spec as `1.0.0`.
 - [x] Add a table of supported languages to the README
 - [x] Show per-language code samples in the
       [Playground](https://nakanoasaservice.github.io/uuid58/)
-- [ ] More implementations, in the order below (1–7 done: PostgreSQL in
+- [ ] More implementations, in the order below (1–8 done: PostgreSQL in
       [`postgres/`](postgres/), the CLI in [`go/cmd/uuid58/`](go/cmd/uuid58/),
       C# in [`dotnet/`](dotnet/), PHP in [uuid58-php](https://github.com/nakanoasaservice/uuid58-php), Ruby in
-      [`ruby/`](ruby/), Dart in [`dart/`](dart/), and Elixir in
-      [`elixir/`](elixir/); first releases,
-      registry setup, and a separate Packagist repository for PHP are still
-      to do)
+      [`ruby/`](ruby/), Dart in [`dart/`](dart/), Elixir in
+      [`elixir/`](elixir/), and MySQL / MariaDB in [`mysql/`](mysql/); first
+      releases and registry setup are still to do)
 
 ### More Implementations
 
@@ -189,7 +188,7 @@ brings four languages to users for less work than any new one.
 | 5     | Ruby                                 | For Rails apps with UUID primary keys.                                                                                                                                            |
 | 6     | Dart / Flutter                       | With Swift and Kotlin, this covers mobile apps.                                                                                                                                   |
 | 7     | Elixir                               | Ecto often uses UUID primary keys.                                                                                                                                                |
-| 8     | MySQL / MariaDB (stored functions)   | 128-bit arithmetic in stored functions is awkward (it needs `DECIMAL(39)` or similar), so this comes last.                                                                        |
+| 8     | MySQL / MariaDB (stored functions)   | Two `BIGINT UNSIGNED` halves. Generated columns cannot call stored functions, so expose the short ID from a view.                                                                 |
 
 C#, PHP, and Ruby do not depend on each other and can be built in parallel,
 as in Phase 3. After these, add others (C, Zig, Haskell, OCaml, Gleam, and so
