@@ -13,7 +13,7 @@ jobs:
   # Dependabot bump of setup-java) runs only that job. Changes under spec/
   # or to this file run every language job.
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       actions_lock: ${{ steps.filter.outputs.actions_lock }}
       spec: ${{ steps.filter.outputs.spec }}
@@ -151,7 +151,7 @@ jobs:
   check:
     needs: [changes, spec, js, go, python, rust, java, postgres, dotnet, php, ruby, dart, nix, site, actions-lock]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - env:
           RESULTS: ${{ join(needs.*.result, ' ') }}
