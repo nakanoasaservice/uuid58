@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v10.3.3
+        uses: astral-sh/setup-uv@v10.4.0
         with:
           working-directory: python
           # No dependency cache in the release job, to rule out cache poisoning.
