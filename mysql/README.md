@@ -66,8 +66,8 @@ SELECT * FROM users WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2');
 SELECT uuid58_encode_bytes(id) FROM users_bin;
 SELECT * FROM users_bin WHERE id = uuid58_decode_bytes('XDY9dmBbcMBXqcRvYw8xJ2');
 
--- MariaDB UUID column.
-SELECT uuid58_encode(id) FROM users_uuid;
+-- MariaDB UUID column: it reaches the functions as 16 bytes.
+SELECT uuid58_encode_bytes(id) FROM users_uuid;
 SELECT * FROM users_uuid WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2');
 ```
 
@@ -85,8 +85,8 @@ SELECT uuid58_encode(id) AS short_id, name FROM users;
 ## Functions
 
 MySQL has no function overloading and no UUID type, so the text and byte
-encoders have different names. String arguments are `utf8mb4`. All five
-functions are deterministic: NULL in, NULL out.
+encoders have different names. All five functions are deterministic: NULL in,
+NULL out.
 
 | Function                                 | Description                                                                                          |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -97,6 +97,13 @@ functions are deterministic: NULL in, NULL out.
 | `is_uuid58(text) → tinyint`              | 1 if the string is a valid uuid58 string: 22 alphabet characters, value below 2^128. No error. 0 otherwise. |
 
 The encoded and decoded strings use the `utf8mb4_bin` collation.
+
+String arguments are read as bytes, with no character set conversion. The
+result therefore does not depend on the caller's `sql_mode`, and a byte that
+is not valid UTF-8 is rejected like any other invalid character. Text in
+`utf8mb4`, `latin1`, or another ASCII-compatible character set works as it
+is. Convert `utf16`, `ucs2`, and `utf32` values first, with
+`CONVERT(col USING utf8mb4)`.
 
 `uuid58_encode` accepts only the two forms in the spec. It rejects braces,
 a `urn:uuid:` prefix, and hyphens in the wrong places.
@@ -124,8 +131,9 @@ BEGIN
 END;
 ```
 
-Length is counted in characters (Unicode code points), not bytes. Non-ASCII
-input is always an error; its kind may be either of the first two.
+Length is counted in bytes. Input with a non-ASCII character, or with a byte
+that is not valid UTF-8, is always an error; its kind may be either of the
+first two.
 
 ## Sorting
 

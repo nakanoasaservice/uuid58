@@ -39,6 +39,12 @@ BEGIN
   END;
 
   SET kind = NULL;
+  -- The mode of the caller converts the arguments of the functions it calls,
+  -- and for this statement the caller is this procedure. The server restores
+  -- the mode when the procedure returns.
+  IF @uuid58_test_caller_mode IS NOT NULL THEN
+    SET SESSION sql_mode = @uuid58_test_caller_mode;
+  END IF;
   SET @uuid58_test_sql = stmt;
   PREPARE uuid58_test_stmt FROM @uuid58_test_sql;
   EXECUTE uuid58_test_stmt;
@@ -68,6 +74,10 @@ BEGIN
   DECLARE uuid58 VARCHAR(22);
   DECLARE hex VARCHAR(32);
   DECLARE stmt LONGTEXT;
+  DECLARE fn TEXT;
+  DECLARE strict INT;
+
+  SET @uuid58_test_caller_mode = NULL;
 
   -- Every check is NULL-safe: a NULL @vectors, or a section that is missing,
   -- must fail here instead of running no cases and passing.
@@ -203,6 +213,55 @@ BEGIN
     SET i = i + 1;
   END WHILE;
 
+  -- Input that is not valid UTF-8 (SPEC.md Section 8), which vectors.json
+  -- cannot express: [function, input bytes in hex]. The last of each group is
+  -- a valid string followed by such a byte. Each must be rejected under a
+  -- strict and a non-strict caller, and is_uuid58 must return 0 without
+  -- raising.
+  SET @uuid58_ill_formed = '[
+    ["uuid58_decode", "58445939646d4262634d425871635276597738784aff"],
+    ["uuid58_decode", "58445939646d4262634d425871635276597738784a80"],
+    ["uuid58_decode", "58445939646d4262634d42587163527659773878c132"],
+    ["uuid58_decode", "58445939646d4262634d425871635276597738784a32ff"],
+    ["uuid58_encode", "66346232343766642d316638372d343564342d616130362d3163366663306138646661ff"],
+    ["uuid58_encode", "6634623234376664316638373435643461613036316336666330613864666180"],
+    ["uuid58_encode", "66346232343766642d316638372d343564342d616130362d316336666330613864666166ff"],
+    ["uuid58_encode", "6634623234376664316638373435643461613036316336666330613864666166ff616263"]
+  ]';
+  SET strict = 0;
+  WHILE strict < 2 DO
+    SET @uuid58_test_caller_mode = IF(strict = 1, 'STRICT_ALL_TABLES', '');
+    SET i = 0;
+    SET n = JSON_LENGTH(@uuid58_ill_formed);
+    WHILE i < n DO
+      SET fn = JSON_UNQUOTE(JSON_EXTRACT(@uuid58_ill_formed, CONCAT('$[', i, '][0]')));
+      SET input = JSON_UNQUOTE(JSON_EXTRACT(@uuid58_ill_formed, CONCAT('$[', i, '][1]')));
+      SET description = CONCAT(
+        'ill-formed ', fn, ' ', input, IF(strict = 1, ' (strict)', ' (non-strict)')
+      );
+      CALL uuid58_test_error_kind(
+        CONCAT('SET @uuid58_test_out = ', fn, '(UNHEX(', QUOTE(input), '))'),
+        @kind
+      );
+      IF NOT (@kind <=> 'invalid_character') AND NOT (@kind <=> 'invalid_length') THEN
+        INSERT INTO failures VALUES (CONCAT(description, ': ', IFNULL(@kind, 'no error')));
+      END IF;
+      SET @uuid58_test_out = NULL;
+      CALL uuid58_test_error_kind(
+        CONCAT('SET @uuid58_test_out = is_uuid58(UNHEX(', QUOTE(input), '))'),
+        @kind
+      );
+      IF @kind IS NOT NULL OR NOT (@uuid58_test_out <=> 0) THEN
+        INSERT INTO failures VALUES (CONCAT(
+          description, ': is_uuid58 ', IFNULL(@kind, IFNULL(@uuid58_test_out, 'NULL'))
+        ));
+      END IF;
+      SET i = i + 1;
+    END WHILE;
+    SET strict = strict + 1;
+  END WHILE;
+  SET @uuid58_test_caller_mode = NULL;
+
   IF uuid58_encode(NULL) IS NOT NULL
      OR uuid58_encode_bytes(NULL) IS NOT NULL
      OR uuid58_decode(NULL) IS NOT NULL
@@ -236,18 +295,16 @@ BEGIN
     INSERT INTO failures VALUES ('view');
   END IF;
 
-  -- MariaDB has a native UUID type. CREATE TABLE is prepared because MySQL
-  -- cannot parse the column type.
+  -- MariaDB has a native UUID type, which reaches the functions as 16 bytes.
+  -- CREATE TABLE is prepared because MySQL cannot parse the column type.
   IF @@version LIKE '%MariaDB%' THEN
     SET @uuid58_test_sql = 'CREATE TABLE uuid58_native (id UUID NOT NULL PRIMARY KEY)';
     PREPARE uuid58_test_stmt FROM @uuid58_test_sql;
     EXECUTE uuid58_test_stmt;
     DEALLOCATE PREPARE uuid58_test_stmt;
     INSERT INTO uuid58_native VALUES ('f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf');
-    IF NOT ((SELECT uuid58_encode(id) FROM uuid58_native)
+    IF NOT ((SELECT uuid58_encode_bytes(id) FROM uuid58_native)
               COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
-       OR NOT ((SELECT uuid58_encode_bytes(id) FROM uuid58_native)
-                 COLLATE utf8mb4_bin <=> 'XDY9dmBbcMBXqcRvYw8xJ2')
        OR NOT ((SELECT COUNT(*) FROM uuid58_native
                 WHERE id = uuid58_decode('XDY9dmBbcMBXqcRvYw8xJ2')) <=> 1)
        OR NOT ((SELECT COUNT(*) FROM uuid58_native

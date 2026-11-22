@@ -13,7 +13,7 @@
 -- MySQL has no function overloading, so the byte encoder is uuid58_encode_bytes
 -- rather than a second uuid58_encode. MySQL has no native UUID type: pass the
 -- 36-character text form, or 16 bytes in RFC 9562 order (UUID_TO_BIN without
--- the swap flag). A MariaDB UUID value works with either encoder.
+-- the swap flag). Pass a MariaDB UUID value to uuid58_encode_bytes.
 --
 -- These servers reject stored functions in generated columns. Call the
 -- functions from queries or views instead.
@@ -21,7 +21,14 @@
 -- 128-bit values are two BIGINT UNSIGNED halves. 2^64 = 58 * 318047311615681924
 -- + 24, so division and multiplication by 58 stay inside 64-bit arithmetic.
 --
--- Length is measured in characters (Unicode code points), not bytes.
+-- String parameters are LONGBLOB, so the functions read the bytes of the
+-- argument as they are. With a character set on the parameter, the server
+-- would convert the argument first, under the caller's sql_mode: a strict
+-- session raises error 1366 for bytes that are not valid UTF-8, and a
+-- non-strict MySQL session cuts the value at the first such byte, which
+-- turns a valid string followed by junk into a valid string. Length is
+-- therefore measured in bytes, and any byte 0x80 or above is rejected. Pass
+-- utf16, ucs2, or utf32 values through CONVERT(... USING utf8mb4).
 --
 -- Errors (SQLSTATE -> spec error kind):
 --   22026 string data, length mismatch -> invalid_length
@@ -29,7 +36,7 @@
 --   22003 numeric value out of range -> overflow
 --
 -- The functions are created under a strict sql_mode, then the session mode is
--- restored. The mode in effect at CREATE is the one they run with.
+-- restored. The mode in effect at CREATE is the one their bodies run with.
 
 SET @uuid58_install_sql_mode = @@SESSION.sql_mode;
 SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
@@ -97,16 +104,15 @@ BEGIN
 END$$
 
 -- Encodes a UUID string: 36-character hyphenated form or 32 hex digits, any case.
-CREATE FUNCTION uuid58_encode(s LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin)
+CREATE FUNCTION uuid58_encode(s LONGBLOB)
 RETURNS VARCHAR(22) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 COMMENT 'Encode a UUID string as uuid58'
 DETERMINISTIC
 NO SQL
 SQL SECURITY INVOKER
 BEGIN
-  DECLARE plain VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-  DECLARE ch VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-  DECLARE raw LONGBLOB;
+  DECLARE hex_digits VARBINARY(22) DEFAULT _binary'0123456789abcdefABCDEF';
+  DECLARE plain VARBINARY(32);
   DECLARE i INT;
   DECLARE len INT;
   DECLARE msg VARCHAR(128);
@@ -114,41 +120,28 @@ BEGIN
   IF s IS NULL THEN
     RETURN NULL;
   END IF;
-  SET len = CHAR_LENGTH(s);
-  IF len = 32 THEN
-    SET i = 1;
-    WHILE i <= 32 DO
-      SET ch = SUBSTRING(s, i, 1);
-      IF NOT (
-        (ch >= _utf8mb4'0' COLLATE utf8mb4_bin AND ch <= _utf8mb4'9' COLLATE utf8mb4_bin)
-        OR (ch >= _utf8mb4'a' COLLATE utf8mb4_bin AND ch <= _utf8mb4'f' COLLATE utf8mb4_bin)
-        OR (ch >= _utf8mb4'A' COLLATE utf8mb4_bin AND ch <= _utf8mb4'F' COLLATE utf8mb4_bin)
-      ) THEN
+  SET len = LENGTH(s);
+  IF len <> 32 AND len <> 36 THEN
+    SET msg = CONCAT('uuid58: expected a UUID string of 32 or 36 characters, got ', len, ' bytes');
+    SIGNAL SQLSTATE '22026' SET MESSAGE_TEXT = msg;
+  END IF;
+
+  -- Every byte is checked here, so UNHEX below never sees anything else.
+  SET i = 1;
+  WHILE i <= len DO
+    IF len = 36 AND i IN (9, 14, 19, 24) THEN
+      IF SUBSTRING(s, i, 1) <> _binary'-' THEN
         SET msg = CONCAT('uuid58: invalid character in UUID string at position ', i);
         SIGNAL SQLSTATE '22018' SET MESSAGE_TEXT = msg;
       END IF;
-      SET i = i + 1;
-    END WHILE;
-    SET plain = s;
-  ELSEIF len = 36 THEN
-    SET i = 1;
-    WHILE i <= 36 DO
-      SET ch = SUBSTRING(s, i, 1);
-      IF i IN (9, 14, 19, 24) THEN
-        IF ch <> _utf8mb4'-' COLLATE utf8mb4_bin THEN
-          SET msg = CONCAT('uuid58: invalid character in UUID string at position ', i);
-          SIGNAL SQLSTATE '22018' SET MESSAGE_TEXT = msg;
-        END IF;
-      ELSEIF NOT (
-        (ch >= _utf8mb4'0' COLLATE utf8mb4_bin AND ch <= _utf8mb4'9' COLLATE utf8mb4_bin)
-        OR (ch >= _utf8mb4'a' COLLATE utf8mb4_bin AND ch <= _utf8mb4'f' COLLATE utf8mb4_bin)
-        OR (ch >= _utf8mb4'A' COLLATE utf8mb4_bin AND ch <= _utf8mb4'F' COLLATE utf8mb4_bin)
-      ) THEN
-        SET msg = CONCAT('uuid58: invalid character in UUID string at position ', i);
-        SIGNAL SQLSTATE '22018' SET MESSAGE_TEXT = msg;
-      END IF;
-      SET i = i + 1;
-    END WHILE;
+    ELSEIF LOCATE(SUBSTRING(s, i, 1), hex_digits) = 0 THEN
+      SET msg = CONCAT('uuid58: invalid character in UUID string at position ', i);
+      SIGNAL SQLSTATE '22018' SET MESSAGE_TEXT = msg;
+    END IF;
+    SET i = i + 1;
+  END WHILE;
+
+  IF len = 36 THEN
     SET plain = CONCAT(
       SUBSTRING(s, 1, 8),
       SUBSTRING(s, 10, 4),
@@ -157,28 +150,21 @@ BEGIN
       SUBSTRING(s, 25, 12)
     );
   ELSE
-    SET msg = CONCAT('uuid58: expected a UUID string of 32 or 36 characters, got ', len);
-    SIGNAL SQLSTATE '22026' SET MESSAGE_TEXT = msg;
+    SET plain = s;
   END IF;
-
-  SET raw = UNHEX(plain);
-  IF raw IS NULL OR LENGTH(raw) <> 16 THEN
-    SIGNAL SQLSTATE '22018'
-      SET MESSAGE_TEXT = 'uuid58: invalid character in UUID string';
-  END IF;
-  RETURN uuid58_encode_bytes(raw);
+  RETURN uuid58_encode_bytes(UNHEX(plain));
 END$$
 
 -- Decodes a uuid58 string to 16 bytes (big-endian).
-CREATE FUNCTION uuid58_decode_bytes(s LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin)
+CREATE FUNCTION uuid58_decode_bytes(s LONGBLOB)
 RETURNS BINARY(16)
 COMMENT 'Decode uuid58 to 16 big-endian bytes'
 DETERMINISTIC
 NO SQL
 SQL SECURITY INVOKER
 BEGIN
-  DECLARE alphabet VARCHAR(58) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
-    DEFAULT '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  DECLARE alphabet VARBINARY(58)
+    DEFAULT _binary'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   DECLARE hi BIGINT UNSIGNED DEFAULT 0;
   DECLARE lo BIGINT UNSIGNED DEFAULT 0;
   DECLARE lo_l BIGINT UNSIGNED;
@@ -194,8 +180,8 @@ BEGIN
   IF s IS NULL THEN
     RETURN NULL;
   END IF;
-  IF CHAR_LENGTH(s) <> 22 THEN
-    SET msg = CONCAT('uuid58: expected 22 characters, got ', CHAR_LENGTH(s));
+  IF LENGTH(s) <> 22 THEN
+    SET msg = CONCAT('uuid58: expected 22 characters, got ', LENGTH(s), ' bytes');
     SIGNAL SQLSTATE '22026' SET MESSAGE_TEXT = msg;
   END IF;
 
@@ -233,7 +219,7 @@ BEGIN
 END$$
 
 -- Decodes a uuid58 string to the lowercase hyphenated UUID form.
-CREATE FUNCTION uuid58_decode(s LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin)
+CREATE FUNCTION uuid58_decode(s LONGBLOB)
 RETURNS VARCHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 COMMENT 'Decode uuid58 to a lowercase hyphenated UUID'
 DETERMINISTIC
@@ -258,21 +244,21 @@ BEGIN
 END$$
 
 -- True if s is a valid uuid58 string. Never raises.
-CREATE FUNCTION is_uuid58(s LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin)
+CREATE FUNCTION is_uuid58(s LONGBLOB)
 RETURNS TINYINT(1)
 COMMENT 'True when s is a valid uuid58 string'
 DETERMINISTIC
 NO SQL
 SQL SECURITY INVOKER
 BEGIN
-  DECLARE alphabet VARCHAR(58) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
-    DEFAULT '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  DECLARE alphabet VARBINARY(58)
+    DEFAULT _binary'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   DECLARE i INT;
 
   IF s IS NULL THEN
     RETURN NULL;
   END IF;
-  IF CHAR_LENGTH(s) <> 22 THEN
+  IF LENGTH(s) <> 22 THEN
     RETURN 0;
   END IF;
   SET i = 1;
@@ -282,7 +268,7 @@ BEGIN
     END IF;
     SET i = i + 1;
   END WHILE;
-  IF s <= _utf8mb4'YcVfxkQb6JRzqk5kF2tNLv' COLLATE utf8mb4_bin THEN
+  IF s <= _binary'YcVfxkQb6JRzqk5kF2tNLv' THEN
     RETURN 1;
   END IF;
   RETURN 0;
