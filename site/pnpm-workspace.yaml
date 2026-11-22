@@ -1,6 +1,5 @@
 overrides:
-  vite@*: npm:@voidzero-dev/vite-plus-core@1.6.0 # Match the installed vite-plus version
-  vitest@*: 5.1.0 # Match the version from `vp toolchain vitest`
+  vite@*: "catalog:"
 
 # Refuse to resolve package versions published less than 3 days ago (minutes).
 minimumReleaseAge: 4320
@@ -19,3 +18,25 @@ minimumReleaseAgeExclude:
   - "@solidjs/compiler-linux-arm64-gnu@2.0.0"
   - "@solidjs/compiler-win32-x64-msvc@2.0.0"
   - "@solidjs/compiler-wasm32-wasi@2.0.0"
+  - vite-plus
+  - "@voidzero-dev/*"
+  - oxlint
+  - "@oxlint/*"
+  - oxlint-tsgolint
+  - "@oxlint-tsgolint/*"
+  - tsrs
+  - "@tsrs/*"
+  - oxfmt
+  - "@oxfmt/*"
+  - vitest
+  - "@vitest/*"
+
+allowBuilds:
+  esbuild: true
+  workerd: true
+  sharp: true
+
+pmOnFail: download
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
+  vite-plus: 1.7.0
