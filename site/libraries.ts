@@ -224,15 +224,15 @@ uuid58Decode('${examplePair.encoded}');
     id: "elixir",
     label: "Elixir",
     language: "elixir",
-    install: `{:uuid58, "~> 0.1.0"}`,
+    install: `{:uuid58, "~> 0.1.1"}`,
     code: `{:ok, s} = Uuid58.encode("${examplePair.decoded}")
 # s == "${examplePair.encoded}"
 
 {:ok, u} = Uuid58.decode("${examplePair.encoded}")
 # u == "${examplePair.decoded}"`,
-    docs: `${repo}/tree/main/elixir#readme`,
+    docs: "https://uuid58.hexdocs.pm/",
     registries: [{ label: "Hex", href: "https://hex.pm/packages/uuid58" }],
-    note: "Not yet released.",
+    note: "Add to deps in mix.exs.",
   },
   {
     id: "postgres",
