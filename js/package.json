@@ -60,10 +60,16 @@
     "jsr": "^0.14.3",
     "short-uuid": "6.0.3",
     "typescript": "^7.0.2",
-    "vite-plus": "^1.6.0"
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.22.1"
+    }
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@10.34.5"
+  "packageManager": "pnpm@12.21.0"
 }

@@ -6,12 +6,12 @@ One implementation per directory, all checked against `spec/vectors.json`. `site
 
 ## Toolchain and verify commands
 
-Local versions are pinned in each directory's `mise.toml`. Run the commands from that directory; they mirror `.github/workflows/ci-<name>.yml`.
+Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `package.json` pins development Node.js in `devEngines.runtime` and pnpm in `packageManager`; Vite+ reads those pins. Run the commands from that directory; they mirror `.github/workflows/ci-<name>.yml`.
 
 | Dir | Toolchain | Verify |
 | --- | --- | --- |
-| `js/` | Node 24, pnpm 10, Vite+ (`vp`) | `pnpm install --frozen-lockfile`, `vp check`, `vp test run`, `vp pack`, `vp exec jsr publish --dry-run` |
-| `site/` | Node 24, pnpm 10, Vite+ (`vp`) | `pnpm install --frozen-lockfile`, `vp check`, `vp build` |
+| `js/` | Node 24, pnpm 12, Vite+ (`vp`) | `pnpm install --frozen-lockfile`, `vp check`, `vp test run`, `vp pack`, `vp exec jsr publish --dry-run` |
+| `site/` | Node 24, pnpm 12, Vite+ (`vp`) | `pnpm install --frozen-lockfile`, `vp check`, `vp build` |
 | `python/` | uv 0.13 (CI: Python 3.10-3.15) | `uv sync --locked`, `uv run ruff check`, `uv run ruff format --check`, `uv run mypy`, `uv run pytest`, `uv build` |
 | `rust/` | stable + MSRV 1.85 | `cargo fmt --check`, `cargo clippy --locked --all-targets --all-features -- -D warnings`, `cargo test --locked --all-features` (CI also runs no-default-features, `thumbv7em-none-eabi`, docs, MSRV, `cargo publish --dry-run`) |
 | `go/` | Go 1.27 locally (CI: 1.26 and stable) | `gofmt -l .` (must be empty), `go vet ./...`, `go test -race ./...` |
@@ -26,7 +26,7 @@ Local versions are pinned in each directory's `mise.toml`. Run the commands from
 
 ## CI
 
-- `ci.yml` runs on every PR to `main`. Its `changes` job picks the `ci-*.yml` jobs from the changed paths (`spec/` or `ci.yml` changes run all of them); `actions-lock` always runs.
+- `ci.yml` runs on every PR to `main`. Its `changes` job picks the `ci-*.yml` jobs from the changed paths (`spec/` or `ci.yml` changes run all language jobs); `actions-lock` runs only when `.github/workflows/**` (including `actions.lock`) or an `action.yml` / `action.yaml` manifest changes.
 - `check` is the single required status check. It always reports; skipped jobs count as passing.
 - Actions are locked in `.github/workflows/actions.lock`. After changing any `uses:`, run `gh actions-lock` (extension `github/gh-actions-lock`) and commit the lockfile; CI runs `gh actions-lock --verify`.
 
@@ -38,7 +38,7 @@ Local versions are pinned in each directory's `mise.toml`. Run the commands from
 
 Not managed by Dependabot (update by hand, together):
 
-- `vite`, `vite-plus`, `vitest` in `js/` and `site/`: `vite` is an npm alias for `@voidzero-dev/vite-plus-core`, and `vite`/`vitest` are pinned in `pnpm-workspace.yaml` `overrides`. Keep `package.json` and the overrides in sync in both directories.
+- The Vite+ toolchain in `js/` and `site/`: `vite-plus` and the Vite core alias are pinned in each `pnpm-workspace.yaml` catalog; Vitest is bundled with Vite+. Update both directories together with `vp migrate` and refresh both lockfiles. CI and release workflows resolve the Vite+ version from each directory's catalog automatically.
 - `uv_build` in `python/pyproject.toml`: keep it in step with `[tool.uv] required-version` and `python/mise.toml`.
 - Maven in `java/.mvn/wrapper/maven-wrapper.properties`: keep it in step with `java/mise.toml`.
 - JUnit majors in `java/pom.xml`: JUnit 6 requires Java 17, and the library targets Java 8.

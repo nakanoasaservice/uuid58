@@ -18,8 +18,14 @@
     "@types/node": "^26.6.6",
     "marked": "^18.2.1",
     "shiki": "^4.6.0",
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
-    "vite-plus": "^1.6.0"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   },
-  "packageManager": "pnpm@10.34.5"
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.22.1"
+    }
+  },
+  "packageManager": "pnpm@12.21.0"
 }

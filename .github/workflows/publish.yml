@@ -42,7 +42,6 @@ jobs:
         uses: voidzero-dev/setup-vp@v1.22.0
         with:
           working-directory: js
-          node-version: "24"
           # No dependency cache in the release job, to rule out cache poisoning.
           cache: false
 
@@ -58,7 +57,6 @@ jobs:
       - name: Setup npm registry
         uses: actions/setup-node@v7.1.0
         with:
-          node-version: 24
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish to npm

@@ -392,3 +392,18 @@ GitHub Release.
 
 MIT License. See
 [LICENSE](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE).
+
+### Runtime versions
+
+`package.json` is the source of truth for development Node.js (`devEngines.runtime`)
+and pnpm (`packageManager`). The major versions in `mise.toml` only bootstrap the
+environment. Install the [global Vite+ CLI](https://viteplus.dev/guide/global-cli)
+with environment management enabled, then use `vp install --frozen-lockfile`
+and `vp run <script>` to run with the declared versions. `pnpm` commands also use
+them when the Vite+ shims are active. The project-local CLI alone does not switch
+Node.js versions.
+
+CI reads the same manifest automatically; compatibility-test matrices explicitly
+override Node.js. pnpm runtime management is disabled so it does not override
+Vite+'s selection. Keep any consumer-facing `engines.node` support range separate
+from the development pin.
