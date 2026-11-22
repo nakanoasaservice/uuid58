@@ -14,36 +14,20 @@ import {
   usageExample,
 } from "./cli";
 import highlighted from "virtual:highlighted";
-import { sample as samplePair, samples } from "./samples";
+import { examplePair, libraries } from "./libraries";
 
 const REPO = "https://github.com/nakanoasaservice/uuid58";
 const SPEC_VERSION = __SPEC_VERSION__;
 /** The spec page, rendered from spec/SPEC.md at build time. */
 const SPEC = "./spec/";
-const SAMPLE_UUID = samplePair.decoded;
-const SAMPLE_UUID58 = samplePair.encoded;
 
 type Field = "encoded" | "decoded";
 type Pair = { encoded: string; decoded: string };
 type ConversionState = Pair & {
   error: { field: Field; name: string; message: string } | undefined;
-  /** The last pair that converted successfully, for the code samples. */
+  /** The last pair that converted successfully, for the hero example. */
   valid: Pair;
 };
-
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
-/** Puts `values` into code highlighted with the sample pair. */
-function fill(html: string, values: Pair): string {
-  return html
-    .replaceAll(SAMPLE_UUID58, escapeHtml(values.encoded))
-    .replaceAll(SAMPLE_UUID, escapeHtml(values.decoded));
-}
 
 function newPair(): Pair {
   const encoded = uuid58();
@@ -312,33 +296,35 @@ function Playground(props: {
   );
 }
 
-function Samples(props: { values: () => Pair }) {
-  const [selected, setSelected] = createSignal(samples[0]!.id);
+function Libraries() {
+  const [selected, setSelected] = createSignal(libraries[0]!.id);
 
   return (
-    <div class="samples">
+    <div class="libraries">
       <div class="tabs" role="tablist" aria-label="Language">
-        <For each={samples}>
-          {(s) => (
+        <For each={libraries}>
+          {(lib) => (
             <button
               type="button"
               role="tab"
-              id={`tab-${s.id}`}
-              aria-selected={selected() === s.id ? "true" : "false"}
-              aria-controls={`sample-panel-${s.id}`}
-              tabindex={selected() === s.id ? 0 : -1}
-              onClick={() => setSelected(s.id)}
+              id={`tab-${lib.id}`}
+              aria-selected={selected() === lib.id ? "true" : "false"}
+              aria-controls={`sample-panel-${lib.id}`}
+              tabindex={selected() === lib.id ? 0 : -1}
+              onClick={() => setSelected(lib.id)}
               onKeyDown={(event) => {
                 const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
                 if (!step) return;
-                const index = samples.findIndex((x) => x.id === selected());
+                const index = libraries.findIndex((x) => x.id === selected());
                 const next =
-                  samples[(index + step + samples.length) % samples.length]!;
+                  libraries[
+                    (index + step + libraries.length) % libraries.length
+                  ]!;
                 setSelected(next.id);
                 document.getElementById(`tab-${next.id}`)?.focus();
               }}
             >
-              {s.label}
+              {lib.label}
             </button>
           )}
         </For>
@@ -346,48 +332,45 @@ function Samples(props: { values: () => Pair }) {
       {/* Every panel is rendered, with all but the selected one hidden, so the
           prerendered page carries the install command and code for every
           language, not just the first. */}
-      <For each={samples}>
-        {(sample) => (
+      <For each={libraries}>
+        {(library) => (
           <div
-            id={`sample-panel-${sample.id}`}
+            id={`sample-panel-${library.id}`}
             class="sample-panel"
             role="tabpanel"
-            aria-labelledby={`tab-${sample.id}`}
-            hidden={selected() !== sample.id}
+            aria-labelledby={`tab-${library.id}`}
+            hidden={selected() !== library.id}
           >
-            <Show when={sample.note}>
+            <Show when={library.note}>
               {(note) => <p class="sample-note">{note()}</p>}
             </Show>
             <div class="code-block">
               <pre>
                 <code
                   class="language-shellscript"
-                  innerHTML={highlighted.samples[sample.id]!.install}
+                  innerHTML={highlighted.libraries[library.id]!.install}
                 />
               </pre>
               <CopyButton
-                text={() => sample.install}
-                label={`Copy ${sample.label} install command`}
+                text={() => library.install}
+                label={`Copy ${library.label} install command`}
               />
             </div>
             <div class="code-block">
               <pre>
                 <code
-                  class={`language-${sample.language}`}
-                  innerHTML={fill(
-                    highlighted.samples[sample.id]!.code,
-                    props.values(),
-                  )}
+                  class={`language-${library.language}`}
+                  innerHTML={highlighted.libraries[library.id]!.code}
                 />
               </pre>
               <CopyButton
-                text={() => sample.code(props.values())}
-                label={`Copy ${sample.label} code sample`}
+                text={() => library.code}
+                label={`Copy ${library.label} code sample`}
               />
             </div>
             <p class="links">
-              <a href={sample.docs}>{sample.label} documentation</a>
-              <For each={sample.registries}>
+              <a href={library.docs}>{library.label} documentation</a>
+              <For each={library.registries}>
                 {(registry) => <a href={registry.href}>{registry.label}</a>}
               </For>
             </p>
@@ -398,9 +381,8 @@ function Samples(props: { values: () => Pair }) {
   );
 }
 
-function CommandLine(props: { values: () => Pair }) {
+function CommandLine() {
   const [selected, setSelected] = createSignal(installMethods[0]!.id);
-  const usage = () => usageExample(props.values());
 
   return (
     <div class="cli">
@@ -489,12 +471,9 @@ function CommandLine(props: { values: () => Pair }) {
       </p>
       <div class="code-block">
         <pre>
-          <code
-            class="language-shellsession"
-            innerHTML={fill(highlighted.usage, props.values())}
-          />
+          <code class="language-shellsession" innerHTML={highlighted.usage} />
         </pre>
-        <CopyButton text={usage} label="Copy usage example" />
+        <CopyButton text={() => usageExample} label="Copy usage example" />
       </div>
 
       <table class="commands">
@@ -530,9 +509,12 @@ function CommandLine(props: { values: () => Pair }) {
 }
 
 export function App() {
-  // Start from the fixed sample so the prerendered HTML and the first client
+  // Start from the fixed example so the prerendered HTML and the first client
   // render agree, then switch to a fresh random pair once the page is live.
-  const initial = { encoded: SAMPLE_UUID58, decoded: SAMPLE_UUID };
+  const initial = {
+    encoded: examplePair.encoded,
+    decoded: examplePair.decoded,
+  };
   const [conversion, setConversion] = createSignal<ConversionState>({
     ...initial,
     error: undefined,
@@ -578,11 +560,11 @@ export function App() {
           <div class="compare" aria-label="Example">
             <div>
               <span class="tag">UUID · 36</span>
-              <code>{SAMPLE_UUID}</code>
+              <code>{conversion().valid.decoded}</code>
             </div>
             <div>
               <span class="tag accent">uuid58 · 22</span>
-              <code>{SAMPLE_UUID58}</code>
+              <code>{conversion().valid.encoded}</code>
             </div>
           </div>
           <div class="cta">
@@ -654,19 +636,18 @@ export function App() {
             All follow <a href={SPEC}>the uuid58 specification</a>{" "}
             {SPEC_VERSION} and pass{" "}
             <a href={`${REPO}/blob/main/spec/vectors.json`}>its test vectors</a>
-            . The samples below use the values from the converter.
+            .
           </p>
-          <Samples values={() => conversion().valid} />
+          <Libraries />
         </section>
 
         <section id="cli" class="container">
           <h2>Command line</h2>
           <p>
             <code>uuid58</code> is a small command-line tool built on the Go
-            implementation: a single static binary with no dependencies. The
-            example uses the values from the converter.
+            implementation: a single static binary with no dependencies.
           </p>
-          <CommandLine values={() => conversion().valid} />
+          <CommandLine />
         </section>
         <section id="faq" class="container faq">
           <h2>FAQ</h2>

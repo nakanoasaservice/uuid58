@@ -1,22 +1,21 @@
-// Code samples for each uuid58 implementation, filled in with the values
-// currently shown in the playground.
+// Library install commands and code examples for each language.
 
 /**
- * The pair the page starts with. highlight.ts also fills it into the code
- * samples at build time, and app.tsx replaces it with the playground values.
+ * The fixed UUID / uuid58 pair used in the library examples and as the page's initial converter values.
+ * highlight.ts fills it into the highlighted HTML at build time.
  */
-export const sample = {
+export const examplePair = {
   encoded: "XDY9dmBbcMBXqcRvYw8xJ2",
   decoded: "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf",
 };
 
-export type Sample = {
+export type Library = {
   id: string;
   label: string;
   /** Shiki language for the code sample, highlighted at build time. */
   language: string;
   install: string;
-  code: (values: { encoded: string; decoded: string }) => string;
+  code: string;
   docs: string;
   /** Where the package is published. */
   registries: { label: string; href: string }[];
@@ -29,22 +28,19 @@ const unreleased =
 
 const repo = "https://github.com/nakanoasaservice/uuid58";
 
-export const samples: Sample[] = [
+export const libraries: Library[] = [
   {
     id: "js",
     label: "JavaScript",
     language: "typescript",
     install: "npm i @nakanoaas/uuid58",
-    code: ({
-      encoded,
-      decoded,
-    }) => `import { uuid58, uuid58Decode, uuid58Encode } from "@nakanoaas/uuid58";
+    code: `import { uuid58, uuid58Decode, uuid58Encode } from "@nakanoaas/uuid58";
 
-uuid58Encode("${decoded}");
-// => "${encoded}"
+uuid58Encode("${examplePair.decoded}");
+// => "${examplePair.encoded}"
 
-uuid58Decode("${encoded}");
-// => "${decoded}"
+uuid58Decode("${examplePair.encoded}");
+// => "${examplePair.decoded}"
 
 uuid58(); // a new random UUID, encoded`,
     docs: `${repo}/tree/main/js#readme`,
@@ -58,16 +54,13 @@ uuid58(); // a new random UUID, encoded`,
     label: "Go",
     language: "go",
     install: "go get github.com/nakanoasaservice/uuid58/go",
-    code: ({
-      encoded,
-      decoded,
-    }) => `import uuid58 "github.com/nakanoasaservice/uuid58/go"
+    code: `import uuid58 "github.com/nakanoasaservice/uuid58/go"
 
-s, err := uuid58.Encode("${decoded}")
-// s == "${encoded}"
+s, err := uuid58.Encode("${examplePair.decoded}")
+// s == "${examplePair.encoded}"
 
-u, err := uuid58.Decode("${encoded}")
-// u == "${decoded}"`,
+u, err := uuid58.Decode("${examplePair.encoded}")
+// u == "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/go#readme`,
     registries: [
       {
@@ -81,13 +74,13 @@ u, err := uuid58.Decode("${encoded}")
     label: "Python",
     language: "python",
     install: "pip install uuid58",
-    code: ({ encoded, decoded }) => `import uuid58
+    code: `import uuid58
 
-uuid58.encode("${decoded}")
-# '${encoded}'
+uuid58.encode("${examplePair.decoded}")
+# '${examplePair.encoded}'
 
-uuid58.decode("${encoded}")
-# '${decoded}'`,
+uuid58.decode("${examplePair.encoded}")
+# '${examplePair.decoded}'`,
     docs: `${repo}/tree/main/python#readme`,
     registries: [{ label: "PyPI", href: "https://pypi.org/project/uuid58/" }],
   },
@@ -96,14 +89,11 @@ uuid58.decode("${encoded}")
     label: "Rust",
     language: "rust",
     install: "cargo add uuid58",
-    code: ({
-      encoded,
-      decoded,
-    }) => `let id = uuid58::encode_uuid_str("${decoded}")?;
-assert_eq!(id, "${encoded}");
+    code: `let id = uuid58::encode_uuid_str("${examplePair.decoded}")?;
+assert_eq!(id, "${examplePair.encoded}");
 
-let uuid = uuid58::decode_to_uuid_string("${encoded}")?;
-assert_eq!(uuid, "${decoded}");`,
+let uuid = uuid58::decode_to_uuid_string("${examplePair.encoded}")?;
+assert_eq!(uuid, "${examplePair.decoded}");`,
     docs: `${repo}/tree/main/rust#readme`,
     registries: [
       { label: "crates.io", href: "https://crates.io/crates/uuid58" },
@@ -114,16 +104,13 @@ assert_eq!(uuid, "${decoded}");`,
     label: "Java",
     language: "java",
     install: `implementation("io.github.nakanoasaservice:uuid58:0.1.0")`,
-    code: ({
-      encoded,
-      decoded,
-    }) => `import io.github.nakanoasaservice.uuid58.Uuid58;
+    code: `import io.github.nakanoasaservice.uuid58.Uuid58;
 
-Uuid58.encode("${decoded}");
-// "${encoded}"
+Uuid58.encode("${examplePair.decoded}");
+// "${examplePair.encoded}"
 
-Uuid58.decode("${encoded}");
-// "${decoded}"`,
+Uuid58.decode("${examplePair.encoded}");
+// "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/java#readme`,
     registries: [
       {
@@ -137,16 +124,13 @@ Uuid58.decode("${encoded}");
     label: "Kotlin",
     language: "kotlin",
     install: `implementation("io.github.nakanoasaservice:uuid58:0.1.0")`,
-    code: ({
-      encoded,
-      decoded,
-    }) => `import io.github.nakanoasaservice.uuid58.Uuid58
+    code: `import io.github.nakanoasaservice.uuid58.Uuid58
 
-Uuid58.encode("${decoded}")
-// "${encoded}"
+Uuid58.encode("${examplePair.decoded}")
+// "${examplePair.encoded}"
 
-Uuid58.decode("${encoded}")
-// "${decoded}"`,
+Uuid58.decode("${examplePair.encoded}")
+// "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/java#readme`,
     registries: [
       {
@@ -160,13 +144,13 @@ Uuid58.decode("${encoded}")
     label: "Swift",
     language: "swift",
     install: `.package(url: "https://github.com/nakanoasaservice/uuid58-swift.git", from: "0.1.0")`,
-    code: ({ encoded, decoded }) => `import UUID58
+    code: `import UUID58
 
-try uuid58Encode("${decoded}")
-// "${encoded}"
+try uuid58Encode("${examplePair.decoded}")
+// "${examplePair.encoded}"
 
-try uuid58Decode("${encoded}")
-// "${decoded}"`,
+try uuid58Decode("${examplePair.encoded}")
+// "${examplePair.decoded}"`,
     docs: "https://github.com/nakanoasaservice/uuid58-swift#readme",
     registries: [],
   },
@@ -175,13 +159,13 @@ try uuid58Decode("${encoded}")
     label: "C#",
     language: "csharp",
     install: "dotnet add package Uuid58",
-    code: ({ encoded, decoded }) => `using NakanoAsAService.Uuid58;
+    code: `using NakanoAsAService.Uuid58;
 
-Uuid58.EncodeUuidString("${decoded}");
-// "${encoded}"
+Uuid58.EncodeUuidString("${examplePair.decoded}");
+// "${examplePair.encoded}"
 
-Uuid58.Decode("${encoded}");
-// "${decoded}"`,
+Uuid58.Decode("${examplePair.encoded}");
+// "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/dotnet#readme`,
     registries: [],
     note: unreleased,
@@ -191,13 +175,13 @@ Uuid58.Decode("${encoded}");
     label: "PHP",
     language: "php",
     install: "composer require nakanoasaservice/uuid58",
-    code: ({ encoded, decoded }) => `use NakanoAsAService\\Uuid58\\Uuid58;
+    code: `use NakanoAsAService\\Uuid58\\Uuid58;
 
-Uuid58::encode('${decoded}');
-// '${encoded}'
+Uuid58::encode('${examplePair.decoded}');
+// '${examplePair.encoded}'
 
-Uuid58::decode('${encoded}');
-// '${decoded}'`,
+Uuid58::decode('${examplePair.encoded}');
+// '${examplePair.decoded}'`,
     docs: `${repo}/tree/main/php#readme`,
     registries: [],
     note: unreleased,
@@ -207,13 +191,13 @@ Uuid58::decode('${encoded}');
     label: "Ruby",
     language: "ruby",
     install: "bundle add uuid58",
-    code: ({ encoded, decoded }) => `require "uuid58"
+    code: `require "uuid58"
 
-Uuid58.encode("${decoded}")
-# => "${encoded}"
+Uuid58.encode("${examplePair.decoded}")
+# => "${examplePair.encoded}"
 
-Uuid58.decode("${encoded}")
-# => "${decoded}"`,
+Uuid58.decode("${examplePair.encoded}")
+# => "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/ruby#readme`,
     registries: [],
     note: unreleased,
@@ -223,13 +207,13 @@ Uuid58.decode("${encoded}")
     label: "Dart",
     language: "dart",
     install: "dart pub add uuid58",
-    code: ({ encoded, decoded }) => `import 'package:uuid58/uuid58.dart';
+    code: `import 'package:uuid58/uuid58.dart';
 
-uuid58Encode('${decoded}');
-// '${encoded}'
+uuid58Encode('${examplePair.decoded}');
+// '${examplePair.encoded}'
 
-uuid58Decode('${encoded}');
-// '${decoded}'`,
+uuid58Decode('${examplePair.encoded}');
+// '${examplePair.decoded}'`,
     docs: `${repo}/tree/main/dart#readme`,
     registries: [],
     note: unreleased,
@@ -239,11 +223,11 @@ uuid58Decode('${encoded}');
     label: "PostgreSQL",
     language: "sql",
     install: `curl -fsSL https://raw.githubusercontent.com/nakanoasaservice/uuid58/main/postgres/uuid58.sql | psql`,
-    code: ({ encoded, decoded }) => `SELECT uuid58_encode('${decoded}'::uuid);
--- ${encoded}
+    code: `SELECT uuid58_encode('${examplePair.decoded}'::uuid);
+-- ${examplePair.encoded}
 
-SELECT uuid58_decode('${encoded}');
--- ${decoded}`,
+SELECT uuid58_decode('${examplePair.encoded}');
+-- ${examplePair.decoded}`,
     docs: `${repo}/tree/main/postgres#readme`,
     registries: [],
   },

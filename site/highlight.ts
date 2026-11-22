@@ -1,18 +1,13 @@
 // Syntax highlighting at build time. This Vite plugin serves the virtual module
 // `virtual:highlighted`: every code block on the page as highlighted HTML, so
-// Shiki never ships to the browser. The code samples are highlighted with the
-// sample pair filled in; app.tsx swaps in the playground values with fill().
+// Shiki never ships to the browser.
 import { createHighlighter } from "shiki";
 import type { Plugin } from "vite-plus";
 import { installMethods, tryCommand, usageExample } from "./cli";
-import { sample, samples } from "./samples";
+import { libraries } from "./libraries";
 
 const id = "virtual:highlighted";
 const resolvedId = `\0${id}`;
-
-function count(text: string, part: string): number {
-  return text.split(part).length - 1;
-}
 
 export function highlight(): Plugin {
   return {
@@ -26,7 +21,7 @@ export function highlight(): Plugin {
       const highlighter = await createHighlighter({
         themes: ["github-light", "github-dark"],
         langs: [
-          ...new Set(samples.map((s) => s.language)),
+          ...new Set(libraries.map((s) => s.language)),
           "shellscript",
           "shellsession",
         ],
@@ -44,25 +39,13 @@ export function highlight(): Plugin {
         return inner;
       };
 
-      // fill() finds the sample values by exact text, so each must survive
-      // highlighting as one unbroken run.
-      const withValues = (code: string, lang: string) => {
-        const html = toHtml(code, lang);
-        for (const value of [sample.encoded, sample.decoded]) {
-          if (count(html, value) !== count(code, value)) {
-            throw new Error(`Highlighting split ${value} in:\n${code}`);
-          }
-        }
-        return html;
-      };
-
       const highlighted = {
-        samples: Object.fromEntries(
-          samples.map((s) => [
+        libraries: Object.fromEntries(
+          libraries.map((s) => [
             s.id,
             {
               install: toHtml(s.install, "shellscript"),
-              code: withValues(s.code(sample), s.language),
+              code: toHtml(s.code, s.language),
             },
           ]),
         ),
@@ -70,7 +53,7 @@ export function highlight(): Plugin {
           installMethods.map((m) => [m.id, toHtml(m.command, "shellscript")]),
         ),
         try: toHtml(tryCommand, "shellscript"),
-        usage: withValues(usageExample(sample), "shellsession"),
+        usage: toHtml(usageExample, "shellsession"),
       };
       highlighter.dispose();
       return `export default ${JSON.stringify(highlighted)};`;
