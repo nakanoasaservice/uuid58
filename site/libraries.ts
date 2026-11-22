@@ -174,7 +174,7 @@ Uuid58.Decode("${examplePair.encoded}");
     id: "php",
     label: "PHP",
     language: "php",
-    install: "composer require nakanoasaservice/uuid58",
+    install: "composer require nakanoaas/uuid58",
     code: `use NakanoAsAService\\Uuid58\\Uuid58;
 
 Uuid58::encode('${examplePair.decoded}');
@@ -182,9 +182,13 @@ Uuid58::encode('${examplePair.decoded}');
 
 Uuid58::decode('${examplePair.encoded}');
 // '${examplePair.decoded}'`,
-    docs: `${repo}/tree/main/php#readme`,
-    registries: [],
-    note: unreleased,
+    docs: "https://github.com/nakanoasaservice/uuid58-php#readme",
+    registries: [
+      {
+        label: "Packagist",
+        href: "https://packagist.org/packages/nakanoaas/uuid58",
+      },
+    ],
   },
   {
     id: "ruby",

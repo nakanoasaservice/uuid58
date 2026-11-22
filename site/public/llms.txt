@@ -30,6 +30,6 @@ Key facts:
 - [Swift](https://github.com/nakanoasaservice/uuid58-swift): Swift Package Manager
 - [PostgreSQL](https://github.com/nakanoasaservice/uuid58/tree/main/postgres#readme): one SQL file, no extension
 - [C# / .NET](https://github.com/nakanoasaservice/uuid58/tree/main/dotnet#readme): `Uuid58` (not yet on NuGet)
-- [PHP](https://github.com/nakanoasaservice/uuid58/tree/main/php#readme): `nakanoasaservice/uuid58` (not yet on Packagist)
+- [PHP](https://github.com/nakanoasaservice/uuid58-php#readme): `nakanoaas/uuid58` on Packagist
 - [Ruby](https://github.com/nakanoasaservice/uuid58/tree/main/ruby#readme): `uuid58` gem (not yet on RubyGems)
 - [Dart / Flutter](https://github.com/nakanoasaservice/uuid58/tree/main/dart#readme): `uuid58` (not yet on pub.dev)
