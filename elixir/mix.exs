@@ -1,7 +1,7 @@
 defmodule Uuid58.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
   @source_url "https://github.com/nakanoasaservice/uuid58"
   @description "Shorten UUIDs to 22-character Base58 strings, and back. Order-preserving, with a stable, well-tested spec."
 

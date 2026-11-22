@@ -1,3 +1,9 @@
+## 0.1.1
+
+- Update installation documentation now that the package is available on Hex.
+- Publish through GitHub Actions using Hex workload identity.
+- No runtime behavior changes.
+
 ## 0.1.0
 
 - Initial release, implementing uuid58 specification 1.1.0.
