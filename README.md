@@ -49,7 +49,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 | [PostgreSQL](postgres/)                                   | One SQL file, no extension                     | [`uuid58.sql`](postgres/uuid58.sql)                                                             |
 | [C# / .NET](dotnet/)                                      | `dotnet add package Uuid58`                    | [NuGet](https://www.nuget.org/packages/Uuid58)                                                    |
 | [PHP](php/)                                               | `composer require nakanoaas/uuid58`     | [Packagist](https://packagist.org/packages/nakanoaas/uuid58)                                                                    |
-| [Ruby](ruby/)                                             | `bundle add uuid58`                            | RubyGems (not yet released)                                                                     |
+| [Ruby](ruby/)                                             | `bundle add uuid58`                            | [RubyGems](https://rubygems.org/gems/uuid58)                                                                     |
 | [Dart / Flutter](dart/)                                   | `dart pub add uuid58`                          | pub.dev (not yet released)                                                                      |
 | [CLI](go/cmd/uuid58/)                                     | `brew install nakanoasaservice/tap/uuid58`     | Homebrew, `nix run github:nakanoasaservice/uuid58`, or `go install`                             |
 

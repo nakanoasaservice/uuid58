@@ -89,7 +89,36 @@ jobs:
           ruby-version: ruby
 
       - name: Configure RubyGems credentials (trusted publishing)
-        uses: rubygems/configure-rubygems-credentials@v2.1.0
+        # configure-rubygems-credentials v2.1.0 cannot assert the owner required
+        # for a pending trusted publisher. Exchange the short-lived token directly.
+        env:
+          RUBYGEMS_OWNER: "256278"
+        shell: python
+        run: |
+          import json
+          import os
+          import urllib.request
+
+          request = urllib.request.Request(
+              os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"] + "&audience=rubygems.org",
+              headers={"Authorization": "Bearer " + os.environ["ACTIONS_ID_TOKEN_REQUEST_TOKEN"]},
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              jwt = json.load(response)["value"]
+          print("::add-mask::" + jwt)
+          request = urllib.request.Request(
+              "https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token",
+              data=json.dumps({"jwt": jwt, "owner": os.environ["RUBYGEMS_OWNER"]}).encode(),
+              headers={"Content-Type": "application/json", "Accept": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              api_key = json.load(response)["rubygems_api_key"]
+          if not isinstance(api_key, str) or not api_key or any(c in api_key for c in "\r\n"):
+              raise ValueError("Invalid RubyGems API key response")
+          print("::add-mask::" + api_key)
+          with open(os.environ["GITHUB_ENV"], "a") as environment:
+              environment.write("GEM_HOST_API_KEY=" + api_key + "\n")
 
       - name: Publish to RubyGems.org
         run: gem push uuid58.gem
