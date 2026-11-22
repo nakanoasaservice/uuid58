@@ -50,7 +50,7 @@ Uuid58.encode("f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf")
 Uuid58.encode("F4B247FD1F8745D4AA061C6FC0A8DFAF") # plain hex, any case
 Uuid58.encode(0xF4B247FD1F8745D4AA061C6FC0A8DFAF)
 
-raw = Base.decode16!("f4b247fd1f8745d4aa061c6fc0a8dfaf")
+raw = Base.decode16!("f4b247fd1f8745d4aa061c6fc0a8dfaf", case: :lower)
 Uuid58.encode_bytes(raw) # {:ok, s}
 
 Uuid58.decode(s) # {:ok, "f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf"}
@@ -94,7 +94,7 @@ def show(conn, %{"id" => param}) do
        %MyApp.Post{} = post <- MyApp.Repo.get(MyApp.Post, uuid) do
     render(conn, :show, post: post)
   else
-    _ -> conn |> Plug.Conn.put_status(:not_found) |> Plug.Conn.halt()
+    _ -> Plug.Conn.send_resp(conn, :not_found, "Not found")
   end
 end
 ```
