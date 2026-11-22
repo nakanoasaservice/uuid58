@@ -32,13 +32,13 @@ Add `uuid58` to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:uuid58, "~> 0.1.0"}
+    {:uuid58, "~> 0.1.1"}
   ]
 end
 ```
 
-The package is not released on Hex yet; this dependency works once the first
-version is published.
+Available on [Hex](https://hex.pm/packages/uuid58), with API documentation
+on [HexDocs](https://uuid58.hexdocs.pm/).
 
 ## Usage
 
