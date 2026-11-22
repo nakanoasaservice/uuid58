@@ -5,10 +5,10 @@ name: Publish Elixir
 #      elixir/CHANGELOG.md, and merge it into main.
 #   2. git tag elixir/v1.2.3 <commit on main> && git push origin elixir/v1.2.3
 #
-# Hex workload identity publishes the package. Configure it on the package
-# page (repository nakanoasaservice/uuid58, workflow publish-elixir.yml,
-# environment production). It cannot create a package, so publish 0.1.0 once
-# with a Hex account, then add the workload identity.
+# Hex workload identity is configured for repository nakanoasaservice/uuid58,
+# workflow publish-elixir.yml, environment production. The package already
+# exists, production allows elixir/v* tags, and Hex staged publishing is
+# disabled, so releases publish directly without a separate Hex approval.
 # Requires Hex 2.6+ and OTP 27+. mix hex.publish exchanges the OIDC token
 # when no HEX_API_KEY or other Hex credential is set.
 on:

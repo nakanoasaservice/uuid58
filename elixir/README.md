@@ -1,6 +1,8 @@
 # uuid58 for Elixir
 
 [![CI](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-elixir.yml/badge.svg)](https://github.com/nakanoasaservice/uuid58/actions/workflows/ci-elixir.yml)
+[![Hex](https://img.shields.io/hexpm/v/uuid58.svg)](https://hex.pm/packages/uuid58)
+[![HexDocs](https://img.shields.io/badge/docs-HexDocs-purple)](https://uuid58.hexdocs.pm/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nakanoasaservice/uuid58/blob/main/LICENSE)
 
 Shorten UUIDs to 22-character Base58 strings, and back, in Elixir. Give
@@ -188,6 +190,25 @@ mix hex.build     # build uuid58-x.y.z.tar
 
 The conformance tests read `../spec/vectors.json`, so run them from a
 checkout of the repository.
+
+## Releasing
+
+1. Update `@version` in `mix.exs`, add a matching version heading to
+   `CHANGELOG.md`, and update the installation examples in this README,
+   the repository README, `site/libraries.ts`, and `site/public/llms.txt`.
+2. Run the development checks above and merge the changes into `main`.
+3. Tag that commit as `elixir/v<version>` and push the tag.
+
+The [Publish Elixir workflow](https://github.com/nakanoasaservice/uuid58/blob/main/.github/workflows/publish-elixir.yml)
+checks the version and tests, publishes the package and documentation to Hex
+and HexDocs, and creates a GitHub Release.
+
+Publishing uses Hex workload identity for `nakanoasaservice/uuid58`, workflow
+`publish-elixir.yml`, and environment `production`. No API key is needed.
+The environment allows `elixir/v*` tags, and Hex staged publishing is disabled
+for this package, so releases publish without a separate Hex approval.
+If staged publishing is enabled again, a successful workflow only stages
+the release; an owner must approve it in Hex before users can install it.
 
 ## License
 

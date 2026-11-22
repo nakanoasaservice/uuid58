@@ -163,8 +163,10 @@ the spec as `1.0.0`.
       [`postgres/`](postgres/), the CLI in [`go/cmd/uuid58/`](go/cmd/uuid58/),
       C# in [`dotnet/`](dotnet/), PHP in [uuid58-php](https://github.com/nakanoasaservice/uuid58-php), Ruby in
       [`ruby/`](ruby/), Dart in [`dart/`](dart/), Elixir in
-      [`elixir/`](elixir/), and MySQL / MariaDB in [`mysql/`](mysql/); first
-      releases and registry setup are still to do)
+      [`elixir/`](elixir/), and MySQL / MariaDB in [`mysql/`](mysql/))
+- [x] Publish Elixir on [Hex](https://hex.pm/packages/uuid58) with
+      [HexDocs](https://uuid58.hexdocs.pm/), and configure GitHub Actions
+      workload identity for subsequent releases without manual Hex approval
 
 ### More Implementations
 
@@ -174,10 +176,6 @@ where UUIDs are stored and handled: databases and server-side frameworks.
 Some nanoid variants do not apply to uuid58: the spec fixes the alphabet
 and length, so there is nothing like `customAlphabet` or a size calculator.
 uuid58 uses no randomness, so it needs no non-secure build either.
-
-Before adding anything, finish the first releases of Go, Python, Rust, and
-Java (Phase 3). Those implementations already exist, so releasing them
-brings four languages to users for less work than any new one.
 
 | Order | Target                               | Notes                                                                                                                                                                             |
 | ----- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
