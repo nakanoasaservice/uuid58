@@ -38,7 +38,7 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 ## Dependency updates
 
 - Dependabot opens update PRs (`.github/dependabot.yml`): language ecosystems daily, `github-actions` and `nix` weekly, with a cooldown. Patch/minor updates are grouped per directory; each major is its own PR.
-- `.github/workflows/dependabot-triage.yml` enables auto-merge for patch/minor updates on versions >= 1.0. GitHub merges them once `check` passes. Majors, 0.x minors and updates without a SemVer type (for example `nix` flake inputs) are left for review.
+- `.github/workflows/dependabot-triage.yml` enables auto-merge for patch/minor updates on versions >= 1.0, and for the `nixpkgs` flake input (a commit on `nixos-unstable` that `ci-nix.yml` checks). GitHub merges them once `check` passes. Majors, 0.x minors, updates without a SemVer type and any other flake input are left for review.
 - Dependabot updates `actions.lock` together with the workflow files in `github-actions` PRs.
 
 Not managed by Dependabot (update by hand, together):
