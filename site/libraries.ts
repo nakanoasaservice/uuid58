@@ -232,7 +232,7 @@ uuid58Decode('${examplePair.encoded}');
 # u == "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/elixir#readme`,
     registries: [{ label: "Hex", href: "https://hex.pm/packages/uuid58" }],
-    note: unreleased,
+    note: "Not yet released.",
   },
   {
     id: "postgres",
