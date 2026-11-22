@@ -10,8 +10,8 @@
     "check": "vp check"
   },
   "dependencies": {
-    "@solidjs/web": "^2.0.0",
-    "solid-js": "^2.0.0"
+    "@solidjs/web": "^2.0.3",
+    "solid-js": "^2.0.3"
   },
   "devDependencies": {
     "@solidjs/vite-plugin": "^3.0.1",
