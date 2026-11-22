@@ -13,7 +13,7 @@
 
     <!-- NuGet package -->
     <PackageId>Uuid58</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Nakano as a Service</Authors>
     <Description>Shorten UUIDs (Guid) to 22-character Base58 strings, and back. URL-safe, order-preserving, and identical across languages under a stable, well-tested spec.</Description>
     <PackageTags>uuid;guid;base58;uuid58;encoding;short-id</PackageTags>
