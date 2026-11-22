@@ -31,8 +31,7 @@ f4b247fd-1f87-45d4-aa06-1c6fc0a8dfaf  ⇄  XDY9dmBbcMBXqcRvYw8xJ2
 bundle add uuid58
 ```
 
-or `gem install uuid58`. The gem is not released on RubyGems yet; these
-commands work once the first version is published.
+or `gem install uuid58`. Available on [RubyGems](https://rubygems.org/gems/uuid58).
 
 ## Usage
 
