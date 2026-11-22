@@ -3,7 +3,7 @@ description: >-
   Shorten UUIDs to 22-character Base58 strings, and back. Order-preserving,
   with a stable, well-tested spec. Pure Dart: works on the VM, Flutter, and
   the web.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/nakanoasaservice/uuid58/tree/main/dart
 homepage: https://nakanoasaservice.github.io/uuid58/
 issue_tracker: https://github.com/nakanoasaservice/uuid58/issues

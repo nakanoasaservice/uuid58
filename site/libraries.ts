@@ -23,9 +23,6 @@ export type Library = {
   note?: string;
 };
 
-const unreleased =
-  "Not released yet. The install command works once the first version is published.";
-
 const repo = "https://github.com/nakanoasaservice/uuid58";
 
 export const libraries: Library[] = [
@@ -103,7 +100,7 @@ assert_eq!(uuid, "${examplePair.decoded}");`,
     id: "java",
     label: "Java",
     language: "java",
-    install: `implementation("io.github.nakanoasaservice:uuid58:0.1.0")`,
+    install: `implementation("io.github.nakanoasaservice:uuid58:0.1.1")`,
     code: `import io.github.nakanoasaservice.uuid58.Uuid58;
 
 Uuid58.encode("${examplePair.decoded}");
@@ -123,7 +120,7 @@ Uuid58.decode("${examplePair.encoded}");
     id: "kotlin",
     label: "Kotlin",
     language: "kotlin",
-    install: `implementation("io.github.nakanoasaservice:uuid58:0.1.0")`,
+    install: `implementation("io.github.nakanoasaservice:uuid58:0.1.1")`,
     code: `import io.github.nakanoasaservice.uuid58.Uuid58
 
 Uuid58.encode("${examplePair.decoded}")
@@ -167,14 +164,15 @@ Uuid58.EncodeUuidString("${examplePair.decoded}");
 Uuid58.Decode("${examplePair.encoded}");
 // "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/dotnet#readme`,
-    registries: [],
-    note: unreleased,
+    registries: [
+      { label: "NuGet", href: "https://www.nuget.org/packages/Uuid58" },
+    ],
   },
   {
     id: "php",
     label: "PHP",
     language: "php",
-    install: "composer require nakanoasaservice/uuid58",
+    install: "composer require nakanoaas/uuid58",
     code: `use NakanoAsAService\\Uuid58\\Uuid58;
 
 Uuid58::encode('${examplePair.decoded}');
@@ -182,9 +180,13 @@ Uuid58::encode('${examplePair.decoded}');
 
 Uuid58::decode('${examplePair.encoded}');
 // '${examplePair.decoded}'`,
-    docs: `${repo}/tree/main/php#readme`,
-    registries: [],
-    note: unreleased,
+    docs: "https://github.com/nakanoasaservice/uuid58-php#readme",
+    registries: [
+      {
+        label: "Packagist",
+        href: "https://packagist.org/packages/nakanoaas/uuid58",
+      },
+    ],
   },
   {
     id: "ruby",
@@ -199,8 +201,9 @@ Uuid58.encode("${examplePair.decoded}")
 Uuid58.decode("${examplePair.encoded}")
 # => "${examplePair.decoded}"`,
     docs: `${repo}/tree/main/ruby#readme`,
-    registries: [],
-    note: unreleased,
+    registries: [
+      { label: "RubyGems", href: "https://rubygems.org/gems/uuid58" },
+    ],
   },
   {
     id: "dart",
@@ -215,8 +218,7 @@ uuid58Encode('${examplePair.decoded}');
 uuid58Decode('${examplePair.encoded}');
 // '${examplePair.decoded}'`,
     docs: `${repo}/tree/main/dart#readme`,
-    registries: [],
-    note: unreleased,
+    registries: [{ label: "pub.dev", href: "https://pub.dev/packages/uuid58" }],
   },
   {
     id: "elixir",

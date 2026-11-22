@@ -141,25 +141,6 @@ updates:
       ruby-minor-patch:
         update-types: ["minor", "patch"]
 
-  - package-ecosystem: "composer"
-    directory: "/php"
-    schedule:
-      interval: "daily"
-      time: "08:00"
-      timezone: "Asia/Tokyo"
-    cooldown:
-      default-days: 3
-      semver-major-days: 14
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      php-minor-patch:
-        update-types: ["minor", "patch"]
-
   - package-ecosystem: "mix"
     directory: "/elixir"
     schedule:

@@ -21,7 +21,6 @@ Toolchain majors are selected in each directory's `mise.toml`. For JavaScript, `
 | `go/` | Go 1.27 locally (CI: 1.26 and stable) | `gofmt -l .` (must be empty), `go vet ./...`, `go test -race ./...` |
 | `java/` | Temurin 25, Maven via `./mvnw` (CI: Java 8, 17, 21, 25) | `./mvnw -B verify` |
 | `dotnet/` | .NET 10 SDK + .NET 8 runtime | `dotnet format --verify-no-changes`, `dotnet build -c Release`, `dotnet test -c Release --no-build` |
-| `php/` | PHP 8.1+ (CI: 8.1, 8.5), Composer 2 | `composer validate --strict`, `composer update`, `vendor/bin/phpstan analyse`, `vendor/bin/phpunit` |
 | `ruby/` | Ruby 4.0 locally (CI: 3.2 and latest) | `bundle install`, `bundle exec rake test`, `bundle exec rake build` |
 | `dart/` | Dart 3.14 locally (CI: 3.6 and stable) | `dart pub get`, `dart format --output=none --set-exit-if-changed .`, `dart analyze --fatal-infos`, `dart test` |
 | `elixir/` | Elixir 1.20, OTP 29 (CI: 1.16/OTP 26 and 1.20/OTP 29) | `mix deps.get --check-locked`, `mix format --check-formatted`, `mix test`, `mix hex.build` |
@@ -66,5 +65,5 @@ Not managed by Dependabot (update by hand, together):
   | `dart/v*` | `publish-dart.yml` | pub.dev |
   | `elixir/v*` | `publish-elixir.yml` | Hex |
 
-- PHP (Packagist), PostgreSQL and Nix have no publish workflow.
+- PostgreSQL and Nix have no publish workflow. PHP is developed and released in `nakanoasaservice/uuid58-php`, like Swift in `uuid58-swift`.
 - Do not push release tags or run publish commands unless asked.
