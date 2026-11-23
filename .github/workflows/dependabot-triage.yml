@@ -22,12 +22,14 @@ jobs:
         uses: dependabot/fetch-metadata@v3.1.0
 
       # Safe = every updated dependency is a patch/minor update on a >=1.0 version,
-      # or the nixpkgs flake input.
-      # Majors and 0.x minors (breaking under SemVer) are left without auto-merge;
+      # a GitHub Actions major, or the nixpkgs flake input.
+      # Other majors and 0.x minors (breaking under SemVer) are left without auto-merge;
       # the AI task picks up Dependabot PRs that have no auto-merge or a failed check.
       # nixpkgs is a commit on nixos-unstable, not a SemVer release, and
       # fetch-metadata reports every bump as a major. It only feeds the flake,
       # which ci-nix.yml checks on every flake.lock change.
+      # A GitHub Actions major usually only bumps the runtime Node.js version;
+      # the CI jobs that use the action run on the PR, so the required check covers it.
       - name: Decide
         id: decide
         env:
@@ -36,7 +38,7 @@ jobs:
           unsafe=$(jq '[.[] | select(
               ((.packageEcosystem == "nix" and .dependencyName == "nixpkgs") | not)
               and (
-                .updateType == "version-update:semver-major"
+                (.updateType == "version-update:semver-major" and .packageEcosystem != "github_actions")
                 or (.updateType == "version-update:semver-minor" and ((.prevVersion // "") | startswith("0.")))
                 or ((.updateType // "") == "")
               )

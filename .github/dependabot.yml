@@ -5,7 +5,8 @@
 #   hijacked packages); majors wait longer. Security updates are not delayed.
 # - Patch/minor updates are grouped per entry; majors are not grouped, so each
 #   major lands as its own PR. dependabot-triage.yml enables auto-merge only for
-#   patch/minor updates on versions >= 1.0, and for the nixpkgs flake input.
+#   patch/minor updates on versions >= 1.0, GitHub Actions majors, and the
+#   nixpkgs flake input.
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -235,6 +236,7 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 3
+      semver-major-days: 14
     labels:
       - "dependencies"
       - "github-actions"
