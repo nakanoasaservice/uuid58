@@ -139,7 +139,7 @@ decoder result describes the contents of the reused array when it returns.
 Use Bash, Python 3.11 or later, rustup, and the Lean version in
 [lean-toolchain](lean-toolchain). With elan installed, running the script selects
 that Lean toolchain. Download the Linux x86-64 archive from the
-[pinned Aeneas release](https://github.com/AeneasVerif/aeneas/releases/tag/nightly-2026.11.18-1dc8ad3)
+[pinned Aeneas release](https://github.com/AeneasVerif/aeneas/releases/tag/nightly-2026.11.21-2e3d448)
 and extract it to a writable directory, then run this from the repository root.
 
 ```sh

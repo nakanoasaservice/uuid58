@@ -26,8 +26,8 @@ jobs:
           curl -fsSL --retry 3 "https://github.com/AeneasVerif/aeneas/releases/download/$tag/aeneas-linux-x86_64.tar.gz" -o aeneas.tar.gz
           curl -fsSL --retry 3 "https://github.com/leanprover/lean4/releases/download/$version/lean-${version#v}-linux.tar.zst" -o lean.tar.zst
           sha256sum --check <<'SUMS'
-          09c07d644ca0e7b1d0c751049e8d733438194a85e8a6941b7ac00d99609a4391  aeneas.tar.gz
-          0a0a3208617e9eab92f1041efa83ad94d405e69d172fb654a62dbfa9fbc5313b  lean.tar.zst
+          7bb314c2a58f64178a2849bfcd3339d5a4a34e9f47f2530ae064548c614c25e0  aeneas.tar.gz
+          2b7ab1ed8b92d2e6abfaf41344823b510064dbc9c0260cac73eb496ab2dea6eb  lean.tar.zst
           SUMS
           mkdir aeneas
           tar -xzf aeneas.tar.gz -C aeneas
