@@ -87,8 +87,7 @@ private theorem nibble_at (v : Std.U128) (j : Nat) (hj : j < 32) :
   iterate 32
     cases j
     case zero =>
-      simp [Text.nibble, Text.word]
-      omega
+      simp [Text.nibble, Text.word] <;> omega
     rename_i j
   omega
 
