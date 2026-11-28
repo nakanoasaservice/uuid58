@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { defineConfig } from "vite-plus";
+import { defineConfig, type UserConfig } from "vite-plus";
 
 /**
  * Writes jsr.json from package.json so the version lives in one place.
@@ -26,7 +26,7 @@ function generateJsrJson(): void {
   writeFileSync("jsr.json", `${JSON.stringify(jsrJson, null, 2)}\n`);
 }
 
-export default defineConfig({
+const config: UserConfig = defineConfig({
   pack: {
     deps: {
       // tsdown <0.23 compatibility: resolve external dependency subpaths.
@@ -62,3 +62,5 @@ export default defineConfig({
     ignorePatterns: ["dist/**", "bench/.baseline/**", "pnpm-lock.yaml"],
   },
 });
+
+export default config;
