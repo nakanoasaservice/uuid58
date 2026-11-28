@@ -18,12 +18,12 @@ jobs:
           # setup-beam strict mode matches the builds.hex.pm entry exactly, so
           # these are patch versions, not majors. 1.16 is the oldest minor
           # elixir/mix.exs allows, on the newest OTP it supports; 1.20.5 /
-          # OTP 29.1.2 is the current release.
+          # OTP 29.1.3 is the current release.
           - elixir: "1.16.3"
             otp: "26.2.5"
           # lint: also check formatting and build the docs and the package.
           - elixir: "1.20.5"
-            otp: "29.1.2"
+            otp: "29.1.3"
             lint: true
     defaults:
       run:
