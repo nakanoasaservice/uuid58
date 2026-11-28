@@ -35,8 +35,8 @@ function newPair(): Pair {
 }
 
 const fields: { key: Field; label: string; hint: string }[] = [
-  { key: "encoded", label: "uuid58", hint: "22 characters" },
   { key: "decoded", label: "UUID", hint: "36 or 32 characters" },
+  { key: "encoded", label: "uuid58", hint: "22 characters" },
 ];
 
 const features = [
@@ -283,7 +283,7 @@ function Playground(props: {
       </For>
       <div class="playground-footer">
         <button type="button" class="primary" onClick={generate}>
-          Generate new
+          Generate
         </button>
         <p>
           Paste a UUID (with or without hyphens) or a uuid58 string to convert
