@@ -66,6 +66,7 @@ Not managed by Dependabot (update by hand, together):
   | `dart/v*` | `publish-dart.yml` | pub.dev |
   | `elixir/v*` | `publish-elixir.yml` | Hex |
 
-- Elixir publishes with Hex workload identity (`nakanoasaservice/uuid58`, `publish-elixir.yml`, environment `production`), without an API key. `production` allows `elixir/v*` tags. Hex staged publishing is disabled for `uuid58`, so no separate Hex approval is required. See `elixir/README.md` for the release checklist.
+- Every publish job runs in the `production` environment, which holds the publish secrets (for example `HOMEBREW_TAP_TOKEN` for `nakanoasaservice/homebrew-tap`). Its deployment policy allows `main` and the tags `v*`, `js/v*`, `python/v*`, `rust/v*`, `go/v*`, `java/v*`, `dotnet/v*`, `ruby/v*`, `dart/v*` and `elixir/v*`. A job whose tag is not allowed fails before any step runs, so add the tag pattern there when adding a publish workflow.
+- Elixir publishes with Hex workload identity (`nakanoasaservice/uuid58`, `publish-elixir.yml`, environment `production`), without an API key. Hex staged publishing is disabled for `uuid58`, so no separate Hex approval is required. See `elixir/README.md` for the release checklist.
 - PostgreSQL, MySQL, and Nix have no publish workflow. PHP is developed and released in `nakanoasaservice/uuid58-php`, like Swift in `uuid58-swift`.
 - Do not push release tags or run publish commands unless asked.
